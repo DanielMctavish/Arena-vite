@@ -1,0 +1,113 @@
+/* eslint-disable no-unreachable */
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import BgAdm from '../../medias/bg-adm.png';
+import "./styles/PortalAdm.css"
+
+import CardMachine from './ADM-components/CardMachine';
+import NavigationAdm from './ADM-components/Navigation';
+import Asside from './ADM-components/Asside';
+import SelectLocation from './ADM-components/SelectLocation';
+
+import { Add } from '@mui/icons-material'
+import ModalConfigSession from './ADM-Modais/ModalConfigSession';
+import SureMachineDelete from './ADM-Modais/SureMachineDelete';
+import { generateCustomID } from './functions/generateCustomID';
+import { handleInitializeCreateMachine } from './functions/handleInitializeCreateMachine';
+import { handleCreateMachine } from './functions/handleCreateMachine';
+import { getAdmInfoByEmail } from './functions/getAdmInfoByEmail';
+import { handleGetMachineList } from './functions/handleGetMachineList';
+
+function PortalAdm() {
+  const navigate = useNavigate();
+  const [currentSession, setCurrentSession] = useState({ name: "usuário" })
+  const [currentNanoID, setCurrentNanoID] = useState('')
+  const [currentAdmID, setCurrentAdmID] = useState('')
+  const [cardsMachines, setCardsMachines] = useState([])
+  const refCreateSession = useRef()
+
+  useEffect(() => {
+
+    const getAdmSession = JSON.parse(localStorage.getItem('arena-adm-login'))
+    setCurrentSession(getAdmSession)
+    handleGetMachineList()
+
+    if (!getAdmSession) {
+      navigate("/adm-login")
+    }
+
+  }, [])
+
+  const config = {
+    headers: {
+      'Authorization': `Bearer ${currentSession.token}`
+    }
+  };
+
+  return (
+    <div
+      style={{
+        backgroundImage: `url(${BgAdm})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+      className="bg-zinc-800 w-full h-[100vh] flex justify-center items-center border-[10px] border-[#e6a429] relative overflow-hidden"
+    >
+
+      {/* Modal CREATE MACHINE */}
+      <section ref={refCreateSession} className='w-[80%] h-[80%] hidden flex-col gap-3 justify-center items-center absolute bg-white z-[99] rounded-md shadow-lg shadow-[#141414a9]'>
+        <h2>você esta criando uma nova máquina!</h2>
+        <span className='font-bold'>{currentNanoID}</span>
+        <button onClick={() => handleCreateMachine(
+          getAdmInfoByEmail,
+          currentSession,
+          config,
+          currentNanoID,
+          currentAdmID,
+          refCreateSession,
+          handleGetMachineList,
+          navigate)} className='w-[100px] h-[40px] bg-[#e6a429] rounded-[10px] text-white font-bold'>Criar</button>
+      </section>
+
+      <Asside />
+      <NavigationAdm title="SESSÕES" name={currentSession.name} />
+      <SelectLocation />
+      <ModalConfigSession />
+      <SureMachineDelete />
+
+      <section className='absolute flex flex-wrap 
+      justify-start items-start 
+      gap-3 sm:w-[70%] w-[94%] 
+      sm:max-h-[78vh] max-h-[82vh] 
+      sm:right-[3vh] right-auto top-[16vh] 
+      p-3 overflow-y-auto scrollbar 
+      scrollbar-thumb-[#18212f] scrollbar-track-gray-100'>
+
+        {
+          cardsMachines.map((card, i) => (
+            <CardMachine number={i + 1} ID={card.nano_id} machine_id={card.id} />
+          ))
+        }
+
+        <div
+          onClick={() => handleInitializeCreateMachine(refCreateSession, setCurrentNanoID, generateCustomID)}
+          className="add-machine w-[160px] h-[233px] bg-[#1f2735] hover:bg-[#18212f] cursor-pointer border-[1px] border-[#8499c2] rounded-[10px] flex flex-col justify-center items-center text-white">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <Add />
+        </div>
+
+      </section>
+
+    </div>
+  );
+}
+
+export default PortalAdm;
+
+
+

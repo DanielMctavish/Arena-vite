@@ -1,0 +1,20 @@
+.home-arena-player #img,
+.home-arena-adm #img {
+    opacity: .2;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+}
+
+
+.home-arena-player:hover #img {
+    opacity: .6;
+    transition: 2s;
+    height: 112vh;
+}
+
+.home-arena-adm:hover #img {
+    opacity: .6;
+    transition: 2s;
+    height: 112vh;
+}

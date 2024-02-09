@@ -1,0 +1,23 @@
+<?xml version="2.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://dmdesenvolvedor.com.br/</loc>
+    </url>
+  
+    <url>
+        <loc>https://dmdesenvolvedor.com.br/dashboard</loc>
+    </url>
+
+    <url>
+        <loc>https://dmdesenvolvedor.com.br/integrations/chatbot</loc>
+    </url>
+
+    <url>
+        <loc>https://dmdesenvolvedor.com.br/arboris/blog</loc>
+    </url>
+
+    <url>
+        <loc>https://dmdesenvolvedor.com.br/arboris/articles</loc>
+    </url>
+
+</urlset>
