@@ -54,9 +54,6 @@ function CardMachine(props) {
             justify-center 
             items-center">
 
-
-            <span className="font-bold">teste:{props.ID}</span>
-
             <div className="flex justify-center items-center w-[84px] h-[84px]">
                 <img src={ComputerIcon} alt="" className="absolute" />
                 <span className="absolute font-bold text-[22px] font-[Sansation] text-white mt-[-20px]">{props.number}</span>

@@ -9,7 +9,7 @@ import PortalAdm from './components/Portal-ADM/PortalAdm';
 import PortalAdmCaixa from './components/Portal-ADM/PortalAdmCaixa';
 import PortalAdmClientes from './components/Portal-ADM/PortalAdmClientes';
 import PortalAdmColaboradores from './components/Portal-ADM/PortalAdmColaboradores';
-import PortalAdmProdutos from './components/Portal-ADM/PortalAdmProdutos';
+import PortalAdmProdutos from './components/Portal-ADM/PRODUCTS/PortalAdmProdutos';
 import PortalGamerLogin from './components/Portal-GAMER/Login/PortalGamerLogin';
 import PortalAdmLocais from './components/Portal-ADM/PortalAdmLocais';
 import PortalGamerDashboard from './components/Portal-GAMER/PortalGamerDashboard';

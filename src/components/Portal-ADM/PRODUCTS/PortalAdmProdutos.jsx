@@ -1,8 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import CardProdutos from "./ADM-components/CardProdutos";
-import NavigationAdm from "./ADM-components/Navigation";
-import Asside from "./ADM-components/Asside";
+import CardProdutos from "../ADM-components/CardProdutos";
+import NavigationAdm from "../ADM-components/Navigation";
+import Asside from "../ADM-components/Asside";
 import { Add } from '@mui/icons-material'
 import dayjs from "dayjs";
 
@@ -10,16 +11,16 @@ function PortalAdmProdutos() {
 
     const navigate = useNavigate();
 
+    const getAdmSession = JSON.parse(localStorage.getItem("arena-adm-login"))
+   
+  
     useEffect(() => {
-        const getCookie = localStorage.getItem('test-login')
-
-        if (parseInt(getCookie) > dayjs().valueOf()) {
-            return console.log('sessão válida');
-        } else {
-            return navigate("/adm-login")
-        }
-
-    })
+      if (!getAdmSession) {
+        localStorage.removeItem("arena-adm-login")
+        navigate("/adm-login")
+      }
+  
+    }, [])
 
     return (
         <div className="bg-zinc-100 w-full h-[100vh] flex justify-center items-center border-[10px] border-[#e6a429] overflow-hidden">

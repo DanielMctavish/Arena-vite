@@ -13,26 +13,28 @@ function PortalAdmLogin() {
     const refSpanMessage = useRef()
 
     useEffect(() => {
-    
+
         const getAdmSession = localStorage.getItem('arena-adm-login')
         if (getAdmSession) {
             navigate("/adm-sessions")
         }
-    
-      },[])
+
+    }, [])
 
 
-    function handleLoggOn() {
+    async function handleLoggOn() {
         if (!refEmail.current.value || !refPassword.current.value) {
             refSpanMessage.current.innerHTML = "Preencha todos os campos"
         } else {
-            axios.post(`${import.meta.env.VITE_APP_API_URL}/adm/login`, {
+            await axios.post(`${import.meta.env.VITE_APP_API_URL}/adm/login`, {
                 email: refEmail.current.value,
                 senha: refPassword.current.value
-            }).then(response => {
-                console.log(response.data)
-                localStorage.setItem('arena-adm-login', JSON.stringify(response.data))
+            }).then(async response => {
+
+                console.log('resposta ao logar -> ', response.data)
+                await localStorage.setItem('arena-adm-login', JSON.stringify(response.data))
                 navigate("/adm-sessions")
+
             }).catch(err => {
                 console.log('erro ao tentar logar: ', err.response)
                 if (err.response.status === 404) {
