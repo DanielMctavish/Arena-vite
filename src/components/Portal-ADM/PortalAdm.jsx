@@ -19,31 +19,61 @@ import { handleCreateMachine } from './functions/handleCreateMachine';
 import { getAdmInfoByEmail } from './functions/getAdmInfoByEmail';
 import { handleGetMachineList } from './functions/handleGetMachineList';
 
+import { useDispatch } from "react-redux"
+import { useSelector } from "react-redux"
+import { updateError } from '../../redux/access/ErrorSlice';
+import { updateAdmin } from '../../redux/admin/AdminSlice';
+
+
 function PortalAdm() {
   const navigate = useNavigate();
   const [currentSession, setCurrentSession] = useState({ name: "usuário" })
   const [currentNanoID, setCurrentNanoID] = useState('')
-  const [currentAdmID, setCurrentAdmID] = useState('')
   const [cardsMachines, setCardsMachines] = useState([])
   const refCreateSession = useRef()
+  const dispatch = useDispatch()
+  const stateError = useSelector(state => state.error_status)
+  const stateAdmin = useSelector(state => state.admin)
 
-  useEffect(() => {
 
-    const getAdmSession = JSON.parse(localStorage.getItem('arena-adm-login'))
-    setCurrentSession(getAdmSession)
-    handleGetMachineList()
-
-    if (!getAdmSession) {
-      navigate("/adm-login")
-    }
-
-  }, [])
-
+  //----------------------------------------------------------------------------------------------------
+  const getAdmSession = JSON.parse(localStorage.getItem("arena-adm-login"))
   const config = {
     headers: {
       'Authorization': `Bearer ${currentSession.token}`
     }
   };
+
+  useEffect(() => {
+    if (!getAdmSession) {
+      localStorage.removeItem("arena-adm-login")
+      navigate("/adm-login")
+    }
+
+    setCurrentSession(getAdmSession)
+  }, [])
+
+
+  useEffect(() => {
+    if (stateError === 500 || stateError === 401) {
+      localStorage.removeItem('arena-adm-login')
+      navigate("/adm-login")
+    }
+
+    getAdmInfoByEmail(currentSession.email, config, dispatch, updateError, updateAdmin)
+  }, [currentSession, stateError])
+
+
+  useEffect(() => {
+
+    //console.log('observando stateAdmin ->', stateAdmin.admin_id);
+    handleGetMachineList(stateAdmin.admin_id, setCardsMachines)
+
+  }, [stateAdmin])
+
+
+  //-----------------------------------------------------------------------------------------------
+
 
   return (
     <div
@@ -61,13 +91,14 @@ function PortalAdm() {
         <h2>você esta criando uma nova máquina!</h2>
         <span className='font-bold'>{currentNanoID}</span>
         <button onClick={() => handleCreateMachine(
+          stateAdmin.admin_id,
           getAdmInfoByEmail,
           currentSession,
           config,
           currentNanoID,
-          currentAdmID,
           refCreateSession,
           handleGetMachineList,
+          setCardsMachines,
           navigate)} className='w-[100px] h-[40px] bg-[#e6a429] rounded-[10px] text-white font-bold'>Criar</button>
       </section>
 
@@ -87,7 +118,9 @@ function PortalAdm() {
 
         {
           cardsMachines.map((card, i) => (
-            <CardMachine number={i + 1} ID={card.nano_id} machine_id={card.id} />
+            <div key={i}>
+              <CardMachine number={i + 1} ID={card.nano_id} machine_id={card.id} />
+            </div>
           ))
         }
 

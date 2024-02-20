@@ -1,7 +1,8 @@
+/* eslint-disable no-unreachable */
 import axios from "axios"
 
 
-export const handleGetMachineList = async (getAdmInfoByEmail, setCardsMachines) => {
+export const handleGetMachineList = async (admin_id, setCardsMachines) => {
     const getAdmSession = await JSON.parse(localStorage.getItem('arena-adm-login'))
 
     const authorizationConfig = {
@@ -10,20 +11,14 @@ export const handleGetMachineList = async (getAdmInfoByEmail, setCardsMachines) 
         }
     };
 
-    await getAdmInfoByEmail(getAdmSession.email, authorizationConfig).then(async response => {
 
-        await axios.get(`${import.meta.env.VITE_APP_API_URL}/adm/all-machines?adm_id=${response.id}`,
-            authorizationConfig).then(res => {
+    await axios.get(`${import.meta.env.VITE_APP_API_URL}/adm/all-machines?adm_id=${admin_id}`,
+        authorizationConfig).then(res => {
 
-                console.log('lista de máquinas resposta:(auto) ', res.data)
-                setCardsMachines(res.data)
+            setCardsMachines(res.data)
 
-            }).catch(err => {
-                console.log('erro ao pegar lista de máquinas', err.response)
-            })
-
-    }).catch(err => {
-        console.log('erro ao pegar lista de máquinas (auto)', err)
-    })
+        }).catch(err => {
+            console.log('erro ao pegar lista de máquinas', err.response)
+        })
 
 }

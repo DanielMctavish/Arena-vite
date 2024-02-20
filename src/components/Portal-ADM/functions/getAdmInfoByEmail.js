@@ -1,21 +1,20 @@
 import axios from "axios"
 
 
-export const getAdmInfoByEmail = async (email, configAuthorization, setCurrentAdmID) => {
+export const getAdmInfoByEmail = async (email, configAuthorization, dispatch, updateError, updateAdmin) => {
 
-    return new Promise(async (resolve, reject) => {
-
+    if (email) {
         await axios.get(`${import.meta.env.VITE_APP_API_URL}/adm/admin-info-email?email=${email}`, configAuthorization)
             .then(response => {
 
-                console.log('observando adm -> ', response.data);
-                setCurrentAdmID(response.data.id)
-                resolve(response.data)
+                //console.log('observando adm -> ', response.data);
+                dispatch(updateAdmin({ admin_id: response.data.id }))
 
             }).catch(err => {
-                reject(err.response)
+                //console.log('erro ao pegar adm pelo email -> ', err.response.status);
+                if (err.response)
+                    dispatch(updateError(err.response.status))
             })
-
-    })
+    }
 
 }

@@ -1,13 +1,14 @@
 import axios from "axios"
 
 export const handleCreateMachine = async (
+    currentAdmID,
     getAdmInfoByEmail,
     currentSession,
     config,
     currentNanoID,
-    currentAdmID,
     refCreateSession,
     handleGetMachineList,
+    setCardsMachines,
     navigate) => {
 
     //getAdminformations...................................................
@@ -22,9 +23,9 @@ export const handleCreateMachine = async (
         arenaLocalId: "cls4u5ngr0001vj54z40wkc4l"
     }, config).then(response => {
 
-        console.log('observando create machine -> ', response.data)
+        //console.log('observando create machine -> ', response.data)
         refCreateSession.current.style.display = 'none'
-        handleGetMachineList()
+        handleGetMachineList(currentAdmID, setCardsMachines)
 
     }).catch(err => {
 
