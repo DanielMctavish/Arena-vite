@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Richard from "../../../medias/avatares/richard.png"
 import ComputerIcon from "../../../medias/icons/iMac.png"
+import { useNavigate } from "react-router-dom"
 
 function NavigationAdm(props) {
     const [dateFormated, setDateFormated] = useState('data');
+
+    const navigate = useNavigate()
 
     function dateNowFormated() {
         // Obter a data atual
@@ -29,6 +32,22 @@ function NavigationAdm(props) {
     useEffect(() => {
         dateNowFormated()
     }, [])
+
+    const refSubMenu = useRef()
+
+    const showSubMenu = () => {
+        //console.log('clickou');
+        refSubMenu.current.style.display = "flex"
+    }
+
+    const handleRedirectProfilePage = () => {
+
+    }
+
+    const handleLogoutCurrentSession = () => {
+        localStorage.removeItem("arena-adm-login")
+        navigate("/")
+    }
 
     return (
         <nav
@@ -58,11 +77,23 @@ function NavigationAdm(props) {
                 <span className="text-[18px]">{props.title}</span>
             </div>
 
-            <span className="absolute left-[46%] sm:block hidden">{dateFormated}</span>
+            <span className="absolute left-[46%] sm:block hidden">
+                {dateFormated}
+            </span>
 
-            <div className="flex justify-center items-center gap-3">
+            <div onClick={showSubMenu} className="flex justify-center items-center gap-3 cursor-pointer">
                 <img src={Richard} alt="avatar" className="rounded-full bg-slate-200 w-[46px] h-[46px]" />
                 <span className="sm:block hidden">{props.name}</span>
+            </div>
+
+            <div
+                ref={refSubMenu}
+                className="w-[200px] bg-white 
+            hidden flex-col justify-start items-center p-2 
+            absolute right-0 top-[70px] 
+            z-[99] rounded-md text-zinc-900">
+                <button onClick={handleRedirectProfilePage} className="w-full p-2 font-bold hover:bg-[#d4a53e] rounded-md">Perfil</button>
+                <button onClick={handleLogoutCurrentSession} className="w-full p-2 font-bold hover:bg-[#d4a53e] rounded-md">Sair</button>
             </div>
         </nav>
     )

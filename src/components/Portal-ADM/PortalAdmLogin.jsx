@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios"
 import { useNavigate } from 'react-router-dom';
 import ArenaLogoGold from "../../medias/logos/Logo_Completa_GOLD.png";
@@ -11,6 +11,8 @@ function PortalAdmLogin() {
     const refEmail = useRef()
     const refPassword = useRef()
     const refSpanMessage = useRef()
+    const [tailwindConfig, setTailwindConfig] = useState("flex")
+
 
     useEffect(() => {
 
@@ -18,8 +20,25 @@ function PortalAdmLogin() {
         if (getAdmSession) {
             navigate("/adm-sessions")
         }
+        checkServer()
 
     }, [])
+
+    const checkServer = async () => {
+
+        await axios.get(`${import.meta.env.VITE_APP_API_URL}/check`).then(response => {
+            //console.log(response.data);
+            setTailwindConfig("absolute w-[23px] h-[23px] bg-gradient-to-bl from-[#1aff00] via-[#4cff43] to-[#459a00] rounded-full left-1 top-1")
+            refSpanMessage.current.innerHTML = "Bem vindo! insira suas credenciais para começarmos"
+        }).catch(err => {
+
+            if (err.message) {
+                refSpanMessage.current.innerHTML = "servidor desligado"
+                setTailwindConfig("absolute w-[23px] h-[23px] bg-gradient-to-bl from-[red] via-[#ff4343] to-[#ca0000] rounded-full left-1 top-1")
+            }
+        })
+
+    }
 
 
     async function handleLoggOn() {
@@ -37,6 +56,10 @@ function PortalAdmLogin() {
 
             }).catch(err => {
                 console.log('erro ao tentar logar: ', err.response)
+                if (err.message) {
+                    refSpanMessage.current.innerHTML = "servidor desligado"
+                }
+
                 if (err.response.status === 404) {
                     refSpanMessage.current.innerHTML = "Usuário não existe"
                 }
@@ -58,8 +81,9 @@ function PortalAdmLogin() {
 
 
     return (
-        <div className="bg-[#2F2F2F] w-full h-[100vh] flex flex-col justify-center items-center border-[10px] border-[#e6a429] text-white">
+        <div className="bg-[#2F2F2F] w-full h-[100vh] flex flex-col justify-center items-center border-[10px] border-[#e6a429] text-white relative">
             <span ref={refSpanMessage} className="absolute top-6">apenas administradores e colaboradores podem acessar esta área</span>
+            <span className={tailwindConfig}></span>
 
             <section className="flex flex-col justify-between items-center h-[46vh] text-zinc-600">
                 <img onClick={handleNavigateRegisterMaster} src={ArenaLogoGold} alt="logo arena dourado" className="w-[286px] h-[191px]" />

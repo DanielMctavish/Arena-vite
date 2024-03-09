@@ -11,7 +11,10 @@ export const getAdmInfoByEmail = async (email, configAuthorization, dispatch, up
                 dispatch(updateAdmin({ admin_id: response.data.id }))
 
             }).catch(err => {
-                //console.log('erro ao pegar adm pelo email -> ', err.response.status);
+                console.log('erro ao pegar adm pelo email -> ', err);
+                if(err.message){
+                    dispatch(updateError(500))
+                }
                 if (err.response)
                     dispatch(updateError(err.response.status))
             })
