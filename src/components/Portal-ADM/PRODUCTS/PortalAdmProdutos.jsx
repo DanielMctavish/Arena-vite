@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useNavigate } from 'react-router-dom';
 import CardProdutos from "../ADM-components/CardProdutos";
 import NavigationAdm from "../ADM-components/Navigation";
@@ -11,6 +11,7 @@ import AddNewProduct from "../ADM-Modais/AddNewProduct";
 function PortalAdmProdutos() {
     const navigate = useNavigate();
     const getAdmSession = JSON.parse(localStorage.getItem("arena-adm-login"))
+    const refAddProduct = useRef()
 
     useEffect(() => {
         if (!getAdmSession) {
@@ -20,7 +21,7 @@ function PortalAdmProdutos() {
     }, [])
 
     const handleShowModalAddProduct = () => {
-
+        refAddProduct.current.style.display = 'flex'
     }
 
     return (
@@ -41,7 +42,9 @@ function PortalAdmProdutos() {
                 </div>
             </section>
 
-            <section className="w-full h-auto absolute flex justify-center items-center">
+            <section 
+            ref={refAddProduct}
+            className="w-full h-auto absolute hidden justify-center items-center mod-add-product">
                 <AddNewProduct/>
             </section>
 
