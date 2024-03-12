@@ -6,7 +6,6 @@ export const getAdmInfoByEmail = async (email, configAuthorization, dispatch, up
     if (email) {
         await axios.get(`${import.meta.env.VITE_APP_API_URL}/adm/admin-info-email?email=${email}`, configAuthorization)
             .then(response => {
-
                 //console.log('observando adm -> ', response.data);
                 dispatch(updateAdmin({ admin_id: response.data.id }))
 
