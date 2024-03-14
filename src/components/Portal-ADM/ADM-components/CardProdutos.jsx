@@ -1,15 +1,34 @@
 import React from "react";
-import cocaProd from "../../../medias/produtos/coca-cola-lata-350ml-min.png"
+import axios from "axios"
+import { DeleteForever } from "@mui/icons-material"
 
-function CardProdutos(){
-    return(
-        <div className="w-[268px] h-[310px] bg-[#3C4557] 
+function CardProdutos({ name, url_img, available, value, id, reload }) {
+
+    const handleDeleteCurrentProduct = async () => {
+        console.log('observando product _>', id);
+        await axios.delete(`${import.meta.env.VITE_APP_API_URL}/product/delete`)
+
+        try {
+            
+        } catch (error) {
+            
+        }
+    }
+
+    return (
+        <div draggable className="w-[268px] h-[310px] bg-[#3C4557] 
         rounded-[10px] flex flex-col shadow-lg shadow-[#0808083e]
-        justify-around items-center text-white">
-            <span className="font-bold">R$ 5,00</span>
-            <img src={cocaProd} alt="foto de produto"  className="w-[200px] h-[200px]"/>
-            <span>coca-cola 350ml</span>
-            <span className="text-[8pt] text-[#92F82C]">100 disponíveis</span>
+        justify-around items-center text-white relative">
+            <span className="font-bold">R${value.toFixed(2)}</span>
+            <img src={url_img} alt="foto de produto" className="w-[200px] h-[200px] object-cover rounded-md" />
+            <span>{name}</span>
+            <span className="text-[8pt] text-[#92F82C]">{available} disponíveis</span>
+
+            <span className="absolute bottom-1 right-1">
+                <button onClick={handleDeleteCurrentProduct} className="hover:text-red-600">
+                    <DeleteForever />
+                </button>
+            </span>
         </div>
     )
 }

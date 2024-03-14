@@ -1,12 +1,20 @@
+/* eslint-disable no-unreachable */
 import axios from "axios"
 
 
-export const getAdmInfoByEmail = async (email, configAuthorization, dispatch, updateError, updateAdmin) => {
+export const getAdmInfoByEmail = async (email, dispatch, updateError, updateAdmin) => {
+
+    const getAdmSession =await JSON.parse(localStorage.getItem("arena-adm-login"))
+    const config = {
+      headers: {
+        'Authorization': `Bearer ${getAdmSession.token}`
+      }
+    };
 
     if (email) {
-        await axios.get(`${import.meta.env.VITE_APP_API_URL}/adm/admin-info-email?email=${email}`, configAuthorization)
+        await axios.get(`${import.meta.env.VITE_APP_API_URL}/adm/admin-info-email?email=${email}`, config)
             .then(response => {
-                //console.log('observando adm -> ', response.data);
+                
                 dispatch(updateAdmin({ admin_id: response.data.id }))
 
             }).catch(err => {

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import ComputerIcon from "../../../medias/icons/iMac.png"
 import ClockIcon from "../../../medias/icons/Wall Clock.png"
 import DeleteIcon from "../../../medias/icons/Delete.png"
-import { PlayArrow, PauseCircle } from "@mui/icons-material"
+import { PlayArrow, PauseCircle, SyncDisabled, Sync } from "@mui/icons-material"
 import dayjs from "dayjs";
 
 
@@ -51,8 +51,18 @@ function CardMachine(props) {
             rounded-[10px] 
             flex 
             flex-col 
-            justify-center 
+            justify-center
+            relative 
             items-center">
+
+            <span className="absolute text-white top-1 right-1">
+                {
+                    props.status === 'CONECTED' ?
+                        <Sync /> :
+                        <span className="text-red-600"><SyncDisabled /></span>
+                }
+
+            </span>
 
             <div className="flex justify-center items-center w-[84px] h-[84px]">
                 <img src={ComputerIcon} alt="" className="absolute" />

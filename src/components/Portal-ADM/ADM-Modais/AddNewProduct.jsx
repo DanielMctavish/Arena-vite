@@ -9,6 +9,7 @@ function AddNewProduct() {
     const [quantity, setQuantity] = useState("");
     const [price, setPrice] = useState();
     const [files, setFiles] = useState([]);
+    const [isLoading, setIsLoading] = useState(false)
 
     const refSpanMessage = useRef()
 
@@ -62,6 +63,8 @@ function AddNewProduct() {
     // CREATE PRODUCT.......................................................................
 
     const handleCreateProduct = async () => {
+        setIsLoading(true)
+
         const getAdmSession = await JSON.parse(localStorage.getItem("arena-adm-login"))
         const config = {
             headers: {
@@ -75,7 +78,7 @@ function AddNewProduct() {
         try {
             // FIREBASE.....
             let currentUrlProductImage;
-            await axios.post(`${import.meta.env.VITE_APP_API_URL}/adm/upload-product-cover-img`, formData)
+            await axios.post(`${import.meta.env.VITE_APP_API_URL}/product/upload-product-cover-img`, formData)
                 .then(response => {
                     console.log('response firebase ->', response.data);
                     currentUrlProductImage = response.data.currentImage
@@ -84,21 +87,37 @@ function AddNewProduct() {
             const currentAdministrator =
                 await axios.get(`${import.meta.env.VITE_APP_API_URL}/adm/admin-info-email?email=${getAdmSession.email}`, config)
 
-            await axios.post(`${import.meta.env.VITE_APP_API_URL}/adm/create-product`, {
+            await axios.post(`${import.meta.env.VITE_APP_API_URL}/product/create-product`, {
                 owner_id: currentAdministrator.data.id,
                 name: productName,
                 value: parseFloat(price),
-                availabe: parseInt(quantity),
+                available: parseInt(quantity),
                 url_img: currentUrlProductImage
             }, config).then(response => {
                 console.log('produto cadastrado com sucesso -> ', response.data);
+                setIsLoading(false)
+                setFiles([])
+                setProductName()
+                setQuantity()
+                setPrice()
             })
-            
+
         } catch (error) {
             console.log('error ao tentar criar produto -> ', error.message);
-
+            setIsLoading(false)
         }
 
+    }
+
+    if (isLoading) {
+        return (
+            <div className="w-[60%] h-[400px] flex flex-col
+            bg-[#3C4557] text-white rounded-md 
+            justify-center items-center gap-3 relative
+            shadow-lg shadow-[#0f0f0f4d]">
+                <span>criando um novo produto, aguarde!</span>
+            </div>
+        )
     }
 
     return (
@@ -150,7 +169,7 @@ function AddNewProduct() {
                     <input {...getInputProps()} type="file" className="hidden" />
                     {
                         files[0] ?
-                            (<img src={URL.createObjectURL(files[0])} alt={files[0].name} className="absolute flex h-[100%] object-cover z-[99]" />) : ""
+                            (<img src={URL.createObjectURL(files[0])} alt={files[0].name} className="absolute flex h-[100%] object-cover z-[99] rounded-md" />) : ""
                     }
                 </div>
             </section>
