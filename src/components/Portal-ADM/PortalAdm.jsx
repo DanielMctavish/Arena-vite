@@ -37,14 +37,11 @@ function PortalAdm() {
 
 
   //----------------------------------------------------------------------------------------------------
-  const getAdmSession = JSON.parse(localStorage.getItem("arena-adm-login"))
-  const config = {
-    headers: {
-      'Authorization': `Bearer ${currentSession.token}`
-    }
-  };
+
 
   useEffect(() => {
+    const getAdmSession = JSON.parse(localStorage.getItem("arena-adm-login"))
+
     if (!getAdmSession) {
       localStorage.removeItem("arena-adm-login")
       navigate("/adm-login")
@@ -60,7 +57,8 @@ function PortalAdm() {
       navigate("/adm-login")
     }
 
-    getAdmInfoByEmail(currentSession.email, config, dispatch, updateError, updateAdmin)
+
+    getAdmInfoByEmail(currentSession.email, dispatch, updateError, updateAdmin)
   }, [currentSession, stateError])
 
 
@@ -87,16 +85,17 @@ function PortalAdm() {
     >
 
       {/* Modal CREATE MACHINE */}
-      <section ref={refCreateSession} className='w-[80%] h-[80%] hidden flex-col gap-3 justify-center items-center absolute bg-white z-[99] rounded-md shadow-lg shadow-[#141414a9]'>
+      <section ref={refCreateSession}
+        className='w-[80%] h-[80%] hidden flex-col gap-3 
+      justify-center items-center absolute 
+      bg-white z-[99] rounded-md 
+      mod-create-machine
+      shadow-lg shadow-[#141414a9]'>
         <h2>você esta criando uma nova máquina!</h2>
         <span className='font-bold'>{currentNanoID}</span>
         <button onClick={() => handleCreateMachine(
           stateAdmin.admin_id,
-          getAdmInfoByEmail,
-          currentSession,
-          config,
           currentNanoID,
-          refCreateSession,
           handleGetMachineList,
           setCardsMachines,
           navigate)} className='w-[100px] h-[40px] bg-[#e6a429] rounded-[10px] text-white font-bold'>Criar</button>
@@ -119,7 +118,7 @@ function PortalAdm() {
         {
           cardsMachines.map((card, i) => (
             <div key={i}>
-              <CardMachine number={i + 1} ID={card.nano_id} machine_id={card.id} />
+              <CardMachine number={i + 1} ID={card.nano_id} machine_id={card.id} status={card.status} />
             </div>
           ))
         }
