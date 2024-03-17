@@ -1,16 +1,15 @@
 import React, { Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import './App.css';
 
 const ArenaJafHome = React.lazy(() => import('./components/ArenaJafHome'));
 const RegisterAdm = React.lazy(() => import('./components/Portal-ADM/register/RegisterAdm'));
 const PortalAdm = React.lazy(() => import('./components/Portal-ADM/PortalAdm'));
 const PortalAdmCaixa = React.lazy(() => import('./components/Portal-ADM/PortalAdmCaixa'));
-const PortalAdmClientes = React.lazy(() => import('./components/Portal-ADM/PortalAdmClientes'));
+const PortalAdmClientes = React.lazy(() => import('./components/Clients/PortalAdmClients'));
 const PortalAdmColaboradores = React.lazy(() => import('./components/Portal-ADM/PortalAdmColaboradores'));
-const PortalAdmProdutos = React.lazy(() => import('./components/Portal-ADM/PRODUCTS/PortalAdmProdutos'));
+const PortalAdmProdutos = React.lazy(() => import('./components/Products/PortalAdmProdutos'));
 const PortalGamerLogin = React.lazy(() => import('./components/Portal-GAMER/Login/PortalGamerLogin'));
-const PortalAdmLocais = React.lazy(() => import('./components/Portal-ADM/PortalAdmLocais'));
+const PortalAdmLocais = React.lazy(() => import('./components/Location/PortalAdmLocais'));
 const PortalGamerDashboard = React.lazy(() => import('./components/Portal-GAMER/PortalGamerDashboard'));
 const PortalGamerFinanceiro = React.lazy(() => import('./components/Portal-GAMER/PortalGamerFinanceiro'));
 const PortalAdmLogin = React.lazy(() => import("./components/Portal-ADM/PortalAdmLogin"));

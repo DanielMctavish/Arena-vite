@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import axios from "axios";
-import boxIcon from "../../../medias/icons/box-icon.png";
+import boxIcon from "../../medias/icons/box-icon.png";
 import { useDropzone } from "react-dropzone";
 import { Close } from "@mui/icons-material";
 
-function AddNewProduct() {
+function AddNewProduct({reload}) {
     const [productName, setProductName] = useState("");
     const [quantity, setQuantity] = useState("");
     const [price, setPrice] = useState();
@@ -100,6 +100,7 @@ function AddNewProduct() {
                 setProductName()
                 setQuantity()
                 setPrice()
+                reload()
             })
 
         } catch (error) {

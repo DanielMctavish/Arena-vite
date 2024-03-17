@@ -2,12 +2,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios"
 import { useNavigate } from 'react-router-dom';
-import CardProdutos from "../ADM-components/CardProdutos";
-import NavigationAdm from "../ADM-components/Navigation";
-import Asside from "../ADM-components/Asside";
+import CardProdutos from "./CardProdutos";
+import NavigationAdm from "../Portal-ADM/ADM-components/Navigation";
+import Asside from "../Portal-ADM/ADM-components/Asside";
 import { Add } from '@mui/icons-material'
 //import dayjs from "dayjs";
-import AddNewProduct from "../ADM-Modais/AddNewProduct";
+import AddNewProduct from "./AddNewProduct";
 
 
 function PortalAdmProdutos() {
@@ -39,7 +39,7 @@ function PortalAdmProdutos() {
             // #02
             await axios.get(`${import.meta.env.VITE_APP_API_URL}/product/list-products?owner_id=${currentAdministrator.data.id}`, config)
                 .then(response => {
-                    console.log('lista de produtos ->', response.data);
+                    //console.log('lista de produtos ->', response.data);
                     setProductList(response.data)
                 })
 
@@ -79,7 +79,7 @@ function PortalAdmProdutos() {
             <section
                 ref={refAddProduct}
                 className="w-full h-auto absolute hidden justify-center items-center mod-add-product">
-                <AddNewProduct />
+                <AddNewProduct reload={loadProductList} />
             </section>
 
         </div>

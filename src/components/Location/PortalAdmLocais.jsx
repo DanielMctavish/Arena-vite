@@ -1,26 +1,17 @@
 import React, { useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import Asside from "./ADM-components/Asside";
-import NavigationAdm from "./ADM-components/Navigation";
-import CardLocal from "./ADM-components/CardLocal";
+import Asside from "../Portal-ADM/ADM-components/Asside";
+import NavigationAdm from "../Portal-ADM/ADM-components/Navigation";
+import CardLocal from "../Portal-ADM/ADM-components/CardLocal";
 import { Add } from '@mui/icons-material'
-import AddNewLocation from "./ADM-Modais/AddNewLocation";
+import AddNewLocation from "../Portal-ADM/ADM-Modais/AddNewLocation";
 import dayjs from "dayjs";
 
 function PortalAdmLocais(props) {
 
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const getCookie = localStorage.getItem('test-login')
-
-        if (parseInt(getCookie) > dayjs().valueOf()) {
-            return console.log('sessão válida');
-        } else {
-            return navigate("/adm-login")
-        }
-
-    })
+   
 
     function OpenPainelLocation() {
         const currentPainel = document.querySelector(".painel-local")

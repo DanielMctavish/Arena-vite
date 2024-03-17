@@ -22,7 +22,7 @@ export const handleCreateMachine = async (
         await axios.post(`${import.meta.env.VITE_APP_API_URL}/adm/create-machine`, {
             nano_id: currentNanoID,
             userAdmId: currentAdmID,
-            arenaLocalId: "cltrfm9jt0000vzug4md7sjxc",
+            arenaLocalId: "cltt03yy40000vzg8fl8hln00",
             status: 'DESCONECTED'
         }, config).then(response => {
             //console.log('observando create machine -> ', response.data)
