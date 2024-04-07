@@ -2,13 +2,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios"
 import { useNavigate } from 'react-router-dom';
-import Asside from "../Portal-ADM/ADM-components/Asside";
-import NavigationAdm from "../Portal-ADM/ADM-components/Navigation";
+import Asside from "../Asside/Asside";
+import NavigationAdm from "../navigation/Navigation";
 import ClienteLinhaTd from "./ClienteLinhaTd";
 //import dayjs from "dayjs";
 import CreateClient from "./CreateClient";
 import { getAdmInfoByEmail } from "../Portal-ADM/functions/getAdmInfoByEmail";
 import ModConnectClient from "./ModConnectClient";
+import ModClientConsumo from "./ModClientConsumo";
+import ModAddSaldo from "./ModAddSaldo";
 
 function PortalAdmClientes() {
     const [clientList, setClientList] = useState([])
@@ -74,6 +76,14 @@ function PortalAdmClientes() {
 
             <div className="mod-connect-client absolute hidden w-full h-[80vh] justify-center items-center">
                 <ModConnectClient />
+            </div>
+
+            <div className="mod-consumo-client absolute hidden w-full h-[80vh] justify-center items-center">
+                <ModClientConsumo />
+            </div>
+
+            <div className="mod-add-saldo-client absolute hidden w-full h-[80vh] justify-center items-center">
+                <ModAddSaldo />
             </div>
 
         </div>

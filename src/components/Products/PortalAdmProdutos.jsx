@@ -3,8 +3,8 @@ import React, { useEffect, useRef, useState } from "react";
 import axios from "axios"
 import { useNavigate } from 'react-router-dom';
 import CardProdutos from "./CardProdutos";
-import NavigationAdm from "../Portal-ADM/ADM-components/Navigation";
-import Asside from "../Portal-ADM/ADM-components/Asside";
+import NavigationAdm from "../navigation/Navigation";
+import Asside from "../Asside/Asside";
 import { Add } from '@mui/icons-material'
 //import dayjs from "dayjs";
 import AddNewProduct from "./AddNewProduct";

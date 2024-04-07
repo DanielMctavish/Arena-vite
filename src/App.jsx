@@ -1,5 +1,7 @@
 import React, { Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import Screen01 from './test-navigation/Screen01';
+import Screen02 from './test-navigation/Screen02';
 
 const ArenaJafHome = React.lazy(() => import('./components/ArenaJafHome'));
 const RegisterAdm = React.lazy(() => import('./components/Portal-ADM/register/RegisterAdm'));
@@ -21,6 +23,10 @@ function App() {
       <BrowserRouter>
         <Suspense fallback={<div className='text-zinc-600'>carregando...</div>}>
           <Routes>
+            {/* teste de navegação */}
+            <Route element={<Screen01 />} path="/screen01" exact />
+            <Route element={<Screen02 />} path="/screen02" exact />
+
             <Route element={<ArenaJafHome />} path="/" exact />
             <Route element={<RegisterAdm />} path="/register-master" exact />
             <Route element={<PortalAdmLogin />} path="/adm-login" exact />
