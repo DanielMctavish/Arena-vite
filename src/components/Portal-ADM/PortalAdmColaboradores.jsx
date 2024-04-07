@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import Asside from "./ADM-components/Asside";
-import NavigationAdm from "./ADM-components/Navigation";
+import Asside from "../Asside/Asside";
+import NavigationAdm from "../navigation/Navigation";
 import dayjs from "dayjs";
 
 function PortalAdmColaboradores(props) {

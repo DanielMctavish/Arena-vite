@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import Asside from "./ADM-components/Asside";
-import NavigationAdm from "./ADM-components/Navigation";
+import Asside from "../Asside/Asside";
+import NavigationAdm from "../navigation/Navigation";
 import EntradaLinhaTd from "./ADM-components/EntradaLinhaTd";
 import RelatorioFinanceiro from "./ADM-Modais/RelatorioFinanceiro";
 import { useNavigate } from 'react-router-dom';

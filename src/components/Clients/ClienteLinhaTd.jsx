@@ -7,6 +7,16 @@ function ClienteLinhaTd({ nome, email, value, avatar_url }) {
         ModConnectClient.style.display = "flex";
     }
 
+    const handleShowConsumoClient = () => {
+        const ModConnectClient = document.querySelector(".mod-consumo-client")
+        ModConnectClient.style.display = "flex";
+    }
+
+    const handleShowAddSaldo = () => {
+        const ModConnectClient = document.querySelector(".mod-add-saldo-client")
+        ModConnectClient.style.display = "flex";
+    }
+
     return (
         <div className="bg-[#D9D9D9] md:h-[8vh] h-auto flex md:flex-row md:mt-0 mt-1 flex-col justify-around items-center p-1 rounded-md">
             <section className="flex w-[40%] justify-start items-center gap-3">
@@ -16,8 +26,8 @@ function ClienteLinhaTd({ nome, email, value, avatar_url }) {
             </section>
             <section className="flex w-[40%] justify-between items-center">
                 <span><button onClick={handleShowConnectClient} className="bg-[#31B255] p-2 rounded-[5px] text-white md:w-auto w-[180px]">conectar</button></span>
-                <span><button className="bg-[#3C4557] p-2 rounded-[5px] text-white md:w-auto w-[180px]">consumo</button></span>
-                <span><button className="bg-[#3C4557] p-2 rounded-[5px] text-white md:w-auto w-[180px]">add saldo</button></span>
+                <span><button onClick={handleShowConsumoClient} className="bg-[#3C4557] p-2 rounded-[5px] text-white md:w-auto w-[180px]">consumo</button></span>
+                <span><button onClick={handleShowAddSaldo} className="bg-[#3C4557] p-2 rounded-[5px] text-white md:w-auto w-[180px]">add saldo</button></span>
                 <span><button className="bg-[#3C4557] p-2 rounded-[5px] text-white md:w-auto w-[180px]">detalhes</button></span>
             </section>
             <span className="font-bold">R$ {value.toFixed(2)}</span>

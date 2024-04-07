@@ -6,8 +6,8 @@ import BgAdm from '../../medias/bg-adm.png';
 import "./styles/PortalAdm.css"
 
 import CardMachine from './ADM-components/CardMachine';
-import NavigationAdm from './ADM-components/Navigation';
-import Asside from './ADM-components/Asside';
+import NavigationAdm from '../navigation/Navigation';
+import Asside from '../Asside/Asside';
 import SelectLocation from './ADM-components/SelectLocation';
 
 import { Add } from '@mui/icons-material'
