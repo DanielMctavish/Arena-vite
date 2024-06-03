@@ -2,7 +2,7 @@ import React from "react";
 
 function SelectLocation() {
     return (
-        <div className="absolute top-[12vh] sm:left-[35%] left-auto">
+        <div className="absolute top-[12vh] sm:left-[29%] left-auto">
             <select name="" id="" className="w-[200px] p-1 bg-[#DA9A1F] text-white text-center flex justify-around items-center rounded-[2px]">
                 <option value="Arena central">Arena central</option>
                 <option value="Shopping A">Shopping A</option>

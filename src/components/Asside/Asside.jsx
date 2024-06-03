@@ -73,10 +73,10 @@ function Asside() {
 
 
 
-                <div onClick={() => navigate("/adm-caixa")} className='relative w-[130px] h-[130px] bg-[#202736] hover:bg-[#6478a0] 
+                <div onClick={() => navigate("/financial")} className='relative w-[130px] h-[130px] bg-[#202736] hover:bg-[#6478a0] 
                     rounded-[10px] border-[1px] border-[#7586A8] flex flex-col justify-center items-center cursor-pointer'>
                     <CurrencyExchange style={{ fontSize: '70pt', color: 'white' }} />
-                    <span>Caixa</span>
+                    <span>Financeiro</span>
                 </div>
 
 

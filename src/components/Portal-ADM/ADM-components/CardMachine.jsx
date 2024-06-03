@@ -4,6 +4,8 @@ import ClockIcon from "../../../medias/icons/Wall Clock.png"
 import DeleteIcon from "../../../medias/icons/Delete.png"
 import { PlayArrow, PauseCircle, SyncDisabled, Sync } from "@mui/icons-material"
 import dayjs from "dayjs";
+import { useDispatch } from "react-redux";
+import { machineToDelete } from "../../../redux/machines/MachineSlice";
 
 
 function CardMachine(props) {
@@ -11,16 +13,23 @@ function CardMachine(props) {
     const [playColor, setPlayColor] = useState('#3C4557')
     const [machineStatus, setMachineStatus] = useState('')
 
-    const statusProps = {
-        status: 'inativa',
-        color: 'rgb(113 113 122)'
-    }
+    const dispatch = useDispatch()
+
     useEffect(() => {
 
         let intervalId;
         return () => {
-            setPlayColor('#3C4557')
-            setMachineStatus(statusProps)
+
+            if (props.status === "CONECTED") {
+                setPlayColor('#1f5948')
+            } else {
+                setPlayColor('#3C4557')
+            }
+
+            setMachineStatus({
+                status: props.status,
+                color: props.status === "CONECTED" ? 'rgb(23, 250, 137)' : 'rgba(248, 85, 85, 0.822)'
+            })
             clearInterval(intervalId);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -29,9 +38,15 @@ function CardMachine(props) {
 
 
     function openPanelWarning() {
+
+        dispatch(machineToDelete({
+            nano_id: props.ID,
+            machine_id: props.machine_id
+        }))
+
         const PanelWarning = document.querySelector(".windows-del-warning")
         PanelWarning.style.display = 'flex'
-        console.log('observando id ->> ', props.machine_id, props.ID);
+
     }
 
     const formatTime = (time) => {
@@ -79,7 +94,8 @@ function CardMachine(props) {
             </div>
 
 
-            <img onClick={openPanelWarning} src={DeleteIcon} alt="delete icone" className="mt-3 cursor-pointer hover:brightness-150" />
+            <img onClick={openPanelWarning} src={DeleteIcon} alt="delete icone"
+                className="mt-3 cursor-pointer hover:brightness-150" />
 
         </div>
     )

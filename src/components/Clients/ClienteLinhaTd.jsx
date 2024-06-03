@@ -1,6 +1,10 @@
 import React from "react";
+import { useDispatch } from "react-redux";
+import { selectedClient } from "../../redux/client/ClientSlice";
 
-function ClienteLinhaTd({ nome, email, value, avatar_url }) {
+function ClienteLinhaTd({ nome, email, value, avatar_url, client_id }) {
+
+    const dispatch = useDispatch()
 
     const handleShowConnectClient = () => {
         const ModConnectClient = document.querySelector(".mod-connect-client")
@@ -15,6 +19,13 @@ function ClienteLinhaTd({ nome, email, value, avatar_url }) {
     const handleShowAddSaldo = () => {
         const ModConnectClient = document.querySelector(".mod-add-saldo-client")
         ModConnectClient.style.display = "flex";
+
+        dispatch(selectedClient({
+            client_id: client_id,
+            nome: nome,
+            value: value,
+            avatar_url: avatar_url
+        }))
     }
 
     return (
@@ -25,10 +36,26 @@ function ClienteLinhaTd({ nome, email, value, avatar_url }) {
                 <span className="text-[#54678d]">{email}</span>
             </section>
             <section className="flex w-[40%] justify-between items-center">
-                <span><button onClick={handleShowConnectClient} className="bg-[#31B255] p-2 rounded-[5px] text-white md:w-auto w-[180px]">conectar</button></span>
-                <span><button onClick={handleShowConsumoClient} className="bg-[#3C4557] p-2 rounded-[5px] text-white md:w-auto w-[180px]">consumo</button></span>
-                <span><button onClick={handleShowAddSaldo} className="bg-[#3C4557] p-2 rounded-[5px] text-white md:w-auto w-[180px]">add saldo</button></span>
-                <span><button className="bg-[#3C4557] p-2 rounded-[5px] text-white md:w-auto w-[180px]">detalhes</button></span>
+                <span>
+                    <button onClick={handleShowConnectClient} className="bg-[#31B255] p-2 rounded-[5px] text-white md:w-auto w-[180px]">
+                        conectar
+                    </button>
+                </span>
+                <span>
+                    <button onClick={handleShowConsumoClient} className="bg-[#3C4557] p-2 rounded-[5px] text-white md:w-auto w-[180px]">
+                        consumo
+                    </button>
+                </span>
+                <span>
+                    <button onClick={handleShowAddSaldo} className="bg-[#3C4557] p-2 rounded-[5px] text-white md:w-auto w-[180px]">
+                        add saldo
+                    </button>
+                </span>
+                <span>
+                    <button className="bg-[#3C4557] p-2 rounded-[5px] text-white md:w-auto w-[180px]">
+                        detalhes
+                    </button>
+                </span>
             </section>
             <span className="font-bold">R$ {value.toFixed(2)}</span>
         </div>

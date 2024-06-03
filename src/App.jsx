@@ -2,11 +2,12 @@ import React, { Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Screen01 from './test-navigation/Screen01';
 import Screen02 from './test-navigation/Screen02';
+import AdmProfile from './components/profile/AdmProfile';
+import Financial from './components/Portal-ADM/Financial/Financial';
 
 const ArenaJafHome = React.lazy(() => import('./components/ArenaJafHome'));
 const RegisterAdm = React.lazy(() => import('./components/Portal-ADM/register/RegisterAdm'));
 const PortalAdm = React.lazy(() => import('./components/Portal-ADM/PortalAdm'));
-const PortalAdmCaixa = React.lazy(() => import('./components/Portal-ADM/PortalAdmCaixa'));
 const PortalAdmClientes = React.lazy(() => import('./components/Clients/PortalAdmClients'));
 const PortalAdmColaboradores = React.lazy(() => import('./components/Portal-ADM/PortalAdmColaboradores'));
 const PortalAdmProdutos = React.lazy(() => import('./components/Products/PortalAdmProdutos'));
@@ -30,16 +31,20 @@ function App() {
             <Route element={<ArenaJafHome />} path="/" exact />
             <Route element={<RegisterAdm />} path="/register-master" exact />
             <Route element={<PortalAdmLogin />} path="/adm-login" exact />
+            <Route element={<AdmProfile />} path="/adm-profile" exact />
             <Route element={<PortalAdm />} path="/adm-sessions" />
-            <Route element={<PortalAdmCaixa />} path="/adm-caixa" />
+            <Route element={<Financial />} path="/financial" />
             <Route element={<PortalAdmClientes />} path="/adm-clientes" />
             <Route element={<PortalAdmColaboradores />} path="/adm-colaboradores" />
             <Route element={<PortalAdmProdutos />} path="/adm-produtos" />
             <Route element={<PortalAdmLocais />} path="/adm-locais" />
+
+            {/* PORTAL GAMER */}
             <Route element={<PortalGamerDashboard />} path="/gamer-dashboard" />
             <Route element={<PortalGamerFinanceiro />} path="/gamer-financeiro" />
             <Route element={<PortalGamerLogin />} path="/gamer-login" />
             <Route element={<GamerRegister />} path="/gamer-register" />
+
           </Routes>
         </Suspense>
       </BrowserRouter>

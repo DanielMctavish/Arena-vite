@@ -19,10 +19,12 @@ export const handleCreateMachine = async (
             }
         };
 
+        const currentAdmInfo = await axios.get(`${import.meta.env.VITE_APP_API_URL}/adm/admin-info?adm_id=${currentAdmID}`, config);
+
         await axios.post(`${import.meta.env.VITE_APP_API_URL}/adm/create-machine`, {
             nano_id: currentNanoID,
             userAdmId: currentAdmID,
-            arenaLocalId: "cltt03yy40000vzg8fl8hln00",
+            arenaLocalId: currentAdmInfo.data.ArenaLocal[0].id,
             status: 'DESCONECTED'
         }, config).then(response => {
             //console.log('observando create machine -> ', response.data)
