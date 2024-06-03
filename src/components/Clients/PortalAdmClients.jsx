@@ -14,6 +14,7 @@ import ModAddSaldo from "./ModAddSaldo";
 
 function PortalAdmClientes() {
     const [clientList, setClientList] = useState([])
+    const [changeState, setChangeState] = useState(false)
     const navigate = useNavigate();
     const refModAddCreate = useRef()
 
@@ -22,7 +23,7 @@ function PortalAdmClientes() {
     }
     useEffect(() => {
         getClientList()
-    }, [])
+    }, [changeState])
 
     const getClientList = async () => {
         const getAdmSession = JSON.parse(localStorage.getItem("arena-adm-login"))
@@ -64,7 +65,7 @@ function PortalAdmClientes() {
 
                 <div className="flex flex-col text-zinc-900 w-[100%] p-6 gap-1">
                     {clientList.map((client, index) => (
-                        <ClienteLinhaTd key={index} nome={client.nome} email={client.email} value={client.saldo} avatar_url={client.avatar_url} />
+                        <ClienteLinhaTd key={index} nome={client.nome} email={client.email} value={client.saldo} avatar_url={client.avatar_url} client_id={client.id} />
                     ))}
                 </div>
 
@@ -83,7 +84,7 @@ function PortalAdmClientes() {
             </div>
 
             <div className="mod-add-saldo-client absolute hidden w-full h-[80vh] justify-center items-center">
-                <ModAddSaldo />
+                <ModAddSaldo changeState={changeState} setChangeState={setChangeState} />
             </div>
 
         </div>

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios"
 import ArenaLogo from "../../../medias/logos/Logo_Completa.png"
 import rdr2_cover_desktop from "../../../medias/backgrounds/rdr2_cover_Desktop.png"
 import { useNavigate } from "react-router-dom";
@@ -7,7 +8,9 @@ const PortalGamerLogin = () => {
     const [messageError, setMessageError] = useState('mensagem de erro')
 
     const navigate = useNavigate()
-    const clientLogin = async () => {
+
+    const handleClientLogin = async () => {
+
         const email = document.querySelector(".client-login-email").value
         const password = document.querySelector(".client-login-password").value
 
@@ -15,10 +18,24 @@ const PortalGamerLogin = () => {
             document.querySelector(".error-display-login-client").style.display = 'flex'
             return setMessageError('preencha os campos')
         }
-
         document.querySelector(".error-display-login-client").style.display = 'none'
 
-        console.log('acessando credenciais --> ', email, password);
+        try {
+
+            await axios.post(`${import.meta.env.VITE_APP_API_URL}/client/login-client`, {
+                email: email,
+                senha: password
+            }).then(async (response) => {
+
+                console.log('resposta ao logar -> ', response.data)
+                await localStorage.setItem('arena-client-login', JSON.stringify(response.data))
+                navigate("/gamer-dashboard")
+
+            })
+
+        } catch (error) {
+            console.log("erro ao tentar logar ", error)
+        }
     }
 
     return (
@@ -61,7 +78,7 @@ const PortalGamerLogin = () => {
                 </section>
 
                 <button
-                    onClick={clientLogin}
+                    onClick={handleClientLogin}
                     className="bg-[#7100F3] border-[1px] border-[#902fff] p-1 w-[220px] rounded-[4px]">ENTRAR</button>
                 <div
                     className="hover:cursor-pointer hover:font-bold"

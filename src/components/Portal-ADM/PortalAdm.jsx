@@ -34,6 +34,7 @@ function PortalAdm() {
   const dispatch = useDispatch()
   const stateError = useSelector(state => state.error_status)
   const stateAdmin = useSelector(state => state.admin)
+  const stateMachine = useSelector(state => state.machine)
 
 
   //----------------------------------------------------------------------------------------------------
@@ -48,7 +49,7 @@ function PortalAdm() {
     }
 
     setCurrentSession(getAdmSession)
-  }, [])
+  }, [stateMachine])
 
 
   useEffect(() => {
@@ -81,7 +82,9 @@ function PortalAdm() {
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
       }}
-      className="bg-zinc-800 w-full h-[100vh] flex justify-center items-center border-[10px] border-[#e6a429] relative overflow-hidden"
+      className="bg-zinc-800 w-full h-[100vh] 
+      flex justify-center items-center border-[10px] 
+      border-[#e6a429] relative overflow-hidden"
     >
 
       {/* Modal CREATE MACHINE */}
@@ -102,10 +105,10 @@ function PortalAdm() {
       </section>
 
       <Asside />
-      <NavigationAdm title="SESSÕES" name={currentSession.name} />
-      <SelectLocation />
+      <NavigationAdm title="SESSÕES" adm_id={stateAdmin.admin_id} />
       <ModalConfigSession />
       <SureMachineDelete />
+      <SelectLocation />
 
       <section className='absolute flex flex-wrap 
       justify-start items-start 
@@ -125,7 +128,9 @@ function PortalAdm() {
 
         <div
           onClick={() => handleInitializeCreateMachine(refCreateSession, setCurrentNanoID, generateCustomID)}
-          className="add-machine w-[160px] h-[233px] bg-[#1f2735] hover:bg-[#18212f] cursor-pointer border-[1px] border-[#8499c2] rounded-[10px] flex flex-col justify-center items-center text-white">
+          className="add-machine w-[160px] h-[233px] bg-[#1f2735] hover:bg-[#18212f] 
+          cursor-pointer border-[1px] border-[#8499c2] rounded-[10px] 
+          flex flex-col justify-center items-center text-white">
           <span></span>
           <span></span>
           <span></span>

@@ -1,12 +1,27 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useRef, useState } from "react";
-import Richard from "../../medias/avatares/richard.png"
+import axios from "axios";
 import ComputerIcon from "../../medias/icons/iMac.png"
 import { useNavigate } from "react-router-dom"
 
-function NavigationAdm(props) {
+function NavigationAdm({title }) {
+    const [currentAdm, setCurrentAdm] = useState({})
     const [dateFormated, setDateFormated] = useState('data');
+    const [clicked, setClicked] = useState(false)
 
     const navigate = useNavigate()
+
+    const getCurrentAdm = async () => {
+        const getAdmSession = await JSON.parse(localStorage.getItem("arena-adm-login"))
+        const config = {
+            headers: {
+                'Authorization': `Bearer ${getAdmSession.token}`
+            }
+        };
+        const currentAdmInfo = await axios.get(`${import.meta.env.VITE_APP_API_URL}/adm/admin-info-email?email=${getAdmSession.email}`, config);
+        //console.log('adm atual >>> ', currentAdmInfo.data);
+        setCurrentAdm(currentAdmInfo.data)
+    }
 
     function dateNowFormated() {
         // Obter a data atual
@@ -31,17 +46,24 @@ function NavigationAdm(props) {
 
     useEffect(() => {
         dateNowFormated()
+        getCurrentAdm()
     }, [])
 
     const refSubMenu = useRef()
 
     const showSubMenu = () => {
-        //console.log('clickou');
-        refSubMenu.current.style.display = "flex"
+
+        if (!clicked) {
+            refSubMenu.current.style.display = "flex"
+        } else {
+            refSubMenu.current.style.display = "none"
+        }
+        console.log('clickou -> ', clicked);
+        setClicked(!clicked)
     }
 
     const handleRedirectProfilePage = () => {
-
+        navigate("/adm-profile")
     }
 
     const handleLogoutCurrentSession = () => {
@@ -73,8 +95,8 @@ function NavigationAdm(props) {
         border-[#535E74]'>
 
             <div className="flex justify-center items-center gap-3">
-                <img src={ComputerIcon} alt="icone computador" className="w-[30px] h-[30px]" />
-                <span className="text-[18px]">{props.title}</span>
+                <img src={ComputerIcon} alt="icone computador" className="w-[30px] h-[30px] object-cover" />
+                <span className="text-[18px]">{title}</span>
             </div>
 
             <span className="absolute left-[46%] sm:block hidden">
@@ -82,8 +104,8 @@ function NavigationAdm(props) {
             </span>
 
             <div onClick={showSubMenu} className="flex justify-center items-center gap-3 cursor-pointer">
-                <img src={Richard} alt="avatar" className="rounded-full bg-slate-200 w-[46px] h-[46px]" />
-                <span className="sm:block hidden">{props.name}</span>
+                <img src={currentAdm.avatar_url} alt="avatar" className="rounded-full bg-slate-200 w-[46px] h-[46px] object-cover" />
+                <span className="sm:block hidden">{currentAdm.nome}</span>
             </div>
 
             <div

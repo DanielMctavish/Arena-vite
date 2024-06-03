@@ -142,7 +142,9 @@ function CreateClient() {
                 }
             </div>
 
-            <input onChange={(e) => { setClientName(e.target.value) }} type="text" className="p-2 border-[1px] bg-transparent rounded-md w-[80%]" placeholder="nome do cliente" />
+            <input onChange={(e) => { setClientName(e.target.value) }} 
+            type="text" className="p-2 border-[1px] bg-transparent rounded-md w-[80%]" 
+            placeholder="nome do cliente" />
             <input onChange={(e) => { setclientEmail(e.target.value) }} type="text" className="p-2 border-[1px] bg-transparent rounded-md w-[80%]" placeholder="email do cliente" />
             <input onChange={(e) => { setclientCpf(e.target.value) }} type="text" className="p-2 border-[1px] bg-transparent rounded-md w-[80%]" placeholder="cpf do cliente" />
             <input onChange={(e) => { setSenha(e.target.value) }} type="password" className="p-2 border-[1px] bg-transparent rounded-md w-[80%]" placeholder="senha" />
@@ -150,7 +152,9 @@ function CreateClient() {
 
             <button
                 onClick={handleCreateClient}
-                className="p-2 bg-[#27314b] border-[1px] border-[#3e4e75] rounded-md w-[80%]">criar cliente</button>
+                className="p-2 bg-[#27314b] border-[1px] border-[#3e4e75] rounded-md w-[80%]">
+                criar cliente
+            </button>
         </div>
     )
 }
