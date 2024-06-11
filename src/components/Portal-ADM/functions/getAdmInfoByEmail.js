@@ -14,20 +14,24 @@ export const getAdmInfoByEmail = async (email, dispatch, updateError, updateAdmi
 
     return new Promise(async (resolve, reject) => {
 
-        if (email) {
-            await axios.get(`${import.meta.env.VITE_APP_API_URL}/adm/admin-info-email?email=${email}`, config)
-                .then(response => {
-                    resolve(response.data)
-                    if (dispatch)
-                        dispatch(updateAdmin({ admin_id: response.data.id }))
-                }).catch(err => {
-                    reject(err)
-                    if (err.message) {
-                        dispatch(updateError(500))
-                    }
-                    if (err.response)
-                        dispatch(updateError(err.response.status))
-                })
+        try {
+            if (email) {
+                await axios.get(`${import.meta.env.VITE_APP_API_URL}/adm/admin-info-email?email=${email}`, config)
+                    .then(response => {
+                        resolve(response.data)
+                        if (dispatch)
+                            dispatch(updateAdmin({ admin_id: response.data.id }))
+                    })
+            }
+        } catch (error) {
+
+            reject({ error: error.message })
+            if (error.message) {
+                dispatch(updateError(500))
+            }
+            if (error.response)
+                dispatch(updateError(error.response.status))
+
         }
 
     })

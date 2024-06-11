@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useRef, useState } from "react";
 import ComputerIcon from "../../../medias/icons/iMac.png"
 import ClockIcon from "../../../medias/icons/Wall Clock.png"
 import DeleteIcon from "../../../medias/icons/Delete.png"
@@ -8,40 +9,60 @@ import { useDispatch } from "react-redux";
 import { machineToDelete } from "../../../redux/machines/MachineSlice";
 
 
-function CardMachine(props) {
+function CardMachine({ machine, socket, index }) {
     const [elapsedTime, setElapsedTime] = useState(0);
     const [playColor, setPlayColor] = useState('#3C4557')
     const [machineStatus, setMachineStatus] = useState('')
+
+    const refCard = useRef()
 
     const dispatch = useDispatch()
 
     useEffect(() => {
 
-        let intervalId;
-        return () => {
+        socket.on('session-machine-running', (message) => {
+            //console.clear()
+            if (message && machine.id === message.data.body.machine_id) {
+                console.log('Message from server:', message);
+                setElapsedTime(message.data.timer)
+            }
 
-            if (props.status === "CONECTED") {
+        });
+
+        return () => {
+            if (machine.status === "RUNNING") {
+                const currentCard = refCard.current;
+                currentCard.style.border = "3px solid #00cccc";
+                currentCard.style.filter = "brightness(160%)"; // Aumenta o brilho
+            } else {
+                const currentCard = refCard.current;
+                currentCard.style.border = "none"; // Volta ao estilo normal
+                currentCard.style.filter = "brightness(100%)"; // Volta ao brilho normal
+            }
+
+            if (machine.connection === "CONECTED") {
                 setPlayColor('#1f5948')
             } else {
                 setPlayColor('#3C4557')
             }
 
             setMachineStatus({
-                status: props.status,
-                color: props.status === "CONECTED" ? 'rgb(23, 250, 137)' : 'rgba(248, 85, 85, 0.822)'
+                status: machine.connection,
+                color: machine.connection === "CONECTED" ? 'rgb(23, 250, 137)' : 'rgba(248, 85, 85, 0.822)'
             })
-            clearInterval(intervalId);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    useEffect(() => { }, [socket])
 
 
 
     function openPanelWarning() {
 
         dispatch(machineToDelete({
-            nano_id: props.ID,
-            machine_id: props.machine_id
+            nano_id: machine.ID,
+            machine_id: machine.machine_id
         }))
 
         const PanelWarning = document.querySelector(".windows-del-warning")
@@ -56,6 +77,7 @@ function CardMachine(props) {
 
     return (
         <div
+            ref={refCard}
             style={{ background: playColor }}
             className="
             w-[160px] h-[233px] 
@@ -72,7 +94,7 @@ function CardMachine(props) {
 
             <span className="absolute text-white top-1 right-1">
                 {
-                    props.status === 'CONECTED' ?
+                    machine.connection === 'CONECTED' ?
                         <Sync /> :
                         <span className="text-red-600"><SyncDisabled /></span>
                 }
@@ -81,10 +103,10 @@ function CardMachine(props) {
 
             <div className="flex justify-center items-center w-[84px] h-[84px]">
                 <img src={ComputerIcon} alt="" className="absolute" />
-                <span className="absolute font-bold text-[22px] font-[Sansation] text-white mt-[-20px]">{props.number}</span>
+                <span className="absolute font-bold text-[22px] font-[Sansation] text-white mt-[-20px]">{index + 1}</span>
             </div>
 
-            <span className="font-[18px] text-white">{props.ID}</span>
+            <span className="font-[18px] text-white">{machine.nano_id}</span>
 
             <span style={{ color: machineStatus.color }} className="font-[18px]">{machineStatus.status}</span>
 
@@ -94,8 +116,10 @@ function CardMachine(props) {
             </div>
 
 
-            <img onClick={openPanelWarning} src={DeleteIcon} alt="delete icone"
-                className="mt-3 cursor-pointer hover:brightness-150" />
+            {
+                machine.status !== "RUNNING" &&
+                <img onClick={openPanelWarning} src={DeleteIcon} alt="delete icone"
+                    className="mt-3 cursor-pointer hover:brightness-150" />}
 
         </div>
     )

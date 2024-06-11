@@ -24,12 +24,16 @@ import { useSelector } from "react-redux"
 import { updateError } from '../../redux/access/ErrorSlice';
 import { updateAdmin } from '../../redux/admin/AdminSlice';
 
+import io from "socket.io-client"
 
 function PortalAdm() {
   const navigate = useNavigate();
+
   const [currentSession, setCurrentSession] = useState({ name: "usuário" })
   const [currentNanoID, setCurrentNanoID] = useState('')
   const [cardsMachines, setCardsMachines] = useState([])
+  const [socket, setSocket] = useState()
+
   const refCreateSession = useRef()
   const dispatch = useDispatch()
   const stateError = useSelector(state => state.error_status)
@@ -37,8 +41,20 @@ function PortalAdm() {
   const stateMachine = useSelector(state => state.machine)
 
 
-  //----------------------------------------------------------------------------------------------------
+  useEffect(() => {
+    const socket = io(import.meta.env.VITE_APP_SOCKET_URL || 'http://localhost:3001');
 
+    socket.on('connect', () => {
+      console.log('Client connected, socket ID:', socket.id);
+    });
+
+    setSocket(socket);
+
+    socket.on('connect_error', (error) => {
+      console.error('Connection error:', error);
+    });
+
+  }, []);
 
   useEffect(() => {
     const getAdmSession = JSON.parse(localStorage.getItem("arena-adm-login"))
@@ -58,21 +74,18 @@ function PortalAdm() {
       navigate("/adm-login")
     }
 
-
     getAdmInfoByEmail(currentSession.email, dispatch, updateError, updateAdmin)
   }, [currentSession, stateError])
 
-
   useEffect(() => {
-
     //console.log('observando stateAdmin ->', stateAdmin.admin_id);
     handleGetMachineList(stateAdmin.admin_id, setCardsMachines)
 
   }, [stateAdmin])
 
 
-  //-----------------------------------------------------------------------------------------------
 
+  //-----------------------------------------------------------------------------------------------
 
   return (
     <div
@@ -119,9 +132,10 @@ function PortalAdm() {
       scrollbar-thumb-[#18212f] scrollbar-track-gray-100'>
 
         {
-          cardsMachines.map((card, i) => (
+          Array.isArray(cardsMachines) &&
+          cardsMachines.map((machine, i) => (
             <div key={i}>
-              <CardMachine number={i + 1} ID={card.nano_id} machine_id={card.id} status={card.status} />
+              <CardMachine machine={machine} socket={socket} index={i} />
             </div>
           ))
         }
@@ -145,6 +159,3 @@ function PortalAdm() {
 }
 
 export default PortalAdm;
-
-
-
