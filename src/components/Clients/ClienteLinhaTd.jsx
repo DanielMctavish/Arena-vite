@@ -9,6 +9,13 @@ function ClienteLinhaTd({ nome, email, value, avatar_url, client_id }) {
     const handleShowConnectClient = () => {
         const ModConnectClient = document.querySelector(".mod-connect-client")
         ModConnectClient.style.display = "flex";
+
+        dispatch(selectedClient({
+            client_id: client_id,
+            nome: nome,
+            value: value,
+            avatar_url: avatar_url
+        }))
     }
 
     const handleShowConsumoClient = () => {
@@ -30,12 +37,14 @@ function ClienteLinhaTd({ nome, email, value, avatar_url, client_id }) {
 
     return (
         <div className="bg-[#D9D9D9] md:h-[8vh] h-auto flex md:flex-row md:mt-0 mt-1 flex-col justify-around items-center p-1 rounded-md">
-            <section className="flex w-[40%] justify-start items-center gap-3">
+
+            <section className="flex w-[400px] justify-start items-center gap-3 text-[14px]">
                 <img src={avatar_url} alt="" className="w-[62px] h-[62px] rounded-full object-cover" />
                 <span className="text-zinc-700 font-bold">{nome}</span>
                 <span className="text-[#54678d]">{email}</span>
             </section>
-            <section className="flex w-[40%] justify-between items-center">
+
+            <section className="flex w-[360px] justify-between items- text-[14px]">
                 <span>
                     <button onClick={handleShowConnectClient} className="bg-[#31B255] p-2 rounded-[5px] text-white md:w-auto w-[180px]">
                         conectar
@@ -57,7 +66,8 @@ function ClienteLinhaTd({ nome, email, value, avatar_url, client_id }) {
                     </button>
                 </span>
             </section>
-            <span className="font-bold">R$ {value.toFixed(2)}</span>
+
+            <span className="flex font-bold w-[100px] text-[14px]">R$ {value.toFixed(2)}</span>
         </div>
     )
 }
