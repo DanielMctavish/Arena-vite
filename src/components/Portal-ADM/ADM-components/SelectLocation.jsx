@@ -1,15 +1,20 @@
 import React from "react";
 
-function SelectLocation() {
+function SelectLocation({ localList, setLocalId }) {
     return (
         <div className="absolute top-[12vh] sm:left-[29%] left-auto">
-            <select name="" id="" className="w-[200px] p-1 bg-[#DA9A1F] text-white text-center flex justify-around items-center rounded-[2px]">
-                <option value="Arena central">Arena central</option>
-                <option value="Shopping A">Shopping A</option>
-                <option value="Shopping B">Shopping B</option>
-                <option value="Shopping C">Shopping C</option>
-                <option value="Shopping D">Shopping D</option>
+
+            <select name="" id=""
+                onChange={(e) => setLocalId(e.target.value)}
+                className="w-[200px] p-1 bg-[#DA9A1F] text-white text-center flex justify-around items-center rounded-[6px]">
+                <option value="Arena central">selecione um local</option>
+                {
+                    localList.map((local, i) => (
+                        <option key={i} value={local.id}>{local.nome}</option>
+                    ))
+                }
             </select>
+
         </div>
     )
 }

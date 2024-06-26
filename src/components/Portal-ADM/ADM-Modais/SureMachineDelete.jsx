@@ -30,6 +30,8 @@ function SureMachineDelete() {
 
     const handleDeleteMachine = async () => {
 
+        console.log("machine to delete -> ", machineState)
+
         try {
 
             await axios.post(`${import.meta.env.VITE_APP_API_URL}/adm/login`, {
@@ -41,16 +43,18 @@ function SureMachineDelete() {
                 headers: {
                     Authorization: `Bearer ${session.token}`
                 }
+            }).then(() => {
+                setPassword("")
             })
 
-            setPassword("")
             CloseWindowWarning()
             dispatch(machineToDelete({
                 machine_id: ""
             }))
 
         } catch (error) {
-
+            
+            setPassword("")
             console.log('erro ao tentar excluir máquina -> ', error.response)
 
         }

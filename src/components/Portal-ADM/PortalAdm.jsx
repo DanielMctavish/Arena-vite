@@ -1,6 +1,7 @@
 /* eslint-disable no-unreachable */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useRef, useState } from 'react';
+import axios from "axios";
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BgAdm from '../../medias/bg-adm.png';
 import "./styles/PortalAdm.css"
@@ -24,11 +25,13 @@ import { useSelector } from "react-redux"
 import { updateError } from '../../redux/access/ErrorSlice';
 import { updateAdmin } from '../../redux/admin/AdminSlice';
 
-import io from "socket.io-client"
+import { connectWebSocket } from "../SocketCOM/connectWebSocket";
 
 function PortalAdm() {
   const navigate = useNavigate();
 
+  const [locationList, setLocationList] = useState([])
+  const [localSelected, setLocalId] = useState("")
   const [currentSession, setCurrentSession] = useState({ name: "usuário" })
   const [currentNanoID, setCurrentNanoID] = useState('')
   const [cardsMachines, setCardsMachines] = useState([])
@@ -42,17 +45,11 @@ function PortalAdm() {
 
 
   useEffect(() => {
-    const socket = io(import.meta.env.VITE_APP_SOCKET_URL || 'http://localhost:3001');
 
-    socket.on('connect', () => {
-      console.log('Client connected, socket ID:', socket.id);
-    });
+    const currentSocket = connectWebSocket()
+    setSocket(currentSocket);
 
-    setSocket(socket);
-
-    socket.on('connect_error', (error) => {
-      console.error('Connection error:', error);
-    });
+    getLocationList()
 
   }, []);
 
@@ -87,6 +84,32 @@ function PortalAdm() {
 
   //-----------------------------------------------------------------------------------------------
 
+  const getLocationList = async () => {
+
+    try {
+      const currentSession = JSON.parse(localStorage.getItem('arena-adm-login'));
+
+      await axios.get(`${import.meta.env.VITE_APP_API_URL}/adm/admin-info-email?email=${currentSession.email}`, {
+        headers: {
+          'Authorization': `Bearer ${currentSession.token}`
+        }
+      }).then((response) => {
+        console.log(response.data.ArenaLocal)
+        setLocationList(response.data.ArenaLocal)
+      })
+
+      // await axios.get(`${import.meta.env.VITE_APP_API_URL}/adm/all-machines?adm_id=${}`)
+      //   .then(response => {
+      //     console.log("all machines -> ", response.data)
+      //     setCardsMachines(response.data)
+      //   })
+
+    } catch (error) {
+      console.log(error.message)
+    }
+
+  }
+
   return (
     <div
       style={{
@@ -100,7 +123,7 @@ function PortalAdm() {
       border-[#e6a429] relative overflow-hidden"
     >
 
-      {/* Modal CREATE MACHINE */}
+      {/* -------------------------------- Modal CREATE MACHINE -------------------------------- */}
       <section ref={refCreateSession}
         className='w-[80%] h-[80%] hidden flex-col gap-3 
       justify-center items-center absolute 
@@ -108,20 +131,25 @@ function PortalAdm() {
       mod-create-machine
       shadow-lg shadow-[#141414a9]'>
         <h2>você esta criando uma nova máquina!</h2>
+
         <span className='font-bold'>{currentNanoID}</span>
+
         <button onClick={() => handleCreateMachine(
           stateAdmin.admin_id,
           currentNanoID,
           handleGetMachineList,
           setCardsMachines,
-          navigate)} className='w-[100px] h-[40px] bg-[#e6a429] rounded-[10px] text-white font-bold'>Criar</button>
+          navigate,
+          localSelected)} className='w-[100px] h-[40px] bg-[#e6a429] rounded-[10px] text-white font-bold'>Criar</button>
+
       </section>
+      {/* ---------------------------------------------------------------------------------------- */}
 
       <Asside />
       <NavigationAdm title="SESSÕES" adm_id={stateAdmin.admin_id} />
       <ModalConfigSession />
       <SureMachineDelete />
-      <SelectLocation />
+      <SelectLocation localList={locationList} setLocalId={setLocalId} />
 
       <section className='absolute flex flex-wrap 
       justify-start items-start 

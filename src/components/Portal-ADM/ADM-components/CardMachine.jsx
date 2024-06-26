@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import ComputerIcon from "../../../medias/icons/iMac.png"
 import ClockIcon from "../../../medias/icons/Wall Clock.png"
 import DeleteIcon from "../../../medias/icons/Delete.png"
-import { PlayArrow, PauseCircle, SyncDisabled, Sync } from "@mui/icons-material"
+import { SyncDisabled, Sync } from "@mui/icons-material"
 import dayjs from "dayjs";
 import { useDispatch } from "react-redux";
 import { machineToDelete } from "../../../redux/machines/MachineSlice";
@@ -23,7 +23,7 @@ function CardMachine({ machine, socket, index }) {
         socket.on('session-machine-running', (message) => {
             //console.clear()
             if (message && machine.id === message.data.body.machine_id) {
-                console.log('Message from server:', message);
+                //console.log('Message from server:', message);
                 setElapsedTime(message.data.timer)
             }
 
@@ -32,12 +32,17 @@ function CardMachine({ machine, socket, index }) {
         return () => {
             if (machine.status === "RUNNING") {
                 const currentCard = refCard.current;
-                currentCard.style.border = "3px solid #00cccc";
-                currentCard.style.filter = "brightness(160%)"; // Aumenta o brilho
+                if (currentCard) {
+                    currentCard.style.border = "3px solid #00cccc";
+                    currentCard.style.filter = "brightness(160%)"; // Aumenta o brilho
+                }
             } else {
                 const currentCard = refCard.current;
-                currentCard.style.border = "none"; // Volta ao estilo normal
-                currentCard.style.filter = "brightness(100%)"; // Volta ao brilho normal
+                if (currentCard) {
+                    currentCard.style.border = "none"; // Volta ao estilo normal
+                    currentCard.style.filter = "brightness(100%)"; // Volta ao brilho normal
+                }
+
             }
 
             if (machine.connection === "CONECTED") {
@@ -57,12 +62,12 @@ function CardMachine({ machine, socket, index }) {
     useEffect(() => { }, [socket])
 
 
-
     function openPanelWarning() {
+        console.log("observando id -> ", machine.nano_id)
 
         dispatch(machineToDelete({
-            nano_id: machine.ID,
-            machine_id: machine.machine_id
+            nano_id: machine.nano_id,
+            machine_id: machine.id
         }))
 
         const PanelWarning = document.querySelector(".windows-del-warning")
@@ -80,6 +85,7 @@ function CardMachine({ machine, socket, index }) {
             ref={refCard}
             style={{ background: playColor }}
             className="
+            shadow-lg shadow-[#141414af]
             w-[160px] h-[233px] 
             border-[1px] 
             border-[#80c4cd]
@@ -115,11 +121,11 @@ function CardMachine({ machine, socket, index }) {
                 <span className="font-[18px] text-white">{formatTime(elapsedTime)}</span>
             </div>
 
-
             {
                 machine.status !== "RUNNING" &&
                 <img onClick={openPanelWarning} src={DeleteIcon} alt="delete icone"
-                    className="mt-3 cursor-pointer hover:brightness-150" />}
+                    className="mt-3 cursor-pointer hover:brightness-150" />
+            }
 
         </div>
     )
