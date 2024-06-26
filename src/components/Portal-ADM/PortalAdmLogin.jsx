@@ -15,13 +15,7 @@ function PortalAdmLogin() {
 
 
     useEffect(() => {
-
-        const getAdmSession = localStorage.getItem('arena-adm-login')
-        if (getAdmSession) {
-            navigate("/adm-sessions")
-        }
         checkServer()
-
     }, [])
 
     const checkServer = async () => {
@@ -51,7 +45,7 @@ function PortalAdmLogin() {
             }).then(async response => {
 
                 console.log('resposta ao logar -> ', response.data)
-                await localStorage.setItem('arena-adm-login', JSON.stringify(response.data))
+                localStorage.setItem('arena-adm-login', JSON.stringify(response.data))
                 navigate("/adm-sessions")
 
             }).catch(err => {

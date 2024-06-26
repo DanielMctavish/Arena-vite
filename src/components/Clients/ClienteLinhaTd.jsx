@@ -1,10 +1,55 @@
-import React from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import dayjs from "dayjs";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { useDispatch } from "react-redux";
 import { selectedClient } from "../../redux/client/ClientSlice";
+import { useNavigate } from "react-router-dom";
+import { connectWebSocket } from "../SocketCOM/connectWebSocket";
 
-function ClienteLinhaTd({ nome, email, value, avatar_url, client_id }) {
-
+function ClienteLinhaTd({ nome, email, value, avatar_url, client_id, isPlaying }) {
+    const [socket, setSocket] = useState()
+    const [machineSession, setMachineSession] = useState({})
+    const [elapsedTime, setElapsedTime] = useState()
     const dispatch = useDispatch()
+    const navigate = useNavigate()
+
+    useEffect(() => {
+
+        getMachineSessionByClient()
+
+        console.log("cliente is playing? -> ", isPlaying)
+
+        if (isPlaying) {
+            const currentSocket = connectWebSocket()
+            setSocket(currentSocket);
+            currentSocket.on('session-machine-running', (message) => {
+                //console.clear()
+                if (message && machineSession.machine_id === message.data.body.machine_id) {
+                    //console.log('Message from server:', message);
+                    setElapsedTime(message.data.timer)
+                }
+
+            });
+        }
+
+    }, [])
+
+    useEffect(() => { }, [elapsedTime,socket])
+
+    const getMachineSessionByClient = async () => {
+        const currentAdmCookie = JSON.parse(localStorage.getItem('arena-adm-login'))
+        if (!currentAdmCookie) return navigate("/")
+
+        await axios.get(`${import.meta.env.VITE_APP_API_URL}/adm/find-session?client_id=${client_id}`, {
+            headers: {
+                'Authorization': `Bearer ${currentAdmCookie.token}`
+            }
+        }).then(response => {
+            setMachineSession(response.data)
+        })
+
+    }
 
     const handleShowConnectClient = () => {
         const ModConnectClient = document.querySelector(".mod-connect-client")
@@ -35,8 +80,19 @@ function ClienteLinhaTd({ nome, email, value, avatar_url, client_id }) {
         }))
     }
 
+    const formatTime = (time) => {
+        const formattedTime = dayjs().startOf("day").second(time).format("HH:mm:ss");
+        return formattedTime;
+    };
+
     return (
         <div className="bg-[#D9D9D9] md:h-[8vh] h-auto flex md:flex-row md:mt-0 mt-1 flex-col justify-around items-center p-1 rounded-md">
+
+            {isPlaying &&
+                <span className="font-bold text-[#f54242] flex justify-center items-center gap-3  w-[80px] h-full bg-white rounded-md">
+                    <span>{elapsedTime}</span>
+                </span>
+            }
 
             <section className="flex w-[400px] justify-start items-center gap-3 text-[14px]">
                 <img src={avatar_url} alt="" className="w-[62px] h-[62px] rounded-full object-cover" />

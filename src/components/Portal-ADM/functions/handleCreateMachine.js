@@ -6,7 +6,10 @@ export const handleCreateMachine = async (
     currentNanoID,
     handleGetMachineList,
     setCardsMachines,
-    navigate) => {
+    navigate,
+    localSelected) => {
+
+    console.log("observando local id -> ", localSelected)
 
     const modCreateMachine = document.querySelector(".mod-create-machine")
     modCreateMachine.style.display = 'none'
@@ -19,13 +22,13 @@ export const handleCreateMachine = async (
             }
         };
 
-        const currentAdmInfo = await axios.get(`${import.meta.env.VITE_APP_API_URL}/adm/admin-info?adm_id=${currentAdmID}`, config);
+        //const currentAdmInfo = await axios.get(`${import.meta.env.VITE_APP_API_URL}/adm/admin-info?adm_id=${currentAdmID}`, config);
 
         await axios.post(`${import.meta.env.VITE_APP_API_URL}/adm/create-machine`, {
             nano_id: currentNanoID,
             userAdmId: currentAdmID,
-            arenaLocalId: import.meta.env.VITE_LOCAL_ID,
-            connection: 'DESCONECTED',
+            arenaLocalId: localSelected,
+            connection: 'DISCONECTED',
             status: 'STOPED'
         }, config).then(response => {
             //console.log('observando create machine -> ', response.data)

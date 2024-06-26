@@ -65,7 +65,14 @@ function PortalAdmClientes() {
 
                 <div className="flex flex-col text-zinc-900 w-[100%] p-6 gap-1">
                     {clientList.map((client, index) => (
-                        <ClienteLinhaTd key={index} nome={client.nome} email={client.email} value={client.saldo} avatar_url={client.avatar_url} client_id={client.id} />
+                        <ClienteLinhaTd
+                            isPlaying={client.isPlaying}
+                            key={index}
+                            nome={client.nome}
+                            email={client.email}
+                            value={client.saldo}
+                            avatar_url={client.avatar_url}
+                            client_id={client.id} />
                     ))}
                 </div>
 
