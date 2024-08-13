@@ -25,7 +25,7 @@ import { useSelector } from "react-redux"
 import { updateError } from '../../redux/access/ErrorSlice';
 import { updateAdmin } from '../../redux/admin/AdminSlice';
 
-import { connectWebSocket } from "../SocketCOM/connectWebSocket";
+import connectWebSocketClient from "../SocketCOM/connectWebSocket";
 
 function PortalAdm() {
   const navigate = useNavigate();
@@ -43,10 +43,11 @@ function PortalAdm() {
   const stateAdmin = useSelector(state => state.admin)
   const stateMachine = useSelector(state => state.machine)
 
+  const clientWebsocket = new connectWebSocketClient()
 
   useEffect(() => {
 
-    const currentSocket = connectWebSocket()
+    const currentSocket = clientWebsocket.getSocketInstance()
     setSocket(currentSocket);
 
     getLocationList()
@@ -94,7 +95,6 @@ function PortalAdm() {
           'Authorization': `Bearer ${currentSession.token}`
         }
       }).then((response) => {
-        console.log(response.data.ArenaLocal)
         setLocationList(response.data.ArenaLocal)
       })
 
@@ -146,7 +146,7 @@ function PortalAdm() {
       {/* ---------------------------------------------------------------------------------------- */}
 
       <Asside />
-      <NavigationAdm title="SESSÕES" adm_id={stateAdmin.admin_id} />
+      <NavigationAdm title="MÁQUINAS" adm_id={stateAdmin.admin_id} />
       <ModalConfigSession />
       <SureMachineDelete />
       <SelectLocation localList={locationList} setLocalId={setLocalId} />

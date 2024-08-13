@@ -11,19 +11,24 @@ import { getAdmInfoByEmail } from "../Portal-ADM/functions/getAdmInfoByEmail";
 import ModConnectClient from "./ModConnectClient";
 import ModClientConsumo from "./ModClientConsumo";
 import ModAddSaldo from "./ModAddSaldo";
+import { useSelector } from "react-redux";
+
 
 function PortalAdmClientes() {
+    const stateMachineRunning = useSelector(state => state.machine)
     const [clientList, setClientList] = useState([])
     const [changeState, setChangeState] = useState(false)
     const navigate = useNavigate();
     const refModAddCreate = useRef()
 
+    useEffect(() => {
+        getClientList()
+        console.log("redux: ", stateMachineRunning)
+    }, [changeState, stateMachineRunning])
+
     const handleShowModAddCreate = () => {
         refModAddCreate.current.style.display = "flex"
     }
-    useEffect(() => {
-        getClientList()
-    }, [changeState])
 
     const getClientList = async () => {
         const getAdmSession = JSON.parse(localStorage.getItem("arena-adm-login"))
@@ -64,15 +69,16 @@ function PortalAdmClientes() {
                 </div>
 
                 <div className="flex flex-col text-zinc-900 w-[100%] p-6 gap-1">
-                    {clientList.map((client, index) => (
+                    {clientList.map((client) => (
                         <ClienteLinhaTd
                             isPlaying={client.isPlaying}
-                            key={index}
+                            key={client.id}
                             nome={client.nome}
                             email={client.email}
                             value={client.saldo}
                             avatar_url={client.avatar_url}
-                            client_id={client.id} />
+                            client_id={client.id}
+                        />
                     ))}
                 </div>
 

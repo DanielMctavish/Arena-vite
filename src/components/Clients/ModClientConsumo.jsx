@@ -3,16 +3,19 @@ import { Close } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { ShoppingCart } from "@mui/icons-material"
 import ModClientConsumoCheckout from "./ModClientConsumoCheckout";
+import { useSelector } from "react-redux";
 
 
 function ModClientConsumo() {
+    const clientState = useSelector(state => state.client)
     const [products, setProducts] = useState({})
     const [itemsCard, setItemsCard] = useState([])
     const [isShowingCheckout, setIsShowingCheckout] = useState(false)
 
     useEffect(() => {
         getAllProducts()
-    }, [])
+        console.log("cliente clicado! ", clientState)
+    }, [clientState])
 
     const getAllProducts = async () => {
         const currentSession = JSON.parse(localStorage.getItem('arena-adm-login'))
@@ -30,7 +33,7 @@ function ModClientConsumo() {
                     'Authorization': `Bearer ${currentSession.token}`
                 }
             }).then(response => {
-                console.log("resposta, produtos -> ", response.data)
+                //console.log("resposta, produtos -> ", response.data)
                 setProducts(response.data)
             })
 
@@ -41,6 +44,10 @@ function ModClientConsumo() {
 
     const handleAddItemsToCard = (product) => {
         const existingItemIndex = itemsCard.findIndex(item => item.product.id === product.id);
+        if (product.available <= 0) {
+            alert("Estoque insuficiente")
+            return;
+        }
 
         if (existingItemIndex !== -1) {
             const updatedItemsCard = itemsCard.map((item, index) => {
@@ -80,7 +87,7 @@ function ModClientConsumo() {
             </span>
 
             <section className="flex justify-center items-center w-[99%] h-[15%] rounded-md gap-1 overflow-y-auto bg-[#131a29]">
-                <span>Cliente Consumo</span>
+                <span>Cliente Consumo: {clientState.nome}</span>
             </section>
 
             <section className="flex flex-col justify-start items-center w-[99%] h-[70%] rounded-md gap-1 overflow-y-auto">
@@ -90,9 +97,12 @@ function ModClientConsumo() {
                         <div key={index}
                             onClick={() => handleAddItemsToCard(product)}
                             className="flex justify-between items-center p-2 bg-[#192234] 
-                        hover:bg-[#202b42] w-full rounded-md cursor-pointer">
+                            hover:bg-[#202b42] w-full rounded-md cursor-pointer relative">
                             <img src={product.url_img} alt="produto" className="w-[100px] h-[100px] object-cover rounded-md" />
-                            <span>{product.name}</span>
+                            <div className="flex w-[60%] justify-between items-center ">
+                                <span>{product.name}</span>
+                                <span className="font-bold text-[#139fd2]">{product.available} disponíveis</span>
+                            </div>
                             <span className="font-bold">R$ {(product.value).toFixed(2)}</span>
                         </div>
                     ))

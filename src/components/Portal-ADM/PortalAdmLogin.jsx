@@ -44,9 +44,8 @@ function PortalAdmLogin() {
                 senha: refPassword.current.value
             }).then(async response => {
 
-                console.log('resposta ao logar -> ', response.data)
                 localStorage.setItem('arena-adm-login', JSON.stringify(response.data))
-                navigate("/adm-sessions")
+                navigate("/adm-machines")
 
             }).catch(err => {
                 console.log('erro ao tentar logar: ', err.response)

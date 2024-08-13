@@ -1,35 +1,38 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useRef, useState } from "react";
+import axios from "axios"
 import ComputerIcon from "../../../medias/icons/iMac.png"
 import ClockIcon from "../../../medias/icons/Wall Clock.png"
 import DeleteIcon from "../../../medias/icons/Delete.png"
-import { SyncDisabled, Sync } from "@mui/icons-material"
+import { SyncDisabled, Sync, StopCircle } from "@mui/icons-material"
 import dayjs from "dayjs";
 import { useDispatch } from "react-redux";
-import { machineToDelete } from "../../../redux/machines/MachineSlice";
+import { machineToDelete, machineRunning } from "../../../redux/machines/MachineSlice";
+import connectWebSocketClient from "../../SocketCOM/connectWebSocket";
 
-
-function CardMachine({ machine, socket, index }) {
+function CardMachine({ machine, index }) {
+    const [isLoading, setIsLoading] = useState(false)
     const [elapsedTime, setElapsedTime] = useState(0);
     const [playColor, setPlayColor] = useState('#3C4557')
     const [machineStatus, setMachineStatus] = useState('')
 
     const refCard = useRef()
-
     const dispatch = useDispatch()
 
+    const socketClient = new connectWebSocketClient()
+
     useEffect(() => {
+        const socket = socketClient.getSocketInstance();
 
-        socket.on('session-machine-running', (message) => {
-            //console.clear()
-            if (message && machine.id === message.data.body.machine_id) {
-                //console.log('Message from server:', message);
-                setElapsedTime(message.data.timer)
-            }
-
+        socket.on(`${machine.id}-running`, (message) => {
+            // console.log("rodando... ", message.data.body.client_id);
+            setElapsedTime(message.data.cronTimer);
         });
 
+        // Função de limpeza
         return () => {
+            socket.off(`${machine.id}-running`); // Desativa o listener do evento
+
             if (machine.status === "RUNNING") {
                 const currentCard = refCard.current;
                 if (currentCard) {
@@ -42,24 +45,22 @@ function CardMachine({ machine, socket, index }) {
                     currentCard.style.border = "none"; // Volta ao estilo normal
                     currentCard.style.filter = "brightness(100%)"; // Volta ao brilho normal
                 }
-
             }
 
             if (machine.connection === "CONECTED") {
-                setPlayColor('#1f5948')
+                setPlayColor('#1f5948');
             } else {
-                setPlayColor('#3C4557')
+                setPlayColor('#3C4557');
             }
 
             setMachineStatus({
                 status: machine.connection,
-                color: machine.connection === "CONECTED" ? 'rgb(23, 250, 137)' : 'rgba(248, 85, 85, 0.822)'
-            })
+                color: machine.connection === "CONECTED" ? 'rgb(23, 250, 137)' : 'rgba(248, 85, 85, 0.822)',
+            });
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [isLoading, elapsedTime]);
 
-    useEffect(() => { }, [socket])
 
 
     function openPanelWarning() {
@@ -79,6 +80,28 @@ function CardMachine({ machine, socket, index }) {
         const formattedTime = dayjs().startOf("day").second(time).format("HH:mm:ss");
         return formattedTime;
     };
+
+    const handleStopMachine = async () => {
+        const arenaAdmSession = JSON.parse(localStorage.getItem("arena-adm-login"))
+        const allSessions = machine.sessions
+        setIsLoading(true)
+        await axios.post(`${import.meta.env.VITE_APP_API_URL}/machines/stop-machine`, {
+            client_id: allSessions[allSessions.length - 1].client_id,
+            machine_id: machine.id
+        }, {
+            headers: {
+                'Authorization': `Bearer ${arenaAdmSession.token}`
+            }
+        }).then(response => {
+            console.log("Stopping machine -> ", response.data)
+            dispatch(machineRunning(response.data))
+            setIsLoading(false)
+            setElapsedTime(0)
+        }).catch(error => {
+            setIsLoading(false)
+            console.log("Error at stop machine -> ", error.message)
+        })
+    }
 
     return (
         <div
@@ -125,6 +148,18 @@ function CardMachine({ machine, socket, index }) {
                 machine.status !== "RUNNING" &&
                 <img onClick={openPanelWarning} src={DeleteIcon} alt="delete icone"
                     className="mt-3 cursor-pointer hover:brightness-150" />
+            }
+            {
+                machine.status === "RUNNING" ?
+                    !isLoading ?
+                        <div
+                            onClick={() => handleStopMachine()}
+                            className="flex justify-center items-center gap-1 p-1 mt-2 bg-white/25 hover:bg-white/70 rounded-md text-zinc-600">
+                            <StopCircle className="h-[24px] w-[24px] text-red-600" />
+                            <span className="font-[18px]">Parar</span>
+                        </div> :
+                        <span>parando...</span> : ""
+
             }
 
         </div>

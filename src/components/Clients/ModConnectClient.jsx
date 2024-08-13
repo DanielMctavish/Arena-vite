@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import ComputerIcon from "../../medias/icons/iMac.png"
 import axios from "axios";
 import dayjs from "dayjs"
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { machineRunning } from "../../redux/machines/MachineSlice";
 
 function ModConnectClient() {
     const [currentAdmin, setCurrentAdmin] = useState({})
@@ -16,6 +17,7 @@ function ModConnectClient() {
     const [serverResponses, setServerResponses] = useState("")
 
     const clientState = useSelector(state => state.client)
+    const dispatch = useDispatch()
 
     useEffect(() => {
         getMachines()
@@ -83,6 +85,7 @@ function ModConnectClient() {
             }
         }).then(result => {
             console.log("session created -> ", result.data)
+            dispatch(machineRunning(result.data))
             handleCloseCurrentWindow()
         }).catch(err => {
             console.log("error at create session -> ", err.response.data)
@@ -127,7 +130,7 @@ function ModConnectClient() {
 
                             if (card.status === "RUNNING") {
                                 return (
-                                    <div className="flex flex-col relative min-w-[140px] h-[140px]">
+                                    <div key={index} className="flex flex-col relative min-w-[140px] h-[140px]">
 
                                         <span className="bg-white text-zinc-600 mb-[-2px] 
                                         w-[80px] text-[12px] rounded-[2px] text-center">rodando</span>
