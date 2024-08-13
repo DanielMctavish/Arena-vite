@@ -14,6 +14,8 @@ function SureMachineDelete() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
+    useEffect(() => { }, [machineState])
+
     useEffect(() => {
         const getAdmSession = JSON.parse(localStorage.getItem("arena-adm-login"))
         if (!getAdmSession) {
@@ -29,8 +31,6 @@ function SureMachineDelete() {
     }
 
     const handleDeleteMachine = async () => {
-
-        console.log("machine to delete -> ", machineState)
 
         try {
 
@@ -53,7 +53,7 @@ function SureMachineDelete() {
             }))
 
         } catch (error) {
-            
+
             setPassword("")
             console.log('erro ao tentar excluir máquina -> ', error.response)
 

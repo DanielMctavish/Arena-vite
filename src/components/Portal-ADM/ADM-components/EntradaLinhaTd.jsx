@@ -24,7 +24,7 @@ function EntradaLinhaTd({ position, user_id, value, type, payment_method, status
     }
 
     return (
-        <tr className=" border-zinc-800 p-2 h-[40px] text-[12px] text-center">
+        <tr className=" border-zinc-800 p-2 h-[40px] text-[12px] text-center mt-[3vh]">
             <td className="border-[1px] border-zinc-300">{position + 1}</td>
             <td className="flex h-[40px] justify-start items-center gap-1 border-[1px] border-zinc-300">
                 <img src={currentUser && currentUser.avatar_url} alt="" className="w-[30px] object- rounded-full" />

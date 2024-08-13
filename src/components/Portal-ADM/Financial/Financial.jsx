@@ -53,18 +53,10 @@ function Financial() {
                 onClick={OpenPainelFinanc}
                 className="absolute top-[12vh] right-[4%] bg-[#3C4557] w-[227px] h-[34px] text-white rounded-[6px] md:block hidden">relatório financeiro</button>
 
-            <section className='absolute flex flex-wrap justify-center items-start gap-3 sm:w-[70%] w-[94%] sm:max-h-[88vh] max-h-[82vh] sm:right-[3vh] right-auto top-[16vh] p-3 overflow-y-auto'>
-                <table className="text-zinc-900 w-[90%]">
-                    <tr className="text-left">
-                        <th>Nº</th>
-                        <th>usuário</th>
-                        <th>valor</th>
-                        <th>tipo</th>
-                        <th>forma de pagamento</th>
-                        <th>status</th>
-                        <th>data</th>
-                    </tr>
+            <section className='absolute flex flex-wrap justify-center items-start gap-3 sm:w-[70%] 
+            w-[94%] sm:max-h-[78vh] max-h-[72vh] sm:right-[3vh] right-auto top-[16vh] p-3 overflow-y-auto'>
 
+                <table className="text-zinc-900 w-[90%]">
                     {
                         transactions.map((transaction, index) => (
                             <EntradaLinhaTd key={index}
@@ -81,6 +73,7 @@ function Financial() {
                     }
 
                 </table>
+
             </section>
         </div>
     )

@@ -4,6 +4,7 @@ import Screen01 from './test-navigation/Screen01';
 import Screen02 from './test-navigation/Screen02';
 import AdmProfile from './components/profile/AdmProfile';
 import Financial from './components/Portal-ADM/Financial/Financial';
+import AdmSessions from './components/Sessions/AdmSessions';
 
 const ArenaJafHome = React.lazy(() => import('./components/ArenaJafHome'));
 const RegisterAdm = React.lazy(() => import('./components/Portal-ADM/register/RegisterAdm'));
@@ -18,7 +19,9 @@ const PortalGamerFinanceiro = React.lazy(() => import('./components/Portal-GAMER
 const PortalAdmLogin = React.lazy(() => import("./components/Portal-ADM/PortalAdmLogin"));
 const GamerRegister = React.lazy(() => import('./components/Portal-GAMER/Register/GamerRegister'));
 
+
 function App() {
+
   return (
     <div className="App bg-zinc">
       <BrowserRouter>
@@ -31,8 +34,9 @@ function App() {
             <Route element={<ArenaJafHome />} path="/" exact />
             <Route element={<RegisterAdm />} path="/register-master" exact />
             <Route element={<PortalAdmLogin />} path="/adm-login" exact />
+            <Route element={<PortalAdm />} path="/adm-machines" />
+            <Route element={<AdmSessions />} path="/adm-sessions" />
             <Route element={<AdmProfile />} path="/adm-profile" exact />
-            <Route element={<PortalAdm />} path="/adm-sessions" />
             <Route element={<Financial />} path="/financial" />
             <Route element={<PortalAdmClientes />} path="/adm-clientes" />
             <Route element={<PortalAdmColaboradores />} path="/adm-colaboradores" />

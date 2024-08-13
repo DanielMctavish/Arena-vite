@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom"
-import { Computer, People, AssignmentInd, ShareLocation, CurrencyExchange } from '@mui/icons-material'
+import { Computer, People, AssignmentInd, ShareLocation, CurrencyExchange, Gamepad } from '@mui/icons-material'
 import boxIcon from "../../medias/icons/box-icon.png"
 
 function Asside() {
@@ -36,56 +36,56 @@ function Asside() {
 
             <section className='
                 w-[100%]
-                h-auto
-                gap-6
-                p-3 
+                h-auto p-6
                 flex
-                flex-wrap
                 justify-center 
                 items-center
-                text-white '>
+                text-white'>
 
-                <div onClick={() => navigate("/adm-sessions")} className='relative w-[130px] h-[130px] bg-[#202736] hover:bg-[#6478a0] 
+                <section className='h-auto gap-6 flex flex-wrap justify-between items-center text-white'>
+
+                    <div onClick={() => navigate("/adm-machines")} className='relative w-[100px] h-[100px] bg-[#202736] hover:bg-[#6478a0] 
                     rounded-[10px] border-[1px] border-[#7586A8] flex flex-col justify-center items-center cursor-pointer'>
-                    <Computer style={{ fontSize: '70pt', color: 'white' }} />
-                    <span>Sessões</span>
-                </div>
+                        <Computer style={{ fontSize: '40pt', color: 'white' }} />
+                        <span>Máquinas</span>
+                    </div>
 
-                <div onClick={() => navigate("/adm-clientes")} className='relative w-[130px] h-[130px] bg-[#202736] hover:bg-[#6478a0] 
+                    <div onClick={() => navigate("/adm-sessions")} className='relative w-[100px] h-[100px] bg-[#202736] hover:bg-[#6478a0] 
                     rounded-[10px] border-[1px] border-[#7586A8] flex flex-col justify-center items-center cursor-pointer'>
-                    <People style={{ fontSize: '70pt', color: 'white' }} />
-                    <span>Clientes</span>
-                </div>
+                        <Gamepad style={{ fontSize: '40pt', color: 'white' }} />
+                        <span>Sessões</span>
+                    </div>
 
-                <div onClick={() => navigate("/adm-colaboradores")} className='relative w-[130px] h-[130px] bg-[#202736] hover:bg-[#6478a0] 
+                    <div onClick={() => navigate("/adm-clientes")} className='relative w-[100px] h-[100px] bg-[#202736] hover:bg-[#6478a0] 
                     rounded-[10px] border-[1px] border-[#7586A8] flex flex-col justify-center items-center cursor-pointer'>
-                    <AssignmentInd style={{ fontSize: '70pt', color: 'white' }} />
-                    <span>Add Colaborador</span>
-                </div>
+                        <People style={{ fontSize: '40pt', color: 'white' }} />
+                        <span>Clientes</span>
+                    </div>
 
+                    <div className='relative w-[100px] h-[100px] bg-[#303030] hover:bg-[#515151] 
+                    rounded-[10px] border-[1px] border-[#646464] flex flex-col justify-center items-center cursor-pointer'>
+                        <AssignmentInd style={{ fontSize: '40pt', color: 'white' }} />
+                        <span>Colaborador</span>
+                    </div>
 
-
-                <div onClick={() => navigate("/adm-locais")} className='relative w-[130px] h-[130px] bg-[#202736] hover:bg-[#6478a0] 
+                    <div onClick={() => navigate("/adm-locais")} className='relative w-[100px] h-[100px] bg-[#202736] hover:bg-[#6478a0] 
                     rounded-[10px] border-[1px] border-[#7586A8] flex flex-col justify-center items-center cursor-pointer'>
-                    <ShareLocation style={{ fontSize: '70pt', color: 'white' }} />
-                    <span>Locais</span>
-                </div>
+                        <ShareLocation style={{ fontSize: '40pt', color: 'white' }} />
+                        <span>Locais</span>
+                    </div>
 
-
-
-                <div onClick={() => navigate("/financial")} className='relative w-[130px] h-[130px] bg-[#202736] hover:bg-[#6478a0] 
+                    <div onClick={() => navigate("/financial")} className='relative w-[100px] h-[100px] bg-[#202736] hover:bg-[#6478a0] 
                     rounded-[10px] border-[1px] border-[#7586A8] flex flex-col justify-center items-center cursor-pointer'>
-                    <CurrencyExchange style={{ fontSize: '70pt', color: 'white' }} />
-                    <span>Financeiro</span>
-                </div>
+                        <CurrencyExchange style={{ fontSize: '40pt', color: 'white' }} />
+                        <span>Financeiro</span>
+                    </div>
 
-
-
-                <div onClick={() => navigate("/adm-produtos")} className='relative w-[130px] h-[130px] bg-[#202736] hover:bg-[#6478a0] 
+                    <div onClick={() => navigate("/adm-produtos")} className='relative w-[100px] h-[100px] bg-[#202736] hover:bg-[#6478a0] 
                     rounded-[10px] border-[1px] border-[#7586A8] flex flex-col justify-center items-center cursor-pointer'>
-                    <img src={boxIcon} alt="icone caixa aberta" className='' />
-                    <span>Produtos</span>
-                </div>
+                        <img src={boxIcon} alt="icone caixa aberta" className='w-[60px]' />
+                        <span>Produtos</span>
+                    </div>
+                </section>
 
 
             </section>
