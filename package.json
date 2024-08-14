@@ -59,7 +59,7 @@
   },
   "scripts": {
     "start": "vite",
-    "build": "vite build",
+    "build": "vite build && mv dist build",
     "test": "vite test",
     "eject": "vite eject",
     "serve": "vite preview"
