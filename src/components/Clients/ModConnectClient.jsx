@@ -6,8 +6,10 @@ import axios from "axios";
 import dayjs from "dayjs"
 import { useDispatch, useSelector } from "react-redux";
 import { machineRunning } from "../../redux/machines/MachineSlice";
+import LoadingComp from "../load/LoadingComp";
 
 function ModConnectClient() {
+    const [isLoading, setIsLoading] = useState(false)
     const [currentAdmin, setCurrentAdmin] = useState({})
     const [cardsMachines, setCardsMachines] = useState([1])
     const [currentMachine, setCurrentMachine] = useState()
@@ -68,6 +70,7 @@ function ModConnectClient() {
 
     const handleRunMachine = async () => {
         const currentSession = JSON.parse(localStorage.getItem('arena-adm-login'))
+        setIsLoading(true)
 
         await axios.post(`${import.meta.env.VITE_APP_API_URL}/machines/start-machine`, {
             value: parseFloat(tax * durations),
@@ -85,10 +88,12 @@ function ModConnectClient() {
             }
         }).then(result => {
             console.log("session created -> ", result.data)
+            setIsLoading(false)
             dispatch(machineRunning(result.data))
             handleCloseCurrentWindow()
         }).catch(err => {
             console.log("error at create session -> ", err.response.data)
+            setIsLoading(false)
             setServerResponses(err.response.data)
         })
 
@@ -109,6 +114,17 @@ function ModConnectClient() {
         })
 
     }
+
+    if (isLoading) return (
+        <div className="lg:w-[60%] w-[90%] h-[58%] flex 
+            bg-gradient-to-r from-[#3c4557b6] via-[#2a4a5a] to-[#19223498] 
+            backdrop-blur-lg text-white rounded-md 
+            justify-center items-center gap-6 relative p-2
+            shadow-lg shadow-[#0f0f0f4d] overflow-y-auto">
+            <span className="fixed bottom-[2vh]">conectando máquina, aguarde...</span>
+            <LoadingComp />
+        </div>
+    )
 
     return (
         <div className="lg:w-[60%] w-[90%] h-[58%] flex 
