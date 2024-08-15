@@ -10,7 +10,6 @@ import CardMachine from './ADM-components/CardMachine';
 import NavigationAdm from '../navigation/Navigation';
 import Asside from '../Asside/Asside';
 import SelectLocation from './ADM-components/SelectLocation';
-
 import { Add } from '@mui/icons-material'
 import ModalConfigSession from './ADM-Modais/ModalConfigSession';
 import SureMachineDelete from './ADM-Modais/SureMachineDelete';
@@ -25,17 +24,15 @@ import { useSelector } from "react-redux"
 import { updateError } from '../../redux/access/ErrorSlice';
 import { updateAdmin } from '../../redux/admin/AdminSlice';
 
-import connectWebSocketClient from "../SocketCOM/connectWebSocket";
 
 function PortalAdm() {
   const navigate = useNavigate();
-
   const [locationList, setLocationList] = useState([])
   const [localSelected, setLocalId] = useState("")
   const [currentSession, setCurrentSession] = useState({ name: "usuário" })
   const [currentNanoID, setCurrentNanoID] = useState('')
   const [cardsMachines, setCardsMachines] = useState([])
-  const [socket, setSocket] = useState()
+
 
   const refCreateSession = useRef()
   const dispatch = useDispatch()
@@ -43,12 +40,9 @@ function PortalAdm() {
   const stateAdmin = useSelector(state => state.admin)
   const stateMachine = useSelector(state => state.machine)
 
-  const clientWebsocket = new connectWebSocketClient()
+
 
   useEffect(() => {
-
-    const currentSocket = clientWebsocket.getSocketInstance()
-    setSocket(currentSocket);
 
     getLocationList()
 
@@ -163,7 +157,7 @@ function PortalAdm() {
           Array.isArray(cardsMachines) &&
           cardsMachines.map((machine, i) => (
             <div key={i}>
-              <CardMachine machine={machine} socket={socket} index={i} />
+              <CardMachine machine={machine} index={i} />
             </div>
           ))
         }
