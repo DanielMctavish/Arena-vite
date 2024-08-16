@@ -6,19 +6,18 @@ import AdmProfile from './components/profile/AdmProfile';
 import Financial from './components/Portal-ADM/Financial/Financial';
 import AdmSessions from './components/Sessions/AdmSessions';
 
-const ArenaJafHome = React.lazy(() => import('./components/ArenaJafHome'));
-const RegisterAdm = React.lazy(() => import('./components/Portal-ADM/register/RegisterAdm'));
-const PortalAdm = React.lazy(() => import('./components/Portal-ADM/PortalAdm'));
-const PortalAdmClientes = React.lazy(() => import('./components/Clients/PortalAdmClients'));
-const PortalAdmColaboradores = React.lazy(() => import('./components/Portal-ADM/PortalAdmColaboradores'));
-const PortalAdmProdutos = React.lazy(() => import('./components/Products/PortalAdmProdutos'));
-const PortalGamerLogin = React.lazy(() => import('./components/Portal-GAMER/Login/PortalGamerLogin'));
-const PortalAdmLocais = React.lazy(() => import('./components/Location/PortalAdmLocais'));
-const PortalGamerDashboard = React.lazy(() => import('./components/Portal-GAMER/PortalGamerDashboard'));
-const PortalGamerFinanceiro = React.lazy(() => import('./components/Portal-GAMER/PortalGamerFinanceiro'));
-const PortalAdmLogin = React.lazy(() => import("./components/Portal-ADM/PortalAdmLogin"));
-const GamerRegister = React.lazy(() => import('./components/Portal-GAMER/Register/GamerRegister'));
-
+import ArenaJafHome from './components/ArenaJafHome'
+import RegisterAdm from './components/Portal-ADM/register/RegisterAdm'
+import PortalAdm from './components/Portal-ADM/PortalAdm'
+import PortalAdmClientes from './components/Clients/PortalAdmClients'
+import PortalAdmColaboradores from './components/Portal-ADM/PortalAdmColaboradores'
+import PortalAdmProdutos from './components/Products/PortalAdmProdutos'
+import PortalGamerLogin from './components/Portal-GAMER/Login/PortalGamerLogin'
+import PortalAdmLocais from './components/Location/PortalAdmLocais'
+import PortalGamerDashboard from './components/Portal-GAMER/PortalGamerDashboard'
+import PortalGamerFinanceiro from './components/Portal-GAMER/PortalGamerFinanceiro'
+import PortalAdmLogin from "./components/Portal-ADM/PortalAdmLogin"
+import GamerRegister from './components/Portal-GAMER/Register/GamerRegister'
 
 function App() {
 
