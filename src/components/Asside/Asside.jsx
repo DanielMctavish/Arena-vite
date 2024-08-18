@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom"
-import { Computer, People, AssignmentInd, ShareLocation, CurrencyExchange, Gamepad } from '@mui/icons-material'
+import { Computer, People, Celebration, ShareLocation, CurrencyExchange, Gamepad } from '@mui/icons-material'
 import boxIcon from "../../medias/icons/box-icon.png"
 
 function Asside() {
@@ -64,8 +64,8 @@ function Asside() {
 
                     <div className='relative w-[100px] h-[100px] bg-[#303030] hover:bg-[#515151] 
                     rounded-[10px] border-[1px] border-[#646464] flex flex-col justify-center items-center cursor-pointer'>
-                        <AssignmentInd style={{ fontSize: '40pt', color: 'white' }} />
-                        <span>Colaborador</span>
+                        <Celebration style={{ fontSize: '40pt', color: 'white' }} />
+                        <span>Eventos</span>
                     </div>
 
                     <div onClick={() => navigate("/adm-locais")} className='relative w-[100px] h-[100px] bg-[#202736] hover:bg-[#6478a0] 

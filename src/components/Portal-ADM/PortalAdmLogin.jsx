@@ -5,14 +5,12 @@ import { useNavigate } from 'react-router-dom';
 import ArenaLogoGold from "../../medias/logos/Logo_Completa_GOLD.png";
 //import dayjs from "dayjs";
 
-
 function PortalAdmLogin() {
     const navigate = useNavigate();
     const refEmail = useRef()
     const refPassword = useRef()
     const refSpanMessage = useRef()
     const [tailwindConfig, setTailwindConfig] = useState("flex")
-
 
     useEffect(() => {
         checkServer()
@@ -22,8 +20,8 @@ function PortalAdmLogin() {
 
         await axios.get(`${import.meta.env.VITE_APP_API_URL}/check`).then(response => {
             //console.log(response.data);
-            setTailwindConfig("absolute w-[23px] h-[23px] bg-gradient-to-bl from-[#1aff00] via-[#4cff43] to-[#459a00] rounded-full left-1 top-1")
-            refSpanMessage.current.innerHTML = "Bem vindo! insira suas credenciais para começarmos"
+            setTailwindConfig("absolute w-[23px] h-[23px] font-bold bg-gradient-to-bl from-[#1aff00] via-[#4cff43] to-[#459a00] rounded-full left-1 top-1")
+            refSpanMessage.current.innerHTML = "Bem vindo! insira suas credenciais"
         }).catch(err => {
 
             if (err.message) {
@@ -33,7 +31,6 @@ function PortalAdmLogin() {
         })
 
     }
-
 
     async function handleLoggOn() {
         if (!refEmail.current.value || !refPassword.current.value) {

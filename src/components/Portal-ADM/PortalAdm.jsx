@@ -4,25 +4,29 @@ import axios from "axios";
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BgAdm from '../../medias/bg-adm.png';
+import PS_logo from "../../medias/logos/PlayStation-Logo.png"
+import Xbox_logo from "../../medias/logos/Xbox-Logo.png"
+import ComputerIcon from "../../medias/icons/iMac.png"
 import "./styles/PortalAdm.css"
 
 import CardMachine from './ADM-components/CardMachine';
 import NavigationAdm from '../navigation/Navigation';
 import Asside from '../Asside/Asside';
 import SelectLocation from './ADM-components/SelectLocation';
-import { Add } from '@mui/icons-material'
+import { Add, Close } from '@mui/icons-material'
 import ModalConfigSession from './ADM-Modais/ModalConfigSession';
 import SureMachineDelete from './ADM-Modais/SureMachineDelete';
 import { generateCustomID } from './functions/generateCustomID';
 import { handleInitializeCreateMachine } from './functions/handleInitializeCreateMachine';
 import { handleCreateMachine } from './functions/handleCreateMachine';
 import { getAdmInfoByEmail } from './functions/getAdmInfoByEmail';
-import { handleGetMachineList } from './functions/handleGetMachineList';
+
 
 import { useDispatch } from "react-redux"
 import { useSelector } from "react-redux"
 import { updateError } from '../../redux/access/ErrorSlice';
 import { updateAdmin } from '../../redux/admin/AdminSlice';
+import LoadingComp from "../load/LoadingComp";
 
 
 function PortalAdm() {
@@ -31,8 +35,8 @@ function PortalAdm() {
   const [localSelected, setLocalId] = useState("")
   const [currentSession, setCurrentSession] = useState({ name: "usuário" })
   const [currentNanoID, setCurrentNanoID] = useState('')
-  const [cardsMachines, setCardsMachines] = useState([])
-
+  const [machineType, setMachineType] = useState('PC')
+  const [isLoading, setIsLoading] = useState(false)
 
   const refCreateSession = useRef()
   const dispatch = useDispatch()
@@ -40,13 +44,11 @@ function PortalAdm() {
   const stateAdmin = useSelector(state => state.admin)
   const stateMachine = useSelector(state => state.machine)
 
-
-
   useEffect(() => {
 
     getLocationList()
 
-  }, []);
+  }, [isLoading]);
 
   useEffect(() => {
     const getAdmSession = JSON.parse(localStorage.getItem("arena-adm-login"))
@@ -69,12 +71,6 @@ function PortalAdm() {
     getAdmInfoByEmail(currentSession.email, dispatch, updateError, updateAdmin)
   }, [currentSession, stateError])
 
-  useEffect(() => {
-    //console.log('observando stateAdmin ->', stateAdmin.admin_id);
-    handleGetMachineList(stateAdmin.admin_id, setCardsMachines)
-
-  }, [stateAdmin])
-
 
 
   //-----------------------------------------------------------------------------------------------
@@ -89,6 +85,7 @@ function PortalAdm() {
           'Authorization': `Bearer ${currentSession.token}`
         }
       }).then((response) => {
+        console.log("locationList -> ", response.data.ArenaLocal)
         setLocationList(response.data.ArenaLocal)
       })
 
@@ -99,6 +96,8 @@ function PortalAdm() {
       //   })
 
     } catch (error) {
+      localStorage.removeItem("arena-adm-login")
+      navigate("/adm-login")
       console.log(error.message)
     }
 
@@ -119,22 +118,63 @@ function PortalAdm() {
 
       {/* -------------------------------- Modal CREATE MACHINE -------------------------------- */}
       <section ref={refCreateSession}
-        className='w-[80%] h-[80%] hidden flex-col gap-3 
+        className='w-[60%] h-[80%] hidden flex-col gap-3 
       justify-center items-center absolute 
       bg-white z-[99] rounded-md 
       mod-create-machine
       shadow-lg shadow-[#141414a9]'>
+        <span className="absolute top-2 right-2 cursor-pointer"
+          onClick={() => refCreateSession.current.style.display = "none"}>
+          <Close />
+        </span>
+
         <h2>você esta criando uma nova máquina!</h2>
 
         <span className='font-bold'>{currentNanoID}</span>
 
-        <button onClick={() => handleCreateMachine(
-          stateAdmin.admin_id,
-          currentNanoID,
-          handleGetMachineList,
-          setCardsMachines,
-          navigate,
-          localSelected)} className='w-[100px] h-[40px] bg-[#e6a429] rounded-[10px] text-white font-bold'>Criar</button>
+        <div className="flex flex-col justify-center items-center gap-6">
+          <span>selecione o tipo da máquina</span>
+
+          <div className="flex justify-center items-center gap-3">
+
+            <span onClick={() => setMachineType("PC")} className={`flex ${machineType === 'PC' ? "w-[90px] h-[90px] shadow-lg shadow-[#14141440]"
+              : "w-[60px] h-[60px]"} cursor-pointer bg-[#707070] border-[1px] border-[#e6e6e6] rounded-md justify-center items-center`}>
+              <img src={ComputerIcon} alt="" className="h-[70%] object-cover" />
+            </span>
+
+            <span onClick={() => setMachineType("PS5")} className={`flex ${machineType === 'PS5' ? "w-[90px] h-[90px] shadow-lg shadow-[#14141440]"
+              : "w-[60px] h-[60px]"}  
+              cursor-pointer bg-[#b8d4ff] border-[1px] border-[#deebfe] rounded-md justify-center items-center`}>
+              <img src={PS_logo} alt="" className="h-[70%] object-cover" />
+            </span>
+
+            <span onClick={() => setMachineType("XBOX")} className={`flex ${machineType === 'XBOX' ? "w-[90px] h-[90px] shadow-lg shadow-[#14141440]"
+              : "w-[60px] h-[60px]"}  
+              cursor-pointer bg-[#b8fff0] border-[1px] border-[#defefa] rounded-md justify-center items-center`}>
+              <img src={Xbox_logo} alt="" className="h-[60%] object-cover" />
+            </span>
+
+          </div>
+
+        </div>
+
+        {
+          !isLoading ?
+            <button onClick={() => handleCreateMachine(
+              stateAdmin.admin_id,
+              machineType,
+              currentNanoID,
+              navigate,
+              localSelected,
+              setIsLoading)}
+              className='w-[100px] h-[40px] bg-[#e6a429] 
+          rounded-[10px] text-white font-bold'>
+              Criar
+            </button> :
+            <div>
+              <LoadingComp />
+            </div>
+        }
 
       </section>
       {/* ---------------------------------------------------------------------------------------- */}
@@ -145,7 +185,7 @@ function PortalAdm() {
       <SureMachineDelete />
       <SelectLocation localList={locationList} setLocalId={setLocalId} />
 
-      <section className='absolute flex flex-wrap 
+      <section className='absolute flex flex-col
       justify-start items-start 
       gap-3 sm:w-[70%] w-[94%] 
       sm:max-h-[78vh] max-h-[82vh] 
@@ -154,17 +194,27 @@ function PortalAdm() {
       scrollbar-thumb-[#18212f] scrollbar-track-gray-100'>
 
         {
-          Array.isArray(cardsMachines) &&
-          cardsMachines.map((machine, i) => (
-            <div key={i}>
-              <CardMachine machine={machine} index={i} />
-            </div>
+          locationList.map((local) => (
+            <section key={local.id} className="flex flex-col w-full  text-white relative">
+              <span className="border-b-[1px] border-white text-[22px]">{local.nome}</span>
+
+              <div className="flex flex-wrap gap-3 p-3 w-full max-h-[30vh]
+              overflow-y-auto overflow-x-hidden 
+              justify-start items-start bg-[#ffffff1c] backdrop-blur-[6px] relative">
+                {local.Machines && local.Machines.map((machine, i) => (
+                  <div key={i}>
+                    <CardMachine machine={machine} index={i} />
+                  </div>
+                ))}
+              </div>
+
+            </section>
           ))
         }
 
         <div
           onClick={() => handleInitializeCreateMachine(refCreateSession, setCurrentNanoID, generateCustomID)}
-          className="add-machine w-[160px] h-[233px] bg-[#1f2735] hover:bg-[#18212f] 
+          className="add-machine w-[160px] min-h-[233px] bg-[#1f2735] hover:bg-[#18212f] 
           cursor-pointer border-[1px] border-[#8499c2] rounded-[10px] 
           flex flex-col justify-center items-center text-white">
           <span></span>

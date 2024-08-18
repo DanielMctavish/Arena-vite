@@ -2,6 +2,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios"
 import ComputerIcon from "../../../medias/icons/iMac.png"
+import PS_logo from "../../../medias/logos/PlayStation-Logo.png"
+import Xbox_logo from "../../../medias/logos/Xbox-Logo.png"
+
 import ClockIcon from "../../../medias/icons/Wall Clock.png"
 import DeleteIcon from "../../../medias/icons/Delete.png"
 import { SyncDisabled, Sync, StopCircle } from "@mui/icons-material"
@@ -109,7 +112,7 @@ function CardMachine({ machine, index }) {
             style={{ background: playColor }}
             className="
             shadow-lg shadow-[#141414af]
-            w-[160px] h-[233px] 
+            min-w-[160px] min-h-[233px] 
             border-[1px] 
             border-[#80c4cd]
             hover:border-[#40b340]
@@ -131,8 +134,20 @@ function CardMachine({ machine, index }) {
             </span>
 
             <div className="flex justify-center items-center w-[84px] h-[84px]">
-                <img src={ComputerIcon} alt="" className="absolute" />
-                <span className="absolute font-bold text-[22px] font-[Sansation] text-white mt-[-20px]">{index + 1}</span>
+                {
+                    machine.type === "PC" &&
+                    <img src={ComputerIcon} alt="" className="absolute" />
+                }
+                {
+                    machine.type === "PS5" &&
+                    <img src={PS_logo} alt="" className="absolute h-[37%] object-cover" style={{ filter: 'invert(1)' }} />
+                }
+                {
+                    machine.type === "XBOX" &&
+                    <img src={Xbox_logo} alt="" className="absolute h-[27%] object-cover" style={{ filter: 'invert(1)' }} />
+                }
+                <span className={`absolute font-bold text-[22px] 
+                    font-[Sansation] text-white ${machine.type === "PC" ? "top-[34px]" : "top-[3px] left-2"}`}>{index + 1}</span>
             </div>
 
             <span className="font-[18px] text-white">{machine.nano_id}</span>
@@ -158,7 +173,7 @@ function CardMachine({ machine, index }) {
                             <StopCircle className="h-[24px] w-[24px] text-red-600" />
                             <span className="font-[18px]">Parar</span>
                         </div> :
-                        <span>parando...</span> : ""
+                        <span className="text-[#fea04d]">parando...</span> : ""
 
             }
 
