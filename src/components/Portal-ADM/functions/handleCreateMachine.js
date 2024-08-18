@@ -3,11 +3,11 @@ import axios from "axios"
 
 export const handleCreateMachine = async (
     currentAdmID,
+    machineType,
     currentNanoID,
-    handleGetMachineList,
-    setCardsMachines,
     navigate,
-    localSelected) => {
+    localSelected,
+    setIsLoading) => {
 
     console.log("observando local id -> ", localSelected)
 
@@ -24,15 +24,18 @@ export const handleCreateMachine = async (
 
         //const currentAdmInfo = await axios.get(`${import.meta.env.VITE_APP_API_URL}/adm/admin-info?adm_id=${currentAdmID}`, config);
 
+        setIsLoading(true)
+
         await axios.post(`${import.meta.env.VITE_APP_API_URL}/adm/create-machine`, {
             nano_id: currentNanoID,
+            type: machineType,
             userAdmId: currentAdmID,
             arenaLocalId: localSelected,
             connection: 'DISCONECTED',
             status: 'STOPED'
         }, config).then(response => {
             //console.log('observando create machine -> ', response.data)
-            handleGetMachineList(currentAdmID, setCardsMachines)
+            setIsLoading(false)
         })
 
     } catch (err) {
@@ -41,6 +44,7 @@ export const handleCreateMachine = async (
             localStorage.removeItem('arena-adm-login')
             navigate("/adm-login")
         }
+        setIsLoading(false)
         modCreateMachine.style.display = 'none'
     }
 

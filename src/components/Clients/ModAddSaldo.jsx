@@ -87,7 +87,14 @@ function ModAddSaldo({ changeState, setChangeState }) {
 
             <div className="flex justify-between items-center p-2 bg-transparent rounded-md w-[80%]">
                 <span>Saldo Atual do Cliente:</span>
-                <span>R$ {clientState.value && clientState.value.toFixed(2)}</span>
+                <span className="text-[33px]">R$ {clientState.value && clientState.value.toFixed(2)}</span>
+            </div>
+
+            <div className="flex w-[80%] justify-center items-center gap-1">
+                <div className="flex-1 text-center h-[40px] bg-[#3C4557] 
+                flex items-center justify-center rounded-md cursor-pointer hover:border-[1px]">PRODUTO</div>
+                <div className="flex-1 text-center h-[40px] bg-[#3C4557] 
+                flex items-center justify-center rounded-md cursor-pointer hover:border-[1px]">HORAS</div>
             </div>
 
             <input onChange={(e) => { setValue(e.target.value) }}
@@ -101,7 +108,7 @@ function ModAddSaldo({ changeState, setChangeState }) {
             </select>
 
             <button onClick={handleAddValueToClient} className="p-2 bg-[#27314b] border-[1px] border-[#3e4e75] rounded-md w-[80%]">
-                adicionar saldo
+                confirmar
             </button>
 
         </div>

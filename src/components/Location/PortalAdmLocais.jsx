@@ -47,12 +47,16 @@ function PortalAdmLocais(props) {
                 className='absolute flex flex-wrap md:justify-start justify-center items-start gap-1 sm:w-[66%] w-[98%] sm:max-h-[88vh] max-h-[82vh] sm:right-[3vh] right-auto top-[16vh] p-3 overflow-y-auto'>
                 {
                     localList.map((local, index) => (
-                        <CardLocal key={index} name={local.nome} address={local.end_url_google} admId={local.userAdmId} />
+                        <CardLocal key={index}
+                            name={local.nome}
+                            address={local.end_url_google}
+                            admId={local.userAdmId}
+                            Machines={local.Machines} />
                     ))
 
                 }
 
-                <div onClick={OpenPainelLocation} className="md:w-[238px] w-[90%] h-[214px] bg-[#3C3C3C] flex flex-col justify-around items-center text-white rounded-[10px] cursor-pointer">
+                <div onClick={OpenPainelLocation} className="md:w-[238px] w-[90%] h-[240px] bg-[#3C3C3C] flex flex-col justify-around items-center text-white rounded-[10px] cursor-pointer">
                     <span className="bg-zinc-500 w-[70px] h-[70px] flex justify-center items-center rounded-full text-[20pt]"><Add /></span>
                 </div>
 
