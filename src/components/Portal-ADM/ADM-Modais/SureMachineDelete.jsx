@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { machineToDelete } from "../../../redux/machines/MachineSlice";
 
-function SureMachineDelete() {
+function SureMachineDelete({ setIsLoading, isLoading }) {
     const [password, setPassword] = useState("")
     const [session, setSession] = useState()
     const machineState = useSelector(state => state.machine)
@@ -31,6 +31,7 @@ function SureMachineDelete() {
     }
 
     const handleDeleteMachine = async () => {
+        setIsLoading(true)
 
         try {
 
@@ -45,6 +46,7 @@ function SureMachineDelete() {
                 }
             }).then(() => {
                 setPassword("")
+                setIsLoading(false)
             })
 
             CloseWindowWarning()
@@ -55,43 +57,51 @@ function SureMachineDelete() {
         } catch (error) {
 
             setPassword("")
+            setIsLoading(false)
             console.log('erro ao tentar excluir máquina -> ', error.response)
 
         }
 
     }
 
+    if (isLoading) {
+        return (
+            <div className="windows-del-warning 
+        w-[636px] h-[337px] hidden absolute
+        flex-col justify-around 
+        items-center bg-[#201733] 
+        border-[1px] border-[#C8D3E9] 
+        rounded-[10px] text-white z-[60]">
+                <span className="text-[#ff9090]">excluindo máquina... </span>
+            </div>
+        )
+    }
+
     return (
-
-        <div className="draggable-container">
-
-            <div
-                className="windows-del-warning 
+        <div
+            className="windows-del-warning 
                     w-[636px] h-[337px] hidden absolute
                     flex-col justify-around 
                     items-center bg-[#201733] 
                     border-[1px] border-[#C8D3E9] 
                     rounded-[10px] text-white z-[60]"
-            >
-                <img src={WarningIcon} alt="icon de aviso" />
-                <span>VOCÊ TEM CERTEZA QUE DESEJA EXCLUIR A MÁQUINA?</span>
-                <span className="font-bold">{machineState.nano_id}</span>
+        >
+            <img src={WarningIcon} alt="icon de aviso" />
+            <span>VOCÊ TEM CERTEZA QUE DESEJA EXCLUIR A MÁQUINA?</span>
+            <span className="font-bold">{machineState.nano_id}</span>
 
-                <section className="flex gap-3">
-                    <input
-                        type="password"
-                        placeholder="confirme sua senha"
-                        className="text-zinc-700 text-center p-2 rounded-md"
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                    <button onClick={handleDeleteMachine} className="text-[#FF5454]">DELETAR</button>
-                </section>
+            <section className="flex gap-3">
+                <input
+                    type="password"
+                    placeholder="confirme sua senha"
+                    className="text-zinc-700 text-center p-2 rounded-md"
+                    onChange={(e) => setPassword(e.target.value)}
+                />
+                <button onClick={handleDeleteMachine} className="text-[#FF5454]">DELETAR</button>
+            </section>
 
-                <button onClick={CloseWindowWarning}>CANCELAR</button>
-            </div>
-
+            <button onClick={CloseWindowWarning}>CANCELAR</button>
         </div>
-
     );
 }
 

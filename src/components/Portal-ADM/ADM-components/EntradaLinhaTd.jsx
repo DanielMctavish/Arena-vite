@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import axios from "axios"
 
-function EntradaLinhaTd({ position, user_id, value, type, payment_method, status, date }) {
+function EntradaLinhaTd({ position, user_id, value, type, payment_method, status, date, fluxo }) {
     const [currentUser, setCurrentUser] = useState()
 
     useEffect(() => {
@@ -24,7 +24,7 @@ function EntradaLinhaTd({ position, user_id, value, type, payment_method, status
     }
 
     return (
-        <tr className=" border-zinc-800 p-2 h-[40px] text-[12px] text-center mt-[3vh]">
+        <tr className={`border-zinc-800 p-2 h-[40px] text-[12px] text-center mt-[3vh] ${fluxo === 'IN' ? 'bg-[#44ff7018]' : 'bg-[#fc58581f]'}`}>
             <td className="border-[1px] border-zinc-300">{position + 1}</td>
             <td className="flex h-[40px] justify-start items-center gap-1 border-[1px] border-zinc-300">
                 <img src={currentUser && currentUser.avatar_url} alt="" className="w-[30px] object- rounded-full" />

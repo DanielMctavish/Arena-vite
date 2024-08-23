@@ -6,9 +6,11 @@ import { getAdmInfoByEmail } from "../Portal-ADM/functions/getAdmInfoByEmail";
 
 function CreateClient() {
     const [files, setFiles] = useState([]);
-    const [clientName, setClientName] = useState([])
-    const [clientEmail, setclientEmail] = useState([])
-    const [clientCpf, setclientCpf] = useState([])
+    const [clientName, setClientName] = useState('')
+    const [clientEmail, setclientEmail] = useState('')
+    const [clientCpf, setclientCpf] = useState('')
+    const [address, setAdress] = useState('')
+    const [phone, setPhone] = useState('')
     const [senha, setSenha] = useState([])
     const [confirmSenha, setConfirmSenha] = useState([])
     const [isCreating, setIsCreating] = useState(false)
@@ -83,8 +85,11 @@ function CreateClient() {
                     nome: clientName,
                     email: clientEmail,
                     saldo: 0,
+                    horas: 0,
                     cpf: clientCpf,
                     senha: senha,
+                    tel: phone,
+                    address: address,
                     avatar_url: currentUrlClientImage,
                     administrator_id: res.id,
                     isPlaying: false
@@ -143,13 +148,32 @@ function CreateClient() {
                 }
             </div>
 
-            <input onChange={(e) => { setClientName(e.target.value) }}
-                type="text" className="p-2 border-[1px] bg-transparent rounded-md w-[80%]"
-                placeholder="nome do cliente" />
-            <input onChange={(e) => { setclientEmail(e.target.value) }} type="text" className="p-2 border-[1px] bg-transparent rounded-md w-[80%]" placeholder="email do cliente" />
-            <input onChange={(e) => { setclientCpf(e.target.value) }} type="text" className="p-2 border-[1px] bg-transparent rounded-md w-[80%]" placeholder="cpf do cliente" />
-            <input onChange={(e) => { setSenha(e.target.value) }} type="password" className="p-2 border-[1px] bg-transparent rounded-md w-[80%]" placeholder="senha" />
-            <input onChange={(e) => { setConfirmSenha(e.target.value) }} type="password" className="p-2 border-[1px] bg-transparent rounded-md w-[80%]" placeholder="confirmar senha" />
+            <section className="flex w-[80%] justify-between items-start">
+
+                <div className="flex flex-col w-[50%] gap-3 p-2">
+                    <input onChange={(e) => { setClientName(e.target.value) }}
+                        type="text" className="p-2 border-[1px] bg-transparent rounded-md w-full"
+                        placeholder="nome do cliente" />
+                    <input onChange={(e) => { setclientEmail(e.target.value) }} type="text"
+                        className="p-2 border-[1px] bg-transparent rounded-md w-full" placeholder="email do cliente" />
+                    <input onChange={(e) => { setclientCpf(e.target.value) }} type="text"
+                        className="p-2 border-[1px] bg-transparent rounded-md w-full" placeholder="cpf do cliente" />
+                    <input onChange={(e) => { setSenha(e.target.value) }} type="password"
+                        className="p-2 border-[1px] bg-transparent rounded-md w-full" placeholder="senha" />
+                    <input onChange={(e) => { setConfirmSenha(e.target.value) }} type="password"
+                        className="p-2 border-[1px] bg-transparent rounded-md w-full" placeholder="confirmar senha" />
+                </div>
+
+                <div className="flex flex-col w-[50%] gap-3 p-2">
+                    <input onChange={(e) => { setAdress(e.target.value) }}
+                        type="text" className="p-2 border-[1px] bg-transparent rounded-md w-full"
+                        placeholder="endereço" />
+                    <input onChange={(e) => { setPhone(e.target.value) }}
+                        type="text" className="p-2 border-[1px] bg-transparent rounded-md w-full"
+                        placeholder="telefone" />
+                </div>
+
+            </section>
 
             <button
                 onClick={handleCreateClient}

@@ -21,13 +21,11 @@ import { handleInitializeCreateMachine } from './functions/handleInitializeCreat
 import { handleCreateMachine } from './functions/handleCreateMachine';
 import { getAdmInfoByEmail } from './functions/getAdmInfoByEmail';
 
-
 import { useDispatch } from "react-redux"
 import { useSelector } from "react-redux"
 import { updateError } from '../../redux/access/ErrorSlice';
 import { updateAdmin } from '../../redux/admin/AdminSlice';
 import LoadingComp from "../load/LoadingComp";
-
 
 function PortalAdm() {
   const navigate = useNavigate();
@@ -182,25 +180,26 @@ function PortalAdm() {
       <Asside />
       <NavigationAdm title="MÁQUINAS" adm_id={stateAdmin.admin_id} />
       <ModalConfigSession />
-      <SureMachineDelete />
+      <SureMachineDelete setIsLoading={setIsLoading} isLoading={isLoading} />
       <SelectLocation localList={locationList} setLocalId={setLocalId} />
 
       <section className='absolute flex flex-col
       justify-start items-start 
-      gap-3 sm:w-[70%] w-[94%] 
-      sm:max-h-[78vh] max-h-[82vh] 
-      sm:right-[3vh] right-auto top-[16vh] 
+      gap-3 lg:w-[70%] w-[94%] 
+      lg:max-h-[78vh] max-h-[82vh] 
+      lg:right-[3vh] right-auto top-[16vh] 
       p-3 overflow-y-auto scrollbar 
       scrollbar-thumb-[#18212f] scrollbar-track-gray-100'>
 
         {
           locationList.map((local) => (
+            local.Machines.length > 0 &&
             <section key={local.id} className="flex flex-col w-full  text-white relative">
-              <span className="border-b-[1px] border-white text-[22px]">{local.nome}</span>
+              <span className="text-[22px]">{local.nome}</span>
 
               <div className="flex flex-wrap gap-3 p-3 w-full max-h-[30vh]
-              overflow-y-auto overflow-x-hidden 
-              justify-start items-start bg-[#ffffff1c] backdrop-blur-[6px] relative">
+              overflow-y-auto overflow-x-hidden rounded-[12px]
+              justify-start items-start bg-[#5e30ba1c] backdrop-blur-[6px] relative">
                 {local.Machines && local.Machines.map((machine, i) => (
                   <div key={i}>
                     <CardMachine machine={machine} index={i} />
