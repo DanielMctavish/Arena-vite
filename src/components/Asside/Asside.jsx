@@ -13,7 +13,7 @@ function Asside() {
       absolute
       p-9 
       text-[14px] 
-      sm:flex
+      lg:flex
       flex-col
       hidden 
       justify-start 

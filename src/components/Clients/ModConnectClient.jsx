@@ -14,8 +14,7 @@ function ModConnectClient() {
     const [cardsMachines, setCardsMachines] = useState([1])
     const [currentMachine, setCurrentMachine] = useState()
     const [durations, setDurations] = useState(1)
-    const [tax, setTax] = useState(3)
-    const [taxInput, setTaxInput] = useState(false)
+
     const [serverResponses, setServerResponses] = useState("")
 
     const clientState = useSelector(state => state.client)
@@ -73,8 +72,7 @@ function ModConnectClient() {
         setIsLoading(true)
 
         await axios.post(`${import.meta.env.VITE_APP_API_URL}/machines/start-machine`, {
-            value: parseFloat(tax * durations),
-            duration: parseInt(durations * 60),
+            duration: parseInt(durations) * 60,
             timer_started_at: dayjs().toDate(),
             timer_ended_at: dayjs().add(durations, 'hour').toDate(),
             status: 'RUNNING',
@@ -164,10 +162,11 @@ function ModConnectClient() {
 
                             return (
                                 <div onClick={() => handleSelectMachine(card)} key={index} className="min-w-[140px] h-[140px]
-                                hover:bg-emerald-200 flex justify-center items-center
+                                hover:bg-emerald-200 flex flex-col justify-center items-center
                                 bg-emerald-600 rounded-md cursor-pointer relative">
                                     <img src={ComputerIcon} alt="" />
-                                    <span className="absolute text-[30px] mt-[-22px]">{index + 1}</span>
+                                    <span className="absolute text-[30px] mt-[-4vh]">{index + 1}</span>
+                                    <span>{card.nano_id}</span>
                                 </div>
                             )
                         })
@@ -194,21 +193,6 @@ function ModConnectClient() {
                     {
                         currentMachine &&
                         <>
-                            <div className="flex w-full h-[40px] justify-between items- absolute top-0">
-                                <button
-                                    onClick={() => setTaxInput(!taxInput)}
-                                    className="top-1 left-3 bg-[#162f3b] p-3 rounded-md text-[12px]">Definir tarifa</button>
-                                {
-                                    taxInput &&
-                                    <div className="flex gap-2 justify-center items-center">
-                                        <span className="text-[23px]">R$</span>
-                                        <input type="number"
-                                            onChange={(e) => e.target.value > 0 ? setTax(e.target.value) : false}
-                                            value={tax}
-                                            className="w-[80px] h-[40px] text-[23px] bg-transparent p-2 border-[1px] border-white/30 rounded-md" />
-                                    </div>
-                                }
-                            </div>
 
                             <div className="flex w-full justify-between items-center">
                                 <div className="flex gap-2 justify-center items-center">
@@ -236,8 +220,6 @@ function ModConnectClient() {
                                                 text-white rounded-lg font-bold">
                                     STOP
                                 </button>
-
-                                <span>R$ - {(tax * durations).toFixed(2)}</span>
                             </div>
                         </>
                     }

@@ -22,8 +22,17 @@ function Financial() {
         if (!currentSession) return navigate("/")
 
         try {
+            let currentAdmin;
 
-            await axios.get(`${import.meta.env.VITE_APP_API_URL}/transactions/list-transactions`, {
+            await axios.get(`${import.meta.env.VITE_APP_API_URL}/adm/admin-info-email?email=${currentSession.email}`, {
+                headers: {
+                    'Authorization': `Bearer ${currentSession.token}`
+                }
+            }).then(result => {
+                currentAdmin = result.data
+            })
+
+            await axios.get(`${import.meta.env.VITE_APP_API_URL}/transactions/list-transactions?adm_id=${currentAdmin.id}`, {
                 headers: {
                     'Authorization': `Bearer ${currentSession.token}`
                 }
@@ -68,6 +77,7 @@ function Financial() {
                                 payment_method={transaction.method}
                                 status={transaction.status}
                                 date={transaction.created_at}
+                                fluxo={transaction.fluxo}
                             />
                         ))
                     }

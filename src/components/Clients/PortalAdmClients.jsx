@@ -12,6 +12,7 @@ import ModConnectClient from "./ModConnectClient";
 import ModClientConsumo from "./ModClientConsumo";
 import ModAddSaldo from "./ModAddSaldo";
 import { useSelector } from "react-redux";
+import { Search } from "@mui/icons-material"
 
 
 function PortalAdmClientes() {
@@ -57,15 +58,22 @@ function PortalAdmClientes() {
 
 
             <section className='absolute flex flex-wrap 
-            justify-center items-start gap-3 sm:w-[72%] 
-            w-[94%] sm:max-h-[76vh] max-h-[77vh] sm:right-[3vh] 
+            justify-center items-start gap-3 lg:w-[72%] 
+            w-[90%] sm:max-h-[76vh] max-h-[77vh] sm:right-[3vh] 
             right-auto top-[16vh] p-3 overflow-y-auto'>
-                <div className="flex w-[98%] h-[60px] bg-zinc-400 p-2 rounded-md">
+                <div className="flex w-[98%] h-[60px] bg-[#eaeaea] p-2 rounded-md justify-between items-center">
                     <button
                         onClick={handleShowModAddCreate}
                         className="flex justify-center items-center bg-[#323e58] text-white p-3 rounded-md shadow-md shadow-[#14141431]">
                         Adicionar Cliente
                     </button>
+                    <div className="flex rounded-md overflow-hidden">
+                        <input type="text" placeholder="pesquisar cliente"
+                            className="bg-[#dfdfdf] text-[#353535] p-3" />
+                        <div className="flex w-full bg-[#dfdfdf] justify-center items-center">
+                            <Search sx={{fontSize:"33px"}}/>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="flex flex-col text-zinc-900 w-[100%] p-6 gap-1">
@@ -78,6 +86,7 @@ function PortalAdmClientes() {
                             value={client.saldo}
                             avatar_url={client.avatar_url}
                             client_id={client.id}
+                            horas={client.horas}
                         />
                     ))}
                 </div>

@@ -4,9 +4,9 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { selectedClient } from "../../redux/client/ClientSlice";
 import { useNavigate } from "react-router-dom";
-import { ShoppingCart } from "@mui/icons-material"
+import { ShoppingCart, Timelapse, Storefront, LocalAtm, Gamepad, ContactPage } from "@mui/icons-material"
 
-function ClienteLinhaTd({ nome, email, value, avatar_url, client_id, isPlaying }) {
+function ClienteLinhaTd({ nome, email, value, avatar_url, client_id, isPlaying, horas }) {
     const stateMachineRunning = useSelector(state => state.machine);
     const [machineSession, setMachineSession] = useState({});
     const dispatch = useDispatch();
@@ -14,6 +14,7 @@ function ClienteLinhaTd({ nome, email, value, avatar_url, client_id, isPlaying }
 
     useEffect(() => {
         getMachineSessionByClient();
+        console.log("horas do cliente -> ", horas)
     }, [client_id, stateMachineRunning]);
 
     const getMachineSessionByClient = () => {
@@ -54,7 +55,7 @@ function ClienteLinhaTd({ nome, email, value, avatar_url, client_id, isPlaying }
             value: value,
             avatar_url: avatar_url
         }));
-        
+
     };
 
     const handleShowAddSaldo = () => {
@@ -69,15 +70,15 @@ function ClienteLinhaTd({ nome, email, value, avatar_url, client_id, isPlaying }
         }));
     };
 
-    const formatTimer = (time) => {
-        const minutes = parseInt(Math.floor(time / 60));
-        const seconds = parseInt(time % 60);
+    // const formatTimer = (time) => {
+    //     const minutes = parseInt(Math.floor(time / 60));
+    //     const seconds = parseInt(time % 60);
 
-        const formattedMinutes = String(minutes).padStart(2, '0');
-        const formattedSeconds = String(seconds).padStart(2, '0');
+    //     const formattedMinutes = String(minutes).padStart(2, '0');
+    //     const formattedSeconds = String(seconds).padStart(2, '0');
 
-        return `${formattedMinutes}:${formattedSeconds}`;
-    };
+    //     return `${formattedMinutes}:${formattedSeconds}`;
+    // };
 
     useEffect(() => {
         // console.log(`Machine session updated for client_id: ${client_id}`, machineSession.Machine && machineSession.Machine);
@@ -103,7 +104,7 @@ function ClienteLinhaTd({ nome, email, value, avatar_url, client_id, isPlaying }
 
                     <span>
                         <button onClick={handleShowConsumoClient} className="flex bg-[#3C4557] p-2 rounded-[5px] text-white md:w-auto w-[180px] gap-3">
-                            <span>consumo</span>
+                            <span>Loja</span>
                             <ShoppingCart />
                         </button>
                     </span>
@@ -114,37 +115,61 @@ function ClienteLinhaTd({ nome, email, value, avatar_url, client_id, isPlaying }
     }
 
     return (
-        <div className="bg-[#D9D9D9] md:h-[8vh] h-auto flex md:flex-row md:mt-0 mt-1 flex-col justify-around items-center p-1 rounded-md">
+        <div className="bg-[#D9D9D9] h-auto flex  md:mt-0 mt-1 justify-around items-center p-1 rounded-md w-full">
+
             <section className="flex w-[400px] justify-start items-center gap-3 text-[14px]">
                 <img src={avatar_url} alt="" className="w-[62px] h-[62px] rounded-full object-cover" />
                 <span className="text-zinc-700 font-bold">{nome}</span>
-                <span className="text-[#54678d]">{email}</span>
+                <span className="text-[#54678d] lg:flex hidden">{email}</span>
             </section>
 
-            <section className="flex w-[360px] justify-between items-center text-[14px]">
+            <section className="flex w-auto justify-between items-center text-[14px] gap-1">
                 <span>
-                    <button onClick={handleShowConnectClient} className="bg-[#31B255] p-2 rounded-[5px] text-white md:w-auto w-[180px]">
-                        conectar
+                    <button onClick={handleShowConnectClient} className="bg-[#31B255] p-2 rounded-[5px] 
+                    text-white  flex justify-center items-center gap-2">
+                        <Gamepad />
+                        <span className="lg:flex hidden">conectar</span>
                     </button>
                 </span>
                 <span>
-                    <button onClick={handleShowConsumoClient} className="bg-[#3C4557] p-2 rounded-[5px] text-white md:w-auto w-[180px]">
-                        consumo
+                    <button onClick={handleShowConsumoClient}
+                        className="flex bg-[#3C4557] p-2 rounded-[5px] text-white 
+                     justify-center items-center gap-2">
+                        <Storefront />
+                        <span className="lg:flex hidden">
+                            Loja
+                        </span>
                     </button>
                 </span>
                 <span>
-                    <button onClick={handleShowAddSaldo} className="bg-[#3C4557] p-2 rounded-[5px] text-white md:w-auto w-[180px]">
-                        add saldo
+                    <button onClick={handleShowAddSaldo}
+                        className="bg-[#3C4557] p-2 rounded-[5px] text-white  
+                        flex justify-center items-center gap-2">
+                        <LocalAtm />
+                        <span className="lg:flex hidden">
+                            Financeiro
+                        </span>
                     </button>
                 </span>
                 <span>
-                    <button className="bg-[#3C4557] p-2 rounded-[5px] text-white md:w-auto w-[180px]">
-                        detalhes
+                    <button className="bg-[#3C4557] p-2 rounded-[5px] text-white  
+                    flex justify-center items-center gap-2">
+                        <ContactPage />
+                        <span className="lg:flex hidden">
+                            detalhes
+                        </span>
                     </button>
                 </span>
+                <span className="flex font-bold min-w-[100px] h-[40px] text-[#343434] justify-center items-center
+            text-[14px] text-center bg-[#3c455712] rounded-md">R$ {value.toFixed(2)}</span>
+
+                <div className="flex gap-3 font-bold">
+                    <Timelapse />
+                    <span>{horas.toFixed(1)} h</span>
+                </div>
+
             </section>
 
-            <span className="flex font-bold w-[100px] text-[14px]">R$ {value.toFixed(2)}</span>
         </div>
     );
 }

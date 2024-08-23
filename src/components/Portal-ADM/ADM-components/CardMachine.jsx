@@ -1,3 +1,4 @@
+/* eslint-disable no-unreachable */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios"
@@ -84,26 +85,47 @@ function CardMachine({ machine, index }) {
         return formattedTime;
     };
 
+
     const handleStopMachine = async () => {
         const arenaAdmSession = JSON.parse(localStorage.getItem("arena-adm-login"))
-        const allSessions = machine.sessions
         setIsLoading(true)
-        await axios.post(`${import.meta.env.VITE_APP_API_URL}/machines/stop-machine`, {
-            client_id: allSessions[allSessions.length - 1].client_id,
-            machine_id: machine.id
-        }, {
-            headers: {
-                'Authorization': `Bearer ${arenaAdmSession.token}`
-            }
-        }).then(response => {
-            console.log("Stopping machine -> ", response.data)
-            dispatch(machineRunning(response.data))
-            setIsLoading(false)
-            setElapsedTime(0)
-        }).catch(error => {
+
+        let allSessions = []
+
+        try {
+
+            await axios.get(`${import.meta.env.VITE_APP_API_URL}/machines/find-machine`, {
+                params: {
+                    machine_id: machine.id
+                },
+                headers: {
+                    'Authorization': `Bearer ${arenaAdmSession.token}`
+                }
+            }).then(response => {
+                console.log("Machine found -> ", response.data)
+                allSessions = response.data.sessions
+            })
+
+            await axios.post(`${import.meta.env.VITE_APP_API_URL}/machines/stop-machine`, {
+                client_id: allSessions[allSessions.length - 1].client_id,
+                machine_id: machine.id,
+                elapsed_time: elapsedTime
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${arenaAdmSession.token}`
+                }
+            }).then(response => {
+                console.log("machine stopped -> ", response.data)
+                dispatch(machineRunning(response.data))
+                setIsLoading(false)
+                setElapsedTime(0)
+            })
+
+        } catch (error) {
             setIsLoading(false)
             console.log("Error at stop machine -> ", error.message)
-        })
+        }
+
     }
 
     return (
