@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { LocationOn } from '@mui/icons-material'; // Importando o ícone genérico de localização
 
 function CardLocal({ name, address, admId, Machines }) {
     const [currentAdm, setCurrentAdm] = useState({})
@@ -37,7 +38,11 @@ function CardLocal({ name, address, admId, Machines }) {
 
             <h2 className="font-bold text-[18px]">{name && name.toUpperCase()}</h2>
             <span>{Machines && Machines.length}</span>
-            <img src={currentAdm.avatar_url && currentAdm.avatar_url} alt="avatar" className="w-[70px] h-[70px] border-[3px] border-white rounded-full object-cover" />
+            {currentAdm.avatar_url ? (
+                <img src={currentAdm.avatar_url} alt="avatar" className="w-[70px] h-[70px] border-[3px] border-white rounded-full object-cover" />
+            ) : (
+                <LocationOn className="text-white" style={{ fontSize: 70 }} />
+            )}
             <span className="text-[10pt]">{address}</span>
 
         </div>

@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 import "./ArenaJafHome.css"
 import bgcod from "../medias/backgrounds/codmw2.png"
 import bgelden from "../medias/backgrounds/elden-ring-godfrey.png"
@@ -6,6 +7,15 @@ import logoStandard from "../medias/logos/Logo_Completa.png"
 import logoGold from "../medias/logos/Logo_Completa_GOLD.png"
 
 function ArenaJafHome() {
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const admSession = JSON.parse(localStorage.getItem("arena-adm-login"));
+        if (admSession) {
+            navigate("/adm-machines");
+        }
+    }, [navigate]);
+
     return (
         <div className="w-full h-[100vh] overflow-hidden bg-[#24242433] flex justify-center items-center">
 

@@ -1,47 +1,22 @@
 import React, { useState } from "react";
-import axios from "axios"
-import { DeleteForever } from "@mui/icons-material"
+import { DeleteForever } from "@mui/icons-material";
+import SureProductDelete from "./SureProductDelete"; // Import SureProductDelete
 
 function CardProdutos({ name, url_img, available, value, id, reload }) {
     const [isDeleting, setIsDeleting] = useState(false);
-    const getAdmSession = JSON.parse(localStorage.getItem("arena-adm-login"))
-    const authorizationConfig = {
-        headers: {
-            'Authorization': `Bearer ${getAdmSession.token}`
+    const [showDeleteModal, setShowDeleteModal] = useState(false); // Add state for showing delete modal
+
+    const handleDeleteCurrentProduct = () => {
+        setShowDeleteModal(true); // Show delete modal
+        const currentWindow = document.querySelector(".windows-del-warning");
+        if (currentWindow) {
+            currentWindow.style.display = "flex";
         }
     };
 
-
-    const handleDeleteCurrentProduct = async () => {
-        console.log('observando product _>', id);
-        setIsDeleting(true)
-
-        try {
-
-            await axios.delete(`${import.meta.env.VITE_APP_API_URL}/product/delete-product?product_id=${id}`, authorizationConfig)
-                .then(async () => {
-                    await axios.delete(`${import.meta.env.VITE_APP_API_URL}/product/delete-product-cover-img?url_image=${url_img}`)
-                    setIsDeleting(false)
-                    reload()
-                })
-
-        } catch (error) {
-
-            console.log('erro ao tentar excluir produto _>', error.message);
-            setIsDeleting(false)
-
-        }
-    }
-
-    if (isDeleting) {
-        return (
-            <div className="w-[268px] h-[310px] bg-[#3C4557] 
-            rounded-[10px] flex flex-col shadow-lg shadow-[#0808083e]
-            justify-around items-center text-white relative">
-                <span>excluindo...</span>
-            </div>
-        )
-    }
+    const closeDeleteModal = () => {
+        setShowDeleteModal(false); // Close delete modal
+    };
 
     return (
         <div draggable className="w-[268px] h-[310px] bg-[#3C4557] 
@@ -57,8 +32,19 @@ function CardProdutos({ name, url_img, available, value, id, reload }) {
                     <DeleteForever />
                 </button>
             </span>
+
+            {showDeleteModal && (
+                <SureProductDelete
+                    setIsLoading={setIsDeleting}
+                    isLoading={isDeleting}
+                    productId={id}
+                    productName={name} // Passar o nome do produto
+                    productUrl={url_img}
+                    reload={reload}
+                />
+            )}
         </div>
-    )
+    );
 }
 
 export default CardProdutos;

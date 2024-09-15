@@ -1,50 +1,55 @@
 import React from "react";
-
+import AssideGamer from './GAMER-components/AssideGamer';
+import backgroundPortal from "../../medias/backgrounds/elden-ring-godfrey.png"
 
 function PortalGamerFinanceiro() {
     return (
-        <div className="bg-zinc-200 w-full h-[100vh] flex flex-col justify-start items-center">
-            <nav style={{
-                border: '1px solid #C089FF',
-                background: 'linear-gradient(90deg, #6E01E9 0%, #045B8C 29.55%, #7A2DD1 69.70%, #AD64FF 100%)',
-                boxShadow: '0px 4px 4px 0px rgba(0, 0, 0, 0.25)',
-            }} className="w-full h-[97px]"></nav>
+        <div id='portal-gamer-financeiro' className="bg-gradient-to-br from-purple-900 p-2 gap-2
+        via-indigo-900 to-blue-900 w-full h-[100vh] flex relative border-[10px] border-[#7300F4]">
+            <img src={backgroundPortal} alt="backgroundPortal"
+                className='absolute top-0 left-0 w-full h-full object-cover opacity-30 blur-[4px]' />
 
-            <section style={{ fontFamily: 'Goldman' }} className="flex justify-between items-center gap-3 w-full p-4">
-                <h2 className="sm:text-[30px] text-[18px] text-left text-zinc-600">PAINEL FINANCEIRO</h2>
-                <button>voltar</button>
+            <AssideGamer />
+
+            <section className='flex flex-col sm:w-[70%] w-full h-full 
+          justify-start items-center relative bg-black/30
+          rounded-[10px] backdrop-blur-lg gap-4 overflow-y-auto p-6'>
+
+                {/* Header */}
+                <div className='w-full flex justify-between items-center mb-6'>
+                    <h2 className="text-3xl font-bold text-white">Portal Financeiro</h2>
+                    <button className="px-5 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition">
+                        Adicionar Horas
+                    </button>
+                </div>
+
+                {/* Recent Transactions */}
+                <div className='w-full bg-white/10 text-white rounded-lg p-6 backdrop-filter backdrop-blur-md'>
+                    <h3 className="text-2xl mb-4">Transações Recentes</h3>
+                    <table className="w-full text-left">
+                        <thead>
+                            <tr>
+                                <th className="py-2">Data</th>
+                                <th className="py-2">Pagamento</th>
+                                <th className="py-2">Status</th>
+                                <th className="py-2">Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr className="bg-white/20">
+                                <td className="py-2">17 de junho de 2023</td>
+                                <td className="py-2">Pix</td>
+                                <td className="py-2 text-green-400">Concluído</td>
+                                <td className="py-2">R$ 30,00</td>
+                            </tr>
+                            {/* Adicione mais linhas conforme necessário */}
+                        </tbody>
+                    </table>
+                </div>
+
             </section>
-
-            <section
-                className="flex sm:justify-between justify-center items-center gap-3 w-full p-4">
-                <div className="w-[441px] h-[138px] bg-zinc-100 rounded-[10px] shadow-black/40 shadow-md sm:flex hidden"></div>
-                <div className="w-[441px] h-[138px] bg-zinc-100 rounded-[10px] shadow-black/40 shadow-md sm:flex hidden"></div>
-                <div className="sm:w-[441px] w-[98%] h-[138px] bg-[#984EEC] rounded-[10px] shadow-black/40 shadow-md"></div>
-            </section>
-
-            <div className="w-full h-[60px] p-3 text-[24px]"><h2>COMPRAS RECENTES</h2></div>
-            <hr className="w-full boder-b-[1px] border-zinc-400" />
-
-            <table className="w-[98%]">
-
-                <tr className="w-full text-zinc-500">
-                    <th>data</th>
-                    <th>pagamento</th>
-                    <th>status</th>
-                    <th>valor</th>
-                </tr>
-
-                <tr className="text-center bg-white text-zinc-500 h-[98px] shadow-black/30 shadow-md ">
-                    <td>17 de junho de 2023</td>
-                    <td>pix</td>
-                    <td className="text-[#009D48]">concluído</td>
-                    <td>R$ 30,00</td>
-                </tr>
-
-            </table>
         </div>
     )
 }
 
-
-export default PortalGamerFinanceiro
+export default PortalGamerFinanceiro;

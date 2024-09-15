@@ -4,7 +4,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { selectedClient } from "../../redux/client/ClientSlice";
 import { useNavigate } from "react-router-dom";
-import { ShoppingCart, Timelapse, Storefront, LocalAtm, Gamepad, ContactPage } from "@mui/icons-material"
+import { ShoppingCart, Timelapse, Storefront, Gamepad, ContactPage, AccessTime } from "@mui/icons-material";
 
 function ClienteLinhaTd({ nome, email, value, avatar_url, client_id, isPlaying, horas }) {
     const stateMachineRunning = useSelector(state => state.machine);
@@ -14,7 +14,7 @@ function ClienteLinhaTd({ nome, email, value, avatar_url, client_id, isPlaying, 
 
     useEffect(() => {
         getMachineSessionByClient();
-        console.log("horas do cliente -> ", horas)
+        console.log("horas do cliente -> ", horas);
     }, [client_id, stateMachineRunning]);
 
     const getMachineSessionByClient = () => {
@@ -55,7 +55,6 @@ function ClienteLinhaTd({ nome, email, value, avatar_url, client_id, isPlaying, 
             value: value,
             avatar_url: avatar_url
         }));
-
     };
 
     const handleShowAddSaldo = () => {
@@ -70,19 +69,18 @@ function ClienteLinhaTd({ nome, email, value, avatar_url, client_id, isPlaying, 
         }));
     };
 
-    // const formatTimer = (time) => {
-    //     const minutes = parseInt(Math.floor(time / 60));
-    //     const seconds = parseInt(time % 60);
-
-    //     const formattedMinutes = String(minutes).padStart(2, '0');
-    //     const formattedSeconds = String(seconds).padStart(2, '0');
-
-    //     return `${formattedMinutes}:${formattedSeconds}`;
-    // };
-
     useEffect(() => {
         // console.log(`Machine session updated for client_id: ${client_id}`, machineSession.Machine && machineSession.Machine);
     }, [machineSession]);
+
+    function formatarHoras(horas) {
+        if (!horas) return '0h 0min';
+
+        const horasInteiras = Math.floor(horas); // Parte inteira das horas
+        const minutos = Math.round((horas - horasInteiras) * 60); // Converte a parte decimal para minutos
+
+        return `${horasInteiras}h ${minutos}min`;
+    }
 
     if (isPlaying) {
         return (
@@ -108,6 +106,16 @@ function ClienteLinhaTd({ nome, email, value, avatar_url, client_id, isPlaying, 
                             <ShoppingCart />
                         </button>
                     </span>
+                    <span>
+                        <button onClick={handleShowAddSaldo}
+                            className="bg-[#3C4557] p-2 rounded-[5px] text-white  
+                        flex justify-center items-center gap-2">
+                            <AccessTime />
+                            <span className="lg:flex hidden">
+                                Adicionar Horas
+                            </span>
+                        </button>
+                    </span>
 
                 </div>
             </div>
@@ -123,7 +131,7 @@ function ClienteLinhaTd({ nome, email, value, avatar_url, client_id, isPlaying, 
                 <span className="text-[#54678d] lg:flex hidden">{email}</span>
             </section>
 
-            <section className="flex w-auto justify-between items-center text-[14px] gap-1">
+            <section className="flex w-[90%] justify-between items-center text-[14px] gap-1">
                 <span>
                     <button onClick={handleShowConnectClient} className="bg-[#31B255] p-2 rounded-[5px] 
                     text-white  flex justify-center items-center gap-2">
@@ -145,9 +153,9 @@ function ClienteLinhaTd({ nome, email, value, avatar_url, client_id, isPlaying, 
                     <button onClick={handleShowAddSaldo}
                         className="bg-[#3C4557] p-2 rounded-[5px] text-white  
                         flex justify-center items-center gap-2">
-                        <LocalAtm />
+                        <AccessTime />
                         <span className="lg:flex hidden">
-                            Financeiro
+                            Adicionar Horas
                         </span>
                     </button>
                 </span>
@@ -160,12 +168,10 @@ function ClienteLinhaTd({ nome, email, value, avatar_url, client_id, isPlaying, 
                         </span>
                     </button>
                 </span>
-                <span className="flex font-bold min-w-[100px] h-[40px] text-[#343434] justify-center items-center
-            text-[14px] text-center bg-[#3c455712] rounded-md">R$ {value.toFixed(2)}</span>
 
                 <div className="flex gap-3 font-bold">
                     <Timelapse />
-                    <span>{horas.toFixed(1)} h</span>
+                    <span>{horas && formatarHoras(horas)}</span>
                 </div>
 
             </section>

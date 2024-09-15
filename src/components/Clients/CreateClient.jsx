@@ -16,6 +16,7 @@ function CreateClient() {
     const [isCreating, setIsCreating] = useState(false)
 
     const refSpanMessage = useRef()
+    const refSpanCreation = useRef()
 
 
     const onDrop = useCallback((acceptedFiles) => {
@@ -46,21 +47,45 @@ function CreateClient() {
 
     const handleCreateClient = async () => {
         const getAdmSession = JSON.parse(localStorage.getItem("arena-adm-login"))
-        setIsCreating(true)
+
         //validate fields and password
+        if (!clientName || !clientEmail || !clientCpf || !senha || !confirmSenha || !address || !phone) {
+            refSpanCreation.current.style.display = "block"
+            refSpanCreation.current.innerHTML = "necessário preencher todos os campos"
+            setTimeout(() => {
+                refSpanCreation.current.style.display = "none"
+            }, 3000);
+            return null
+        }
 
         if (senha !== confirmSenha) {
-            refSpanMessage.current.innerHTML = "As senhas não coincidem"
+            refSpanCreation.current.style.display = "block"
+            refSpanCreation.current.innerHTML = "As senhas não coincidem"
+            setTimeout(() => {
+                refSpanCreation.current.style.display = "none"
+            }, 3000);
             return null
         }
-        // if (senha.length < 8) {
-        //     refSpanMessage.current.innerHTML = "A senha deve conter no mínimo 8 caracteres"
-        //     return null
-        // }
-        if (!clientName || !clientEmail || !clientCpf || !senha || !confirmSenha) {
-            refSpanMessage.current.innerHTML = "necessário preencher todos os campos"
+
+        if (senha.length < 6) {
+            refSpanCreation.current.style.display = "block"
+            refSpanCreation.current.innerHTML = "A senha deve conter no mínimo 6 caracteres"
+            setTimeout(() => {
+                refSpanCreation.current.style.display = "none"
+            }, 3000);
             return null
         }
+
+        if (files.length === 0) {
+            refSpanCreation.current.style.display = "block"
+            refSpanCreation.current.innerHTML = "Adicione uma foto pro usuário"
+            setTimeout(() => {
+                refSpanCreation.current.style.display = "none"
+            }, 3000);
+            return null
+        }
+
+        setIsCreating(true)
 
         getAdmInfoByEmail(getAdmSession.email).then(async res => {
             const config = {
@@ -124,6 +149,9 @@ function CreateClient() {
         bg-gradient-to-r from-[#3C4557] to-[#192234]  text-white rounded-md 
         justify-center items-center gap-6 relative
         shadow-lg shadow-[#0f0f0f4d] overflow-y-auto">
+            <span ref={refSpanCreation} className="absolute hidden bg-[#f49c0e] top-1 w-[300px] text-center p-3 z-[99] rounded-[3px]">
+                span de criação
+            </span>
 
             <span onClick={handleCloseCurrentWindow} className="absolute top-1 right-1 text-zinc-100 cursor-pointer">
                 <Close />

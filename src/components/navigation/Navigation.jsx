@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import ComputerIcon from "../../medias/icons/iMac.png"
 import { useNavigate } from "react-router-dom"
+import { AccountCircle } from '@mui/icons-material'; // Importando o ícone genérico de usuário
 
 function NavigationAdm({title }) {
     const [currentAdm, setCurrentAdm] = useState({})
@@ -104,7 +105,11 @@ function NavigationAdm({title }) {
             </span>
 
             <div onClick={showSubMenu} className="flex justify-center items-center gap-3 cursor-pointer">
-                <img src={currentAdm.avatar_url} alt="avatar" className="rounded-full bg-slate-200 w-[46px] h-[46px] object-cover" />
+                {currentAdm.avatar_url ? (
+                    <img src={currentAdm.avatar_url} alt="avatar" className="rounded-full bg-slate-200 w-[46px] h-[46px] object-cover" />
+                ) : (
+                    <AccountCircle className="text-white" style={{ fontSize: 46 }} />
+                )}
                 <span className="sm:block hidden">{currentAdm.nome}</span>
             </div>
 

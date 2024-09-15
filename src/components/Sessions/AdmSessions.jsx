@@ -14,6 +14,14 @@ import { useSelector } from "react-redux"
 import { updateError } from '../../redux/access/ErrorSlice';
 import { updateAdmin } from '../../redux/admin/AdminSlice';
 
+const MACHINE_TYPE = {
+    PC: 'PC',
+    XBOX: 'XBOX',
+    PS5: 'PS5',
+    VR: 'VR',
+    FLIPERAMA: 'FLIPERAMA',
+    SIMULATOR: 'SIMULATOR'
+};
 
 function AdmSessions() {
     const navigate = useNavigate();
@@ -64,6 +72,7 @@ function AdmSessions() {
                     'Authorization': `Bearer ${getAdmSession.token}`
                 }
             }).then(response => {
+                console.log(response.data)
                 setImportantsSessions(response.data)
             })
 
@@ -90,31 +99,50 @@ function AdmSessions() {
 
             <section className="flex flex-col lg:w-[70%] w-[98%] lg:h-[80%] h-[88%] backdrop-blur-[12px]
             lg:mt-[6vh] mt-[10vh] lg:right-[3vh] right-auto absolute overflow-y-auto gap-1 text-white">
-                {
-                    importantsSessions.map(session =>
-                        <div key={session.id} className="flex justify-between items-center p-3 
-                            border-[1px] border-[#e6a429] border-opacity-[0.5] rounded-md">
 
-                            <div className="flex gap-2 justify-start items-center">
-                                <img src={session.Client.avatar_url} alt=""
-                                    className="w-[33px] object-cover rounded-full" />
-                                <span>{session.Client.nome}</span>
-                            </div>
-
-                            <div className="flex w-[160px] gap-3 justify-between items-center">
-                                <span>
-                                    {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(session.value)}
-                                </span>
-                                <span>
-                                    {`${Math.floor(session.duration / 60)}h ${session.duration % 60}m`}
-                                </span>
-                            </div>
-
-
-                            <span>{dayjs(session.created_at).format("DD/MM/YYYY HH:mm")}</span>
-                        </div>
-                    )
-                }
+                <table className="min-w-full bg-zinc-800 rounded-lg overflow-hidden">
+                    <thead className=" text-white">
+                        <tr>
+                            <th className="w-1/5 py-2">Cliente</th>
+                            <th className="w-1/5 py-2">Início da Sessão</th>
+                            <th className="w-1/5 py-2">Fim da Sessão</th>
+                            <th className="w-1/5 py-2">Total da Sessão</th>
+                            <th className="w-1/5 py-2">Local</th>
+                            <th className="w-1/5 py-2">Máquina</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            importantsSessions.map(session => {
+                                const duration = dayjs(session.timer_ended_at).diff(dayjs(session.timer_started_at), 'minute');
+                                return (
+                                    <tr key={session.id} className="bg-gray-100 border-b border-gray-200">
+                                        <td className="py-2 px-4 flex items-center gap-2 text-gray-800">
+                                            <img src={session.Client.avatar_url} alt=""
+                                                className="w-[33px] h-[33px] object-cover rounded-full" />
+                                            <span>{session.Client.nome}</span>
+                                        </td>
+                                        <td className="py-2 px-4 text-gray-800">
+                                            {dayjs(session.timer_started_at).format("DD/MM/YYYY HH:mm")}
+                                        </td>
+                                        <td className="py-2 px-4 text-gray-800">
+                                            {dayjs(session.timer_ended_at).format("DD/MM/YYYY HH:mm")}
+                                        </td>
+                                        <td className="py-2 px-4 text-gray-800">
+                                            {`${Math.floor(duration / 60)}h ${duration % 60}m`}
+                                        </td>
+                                        <td className="py-2 px-4 text-gray-800">
+                                            {session.location && session.location.nome}
+                                        </td>
+                                        <td className="py-2 px-4 text-gray-800 font-bold">
+                                            {`${session.Machine.nano_id} (${MACHINE_TYPE[session.Machine.type]})`}
+                                        </td>
+                                    </tr>
+                                );
+                            })
+                        }
+                    </tbody>
+                </table>
             </section>
 
         </div>

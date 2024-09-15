@@ -1,16 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import axios from "axios"
+import axios from "axios";
 import { ArrowBack, Close, Add, Remove } from "@mui/icons-material";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 function ModClientConsumoCheckout({ setIsShowingCheckout, itemsCard, setItemsCard }) {
-    const [currentClient, setCurrentClient] = useState({})
-    const clientState = useSelector(state => state.client)
-    const navigate = useNavigate()
+    const [currentClient, setCurrentClient] = useState({});
+    const [method, setMethod] = useState("");
+    const clientState = useSelector(state => state.client);
+    const navigate = useNavigate();
 
-    useEffect(() => { setCurrentClient(clientState) }, clientState)
+    useEffect(() => { setCurrentClient(clientState); }, [clientState]);
 
     const removeItem = (product) => {
         const updatedItemsCard = itemsCard.map(item => {
@@ -32,46 +33,37 @@ function ModClientConsumoCheckout({ setIsShowingCheckout, itemsCard, setItemsCar
         setItemsCard(updatedItemsCard);
     };
 
-    // product_id: string
-    // client_id: string
-    // quantity: number
-    // value: number
-
     const handleConfirm = async () => {
-        const localSession = JSON.parse(localStorage.getItem('arena-adm-login'))
-        console.log("items do carrinho... ", itemsCard[0])
+        const localSession = JSON.parse(localStorage.getItem('arena-adm-login'));
+        console.log("items do carrinho... ", itemsCard[0]);
 
-        if (itemsCard.length > 0) {
-
+        if (itemsCard.length > 0 && method) {
             itemsCard.forEach(async item => {
-
                 try {
-
                     await axios.post(`${import.meta.env.VITE_APP_API_URL}/product/buy-product`, {
                         product_id: item.product.id,
                         client_id: currentClient.client_id,
                         quantity: item.quant,
-                        value: item.product.value * item.quant
+                        value: item.product.value * item.quant,
+                        method: method
                     }, {
                         headers: {
                             'Authorization': `Bearer ${localSession.token}`
                         }
                     }).then(response => {
-                        console.log("resposta, compra -> ", response.data)
-                    })
-
+                        console.log("resposta, compra -> ", response.data);
+                    });
                 } catch (error) {
-                    console.log("error -> ", error.message)
+                    console.log("error -> ", error.message);
                 }
+            });
 
-            })
-
-            navigate("/adm-clientes")
-            handleCloseCurrentWindow()
-            clearCart()
-
+            clearCart();
+            handleCloseCurrentWindow();
+            navigate("/adm-clientes");
+        } else {
+            alert("Selecione um método de pagamento");
         }
-
     };
 
     const refCheckout = useRef();
@@ -132,6 +124,11 @@ function ModClientConsumoCheckout({ setIsShowingCheckout, itemsCard, setItemsCar
                 ))}
             </section>
             <section className="flex flex-col w-[99%] h-[16%] bg-[#0c101a] rounded-md p-1 gap-1 overflow-y-auto">
+                <select onChange={(e) => setMethod(e.target.value)} className="p-2 border-[1px] bg-transparent rounded-md w-full">
+                    <option value="">Selecione o método de pagamento</option>
+                    <option value="CREDITO">Cartão de Crédito</option>
+                    <option value="PIX">PIX</option>
+                </select>
                 <button onClick={handleConfirm} className="w-full h-[50%] bg-[#247e18] rounded-md">Confirmar venda</button>
                 <button onClick={clearCart} className="w-full h-[50%] bg-[#c63129] rounded-md">Limpar carrinho</button>
             </section>

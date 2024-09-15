@@ -17,7 +17,9 @@ import PortalAdmLocais from './components/Location/PortalAdmLocais'
 import PortalGamerDashboard from './components/Portal-GAMER/PortalGamerDashboard'
 import PortalGamerFinanceiro from './components/Portal-GAMER/PortalGamerFinanceiro'
 import PortalAdmLogin from "./components/Portal-ADM/PortalAdmLogin"
-import GamerRegister from './components/Portal-GAMER/Register/GamerRegister'
+import GamerRegister from './components/Portal-GAMER/Register/GamerRegister';
+import GamerProfile from './components/Portal-GAMER/Profile/GamerProfile';
+import GamerShop from './components/Portal-GAMER/GamerShop';
 
 function App() {
 
@@ -47,7 +49,8 @@ function App() {
             <Route element={<PortalGamerFinanceiro />} path="/gamer-financeiro" />
             <Route element={<PortalGamerLogin />} path="/gamer-login" />
             <Route element={<GamerRegister />} path="/gamer-register" />
-
+            <Route element={<GamerProfile />} path="/profile" />
+            <Route element={<GamerShop />} path="/shop" /> {/* Nova rota para a loja */}
           </Routes>
         </Suspense>
       </BrowserRouter>
