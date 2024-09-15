@@ -2,12 +2,12 @@ import { createSlice } from "@reduxjs/toolkit"
 
 
 const initialState = {
-    client_id: "empty"
+    client_id: "empty",
 }
 
 
 const clientSlice = createSlice({
-    name: "admin",
+    name: "client",
     initialState,
     reducers: {
         selectedClient: (state, action) => {

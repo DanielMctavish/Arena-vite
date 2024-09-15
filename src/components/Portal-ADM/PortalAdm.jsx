@@ -43,9 +43,7 @@ function PortalAdm() {
   const stateMachine = useSelector(state => state.machine)
 
   useEffect(() => {
-
     getLocationList()
-
   }, [isLoading]);
 
   useEffect(() => {
@@ -59,7 +57,6 @@ function PortalAdm() {
     setCurrentSession(getAdmSession)
   }, [stateMachine])
 
-
   useEffect(() => {
     if (stateError === 500 || stateError === 401) {
       localStorage.removeItem('arena-adm-login')
@@ -69,12 +66,7 @@ function PortalAdm() {
     getAdmInfoByEmail(currentSession.email, dispatch, updateError, updateAdmin)
   }, [currentSession, stateError])
 
-
-
-  //-----------------------------------------------------------------------------------------------
-
   const getLocationList = async () => {
-
     try {
       const currentSession = JSON.parse(localStorage.getItem('arena-adm-login'));
 
@@ -84,21 +76,19 @@ function PortalAdm() {
         }
       }).then((response) => {
         console.log("locationList -> ", response.data.ArenaLocal)
-        setLocationList(response.data.ArenaLocal)
+        // Ordenar as máquinas por posição em cada local
+        const sortedLocations = response.data.ArenaLocal.map(location => ({
+          ...location,
+          Machines: location.Machines.sort((a, b) => a.position - b.position)
+        }));
+        setLocationList(sortedLocations)
       })
-
-      // await axios.get(`${import.meta.env.VITE_APP_API_URL}/adm/all-machines?adm_id=${}`)
-      //   .then(response => {
-      //     console.log("all machines -> ", response.data)
-      //     setCardsMachines(response.data)
-      //   })
 
     } catch (error) {
       localStorage.removeItem("arena-adm-login")
       navigate("/adm-login")
       console.log(error.message)
     }
-
   }
 
   return (
@@ -118,10 +108,10 @@ function PortalAdm() {
       <section ref={refCreateSession}
         className='w-[60%] h-[80%] hidden flex-col gap-3 
       justify-center items-center absolute 
-      bg-white z-[99] rounded-md 
+      bg-[#1c2833] text-white z-[99] rounded-md 
       mod-create-machine
       shadow-lg shadow-[#141414a9]'>
-        <span className="absolute top-2 right-2 cursor-pointer"
+        <span className="absolute top-2 right-2 cursor-pointer text-white"
           onClick={() => refCreateSession.current.style.display = "none"}>
           <Close />
         </span>
@@ -185,10 +175,10 @@ function PortalAdm() {
 
       <section className='absolute flex flex-col
       justify-start items-start 
-      gap-3 lg:w-[70%] w-[94%] 
+      gap-1 lg:w-[70%] w-[94%] 
       lg:max-h-[78vh] max-h-[82vh] 
       lg:right-[3vh] right-auto top-[16vh] 
-      p-3 overflow-y-auto scrollbar 
+      p-1 overflow-y-auto scrollbar 
       scrollbar-thumb-[#18212f] scrollbar-track-gray-100'>
 
         {
@@ -197,13 +187,11 @@ function PortalAdm() {
             <section key={local.id} className="flex flex-col w-full  text-white relative">
               <span className="text-[22px]">{local.nome}</span>
 
-              <div className="flex flex-wrap gap-3 p-3 w-full max-h-[30vh]
+              <div className="flex flex-wrap gap-2 p-3 w-full max-h-[60vh]
               overflow-y-auto overflow-x-hidden rounded-[12px]
               justify-start items-start bg-[#5e30ba1c] backdrop-blur-[6px] relative">
                 {local.Machines && local.Machines.map((machine, i) => (
-                  <div key={i}>
-                    <CardMachine machine={machine} index={i} />
-                  </div>
+                  <CardMachine key={machine.id} machine={machine} index={i} />
                 ))}
               </div>
 

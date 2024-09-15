@@ -15,6 +15,7 @@ import { machineToDelete, machineRunning } from "../../../redux/machines/Machine
 import connectWebSocketClient from "../../SocketCOM/connectWebSocket";
 
 function CardMachine({ machine, index }) {
+    const [currentClient, setCurrentClient] = useState({})
     const [isLoading, setIsLoading] = useState(false)
     const [elapsedTime, setElapsedTime] = useState(0);
     const [playColor, setPlayColor] = useState('#3C4557')
@@ -24,6 +25,10 @@ function CardMachine({ machine, index }) {
     const dispatch = useDispatch()
 
     const socketClient = new connectWebSocketClient()
+
+    useEffect(() => {
+        getCurrentClient()
+    }, [])
 
     useEffect(() => {
         const socket = socketClient.getSocketInstance();
@@ -38,7 +43,9 @@ function CardMachine({ machine, index }) {
             socket.off(`${machine.id}-running`); // Desativa o listener do evento
 
             if (machine.status === "RUNNING") {
+
                 const currentCard = refCard.current;
+
                 if (currentCard) {
                     currentCard.style.border = "3px solid #00cccc";
                     currentCard.style.filter = "brightness(160%)"; // Aumenta o brilho
@@ -65,7 +72,27 @@ function CardMachine({ machine, index }) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoading, elapsedTime]);
 
+    const getCurrentClient = async () => {
+        const currentSession = JSON.parse(localStorage.getItem("arena-adm-login"))
 
+        try {
+
+            await axios.get(`${import.meta.env.VITE_APP_API_URL}/client/find`, {
+                params: {
+                    client_id: machine.client_id
+                },
+                headers: {
+                    Authorization: `Bearer ${currentSession.token}`
+                }
+            }).then(response => {
+                setCurrentClient(response.data.body)
+            })
+
+        } catch (error) {
+            console.log(error.response)
+        }
+
+    }
 
     function openPanelWarning() {
         console.log("observando id -> ", machine.nano_id)
@@ -85,6 +112,18 @@ function CardMachine({ machine, index }) {
         return formattedTime;
     };
 
+    const getBackgroundColor = () => {
+        switch(machine.type) {
+            case 'PC':
+                return '#3C4557';  // Cor original
+            case 'XBOX':
+                return '#107C10';  // Verde do Xbox
+            case 'PS5':
+                return '#2E6DB4';  // Azul do PlayStation
+            default:
+                return '#3C4557';
+        }
+    }
 
     const handleStopMachine = async () => {
         const arenaAdmSession = JSON.parse(localStorage.getItem("arena-adm-login"))
@@ -131,10 +170,13 @@ function CardMachine({ machine, index }) {
     return (
         <div
             ref={refCard}
-            style={{ background: playColor }}
+            style={{ 
+                background: machine.status === "RUNNING" ? playColor : getBackgroundColor(),
+                // ... outros estilos existentes
+            }}
             className="
             shadow-lg shadow-[#141414af]
-            min-w-[160px] min-h-[233px] 
+            min-w-[82px] min-h-[193px] 
             border-[1px] 
             border-[#80c4cd]
             hover:border-[#40b340]
@@ -169,7 +211,7 @@ function CardMachine({ machine, index }) {
                     <img src={Xbox_logo} alt="" className="absolute h-[27%] object-cover" style={{ filter: 'invert(1)' }} />
                 }
                 <span className={`absolute font-bold text-[22px] 
-                    font-[Sansation] text-white ${machine.type === "PC" ? "top-[34px]" : "top-[3px] left-2"}`}>{index + 1}</span>
+                    font-[Sansation] text-white ${machine.type === "PC" ? "top-[1.2vh]" : "top-[3px] left-2"}`}>{machine.position}</span>
             </div>
 
             <span className="font-[18px] text-white">{machine.nano_id}</span>
@@ -199,6 +241,11 @@ function CardMachine({ machine, index }) {
 
             }
 
+            <span className="flex absolute top-1 right-1">
+                {currentClient.avatar_url &&
+                    <img src={currentClient.avatar_url} alt="" className="w-[30px] h-[30px] rounded-full object-cover" />
+                }
+            </span>
         </div>
     )
 }

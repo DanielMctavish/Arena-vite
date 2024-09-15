@@ -53,7 +53,6 @@ function PortalAdmLocais(props) {
                             admId={local.userAdmId}
                             Machines={local.Machines} />
                     ))
-
                 }
 
                 <div onClick={OpenPainelLocation} className="md:w-[238px] w-[90%] h-[240px] bg-[#3C3C3C] flex flex-col justify-around items-center text-white rounded-[10px] cursor-pointer">
