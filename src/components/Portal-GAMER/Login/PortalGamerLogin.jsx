@@ -6,13 +6,12 @@ import { useNavigate } from "react-router-dom";
 
 const PortalGamerLogin = () => {
     const [messageError, setMessageError] = useState('')
-
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
     const navigate = useNavigate()
 
-    const handleClientLogin = async () => {
-        const email = document.querySelector(".client-login-email").value
-        const password = document.querySelector(".client-login-password").value
-
+    const handleClientLogin = async (e) => {
+        e.preventDefault()
         if (!email || !password) {
             setMessageError('Preencha todos os campos')
             return
@@ -24,74 +23,78 @@ const PortalGamerLogin = () => {
                 senha: password
             })
 
-            console.log('resposta ao logar -> ', response.data)
             await localStorage.setItem('arena-client-login', JSON.stringify(response.data))
             navigate("/gamer-dashboard")
 
         } catch (error) {
-            console.log("erro ao tentar logar ", error)
-            if (error.response && error.response.status === 403) {
-                setMessageError('Senha ou usuário incorretos')
-            } else {
-                setMessageError('Erro ao fazer login. Tente novamente.')
-            }
+            console.error("Erro ao tentar logar:", error)
+            setMessageError(error.response?.status === 403 ? 'Senha ou usuário incorretos' : 'Erro ao fazer login. Tente novamente.')
         }
     }
 
     return (
-        <div className="flex flex-col justify-center items-center bg-white w-full h-[100vh] overflow-hidden text-white font-trispace p-[10px]">
-            {messageError && (
-                <span className="absolute w-full h-[40px] flex justify-center items-center top-0 bg-red-600 z-40">
-                    {messageError}
-                </span>
-            )}
-            <div className="absolute w-full h-full border-[10px] border-[#7100F3] z-30" />
-
-            <img
-                className="absolute w-full h-[100vh] object-cover"
-                alt=""
-                src={rdr2_cover_desktop}
-            />
-
-            <img
-                className="absolute top-[58px]  w-[478px] h-[310px] object-cover z-[1]"
-                alt=""
-                src={ArenaLogo}
-            />
-
-            <div className="
-            relative
-            w-[478px] 
-            h-[531px] 
-            bg-gradient-to-b 
-            from-[#7300F4] 
-            to-[#32006A] 
-            flex 
-            flex-col 
-            justify-center
-            gap-7
-            items-center 
-            rounded-[12px]">
-                <div className="font-extrabold  z-[999] absolute top-[8vh]">
-                    ENTRE NA SUA CONTA
+        <div className="flex flex-col md:flex-row min-h-screen bg-gray-900 text-white font-trispace">
+            <div className="md:flex-1 bg-cover bg-center h-48 md:h-auto relative" style={{ backgroundImage: `url(${rdr2_cover_desktop})` }}>
+                <div className="absolute inset-0 backdrop-blur-sm bg-black bg-opacity-60"></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <img src={ArenaLogo} alt="Arena JAF Logo" className="w-3/4 md:w-1/2 max-w-md object-contain" />
                 </div>
+            </div>
 
-                <section className="flex flex-col justify-center items-center gap-3 z-30 p-2">
-                    <input type="text" placeholder="seu email" 
-                    className="p-1 text-[#6600DD] rounded-[4px] text-center client-login-email z-[999]" />
-                    <input type="password" placeholder="sua senha" 
-                    className="p-1 text-[#6600DD] rounded-[4px] text-center client-login-password z-[999]" />
-                </section>
-
-                <button
-                    onClick={handleClientLogin}
-                    className="bg-[#7100F3] border-[1px] z-[999]
-                    border-[#902fff] p-1 w-[220px] rounded-[4px]">ENTRAR</button>
-                <div
-                    className="hover:cursor-pointer hover:font-bold z-[999]"
-                    onClick={() => { navigate('/gamer-register') }}>não tem uma conta? registre-se</div>
-                <div className="text-[12px]">
-                    esqueceu sua senha?
+            <div className="flex-1 flex flex-col justify-center items-center bg-gradient-to-br from-purple-900 to-indigo-900 p-4 md:p-8">
+                <div className="w-full max-w-md">
+                    <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">Login do Gamer</h2>
+                    {messageError && (
+                        <div className="bg-red-500 text-white p-3 rounded mb-4 text-center text-sm md:text-base">
+                            {messageError}
+                        </div>
+                    )}
+                    <form onSubmit={handleClientLogin} className="space-y-4">
+                        <div>
+                            <label htmlFor="email" className="block mb-1 text-sm md:text-base">Email</label>
+                            <input
+                                type="email"
+                                id="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="w-full p-2 rounded bg-gray-800 border border-gray-700 focus:border-purple-500 focus:outline-none text-sm md:text-base"
+                                placeholder="Seu email"
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="password" className="block mb-1 text-sm md:text-base">Senha</label>
+                            <input
+                                type="password"
+                                id="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="w-full p-2 rounded bg-gray-800 border border-gray-700 focus:border-purple-500 focus:outline-none text-sm md:text-base"
+                                placeholder="Sua senha"
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded transition duration-300 text-sm md:text-base"
+                        >
+                            Entrar
+                        </button>
+                    </form>
+                    <div className="mt-4 text-center text-sm md:text-base">
+                        <p className="mb-2">
+                            <span className="cursor-pointer hover:underline" onClick={() => navigate('/gamer-register')}>
+                                Não tem uma conta? Registre-se
+                            </span>
+                        </p>
+                        <p className="text-xs md:text-sm text-gray-400">Esqueceu sua senha?</p>
+                    </div>
+                    <div className="mt-8 text-center">
+                        <button
+                            onClick={() => navigate('/adm-login')}
+                            className="text-xs md:text-sm text-gray-400 hover:text-white transition duration-300"
+                        >
+                            Área do Administrador
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

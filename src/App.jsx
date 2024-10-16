@@ -33,6 +33,7 @@ function App() {
             <Route element={<Screen02 />} path="/screen02" exact />
 
             <Route element={<ArenaJafHome />} path="/" exact />
+
             <Route element={<RegisterAdm />} path="/register-master" exact />
             <Route element={<PortalAdmLogin />} path="/adm-login" exact />
             <Route element={<PortalAdm />} path="/adm-machines" />

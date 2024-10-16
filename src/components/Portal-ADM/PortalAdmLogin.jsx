@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import axios from "axios"
 import { useNavigate } from 'react-router-dom';
 import ArenaLogoGold from "../../medias/logos/Logo_Completa_GOLD.png";
+import BgAdm from '../../medias/bg-adm.png'; // Importando o background
 //import dayjs from "dayjs";
 
 function PortalAdmLogin() {
@@ -72,10 +73,22 @@ function PortalAdmLogin() {
 
     return (
         <div className="bg-[#2F2F2F] w-full h-[100vh] flex flex-col justify-center items-center border-[10px] border-[#e6a429] text-white relative">
-            <span ref={refSpanMessage} className="absolute top-6">apenas administradores e colaboradores podem acessar esta área</span>
-            <span className={tailwindConfig}></span>
+            {/* Adicionando o background com opacidade reduzida */}
+            <div 
+                className="absolute inset-0 bg-cover bg-center opacity-60"
+                style={{
+                    backgroundImage: `url(${BgAdm})`,
+                }}
+            ></div>
+            
+            {/* Adicionando um overlay escuro para melhorar a legibilidade */}
+            <div className="absolute inset-0 bg-black opacity-70"></div>
 
-            <section className="flex flex-col justify-between items-center h-[46vh] text-zinc-600">
+            {/* O conteúdo existente */}
+            <span ref={refSpanMessage} className="absolute top-6 z-10">apenas administradores e colaboradores podem acessar esta área</span>
+            <span className={`${tailwindConfig} z-10`}></span>
+
+            <section className="flex flex-col justify-between items-center h-[46vh] text-zinc-600 z-10">
                 <img onClick={handleNavigateRegisterMaster} src={ArenaLogoGold} alt="logo arena dourado" className="w-[286px] h-[191px]" />
 
                 <input ref={refEmail} type="text" placeholder="seu email" className="bg-[#FFFFFF] rounded-[4px] w-[200px] h-[36px] text-center" required />
