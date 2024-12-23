@@ -2,7 +2,7 @@ import React from "react";
 
 function SelectLocation({ localList, setLocalId }) {
     return (
-        <div className="absolute top-[12vh] sm:left-[29%] left-auto">
+        <div className="relative">
 
             <select name="" id=""
                 onChange={(e) => setLocalId(e.target.value)}

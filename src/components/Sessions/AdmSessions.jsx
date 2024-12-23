@@ -83,68 +83,67 @@ function AdmSessions() {
     }
 
     return (
-        <div
-            style={{
-                backgroundImage: `url(${BgAdm})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-            }}
-            className="bg-zinc-800 w-full h-[100vh] 
-                        flex justify-center items-center border-[10px] 
-                        border-[#e6a429] relative overflow-hidden">
+        <div className="bg-zinc-800 w-full h-[100vh] 
+        flex justify-center items-center border-[10px] 
+        border-[#e6a429] relative overflow-hidden"
+        style={{
+            backgroundImage: `url(${BgAdm})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+        }}>
+            <nav className="w-[30%] h-[100vh] relative">
+                <Asside />
+            </nav>
 
-            <Asside />
-            <NavigationAdm title="Sessões" adm_id={stateAdmin.admin_id} />
+            <section className="w-[70%] h-[100vh] relative p-3">
+                <NavigationAdm title="SESSÕES" adm_id={stateAdmin.admin_id} />
 
-            <section className="flex flex-col lg:w-[70%] w-[98%] lg:h-[80%] h-[88%] backdrop-blur-[12px]
-            lg:mt-[6vh] mt-[10vh] lg:right-[3vh] right-auto absolute overflow-y-auto gap-1 text-white">
-
-                <table className="min-w-full bg-zinc-800 rounded-lg overflow-hidden">
-                    <thead className=" text-white">
-                        <tr>
-                            <th className="w-1/5 py-2">Cliente</th>
-                            <th className="w-1/5 py-2">Início da Sessão</th>
-                            <th className="w-1/5 py-2">Fim da Sessão</th>
-                            <th className="w-1/5 py-2">Total da Sessão</th>
-                            <th className="w-1/5 py-2">Local</th>
-                            <th className="w-1/5 py-2">Máquina</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {
-                            importantsSessions.map(session => {
+                <div className="absolute flex flex-col w-full max-h-[78vh] top-[16vh] p-1 
+                overflow-y-auto scrollbar scrollbar-thumb-[#18212f] scrollbar-track-gray-100">
+                    <table className="w-[98%] bg-zinc-800/50 backdrop-blur-[12px] rounded-lg overflow-hidden">
+                        <thead className="text-white border-b border-purple-500/30">
+                            <tr>
+                                <th className="w-1/5 py-4">Cliente</th>
+                                <th className="w-1/5 py-4">Início da Sessão</th>
+                                <th className="w-1/5 py-4">Fim da Sessão</th>
+                                <th className="w-1/5 py-4">Total da Sessão</th>
+                                <th className="w-1/5 py-4">Local</th>
+                                <th className="w-1/5 py-4">Máquina</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {importantsSessions.map(session => {
                                 const duration = dayjs(session.timer_ended_at).diff(dayjs(session.timer_started_at), 'minute');
                                 return (
-                                    <tr key={session.id} className="bg-gray-100 border-b border-gray-200">
-                                        <td className="py-2 px-4 flex items-center gap-2 text-gray-800">
+                                    <tr key={session.id} className="border-b border-purple-500/10 hover:bg-white/5 transition-colors">
+                                        <td className="py-4 px-4 flex items-center gap-2 text-white">
                                             <img src={session.Client.avatar_url} alt=""
                                                 className="w-[33px] h-[33px] object-cover rounded-full" />
                                             <span>{session.Client.nome}</span>
                                         </td>
-                                        <td className="py-2 px-4 text-gray-800">
+                                        <td className="py-4 px-4 text-white text-center">
                                             {dayjs(session.timer_started_at).format("DD/MM/YYYY HH:mm")}
                                         </td>
-                                        <td className="py-2 px-4 text-gray-800">
+                                        <td className="py-4 px-4 text-white text-center">
                                             {dayjs(session.timer_ended_at).format("DD/MM/YYYY HH:mm")}
                                         </td>
-                                        <td className="py-2 px-4 text-gray-800">
+                                        <td className="py-4 px-4 text-white text-center">
                                             {`${Math.floor(duration / 60)}h ${duration % 60}m`}
                                         </td>
-                                        <td className="py-2 px-4 text-gray-800">
+                                        <td className="py-4 px-4 text-white text-center">
                                             {session.location && session.location.nome}
                                         </td>
-                                        <td className="py-2 px-4 text-gray-800 font-bold">
+                                        <td className="py-4 px-4 text-white text-center font-bold">
                                             {`${session.Machine.nano_id} (${MACHINE_TYPE[session.Machine.type]})`}
                                         </td>
                                     </tr>
                                 );
-                            })
-                        }
-                    </tbody>
-                </table>
+                            })}
+                        </tbody>
+                    </table>
+                </div>
             </section>
-
         </div>
     );
 }

@@ -7,6 +7,7 @@ import RelatorioFinanceiro from "../ADM-Modais/RelatorioFinanceiro";
 import { useNavigate } from 'react-router-dom';
 import { CreditCard, Pix } from "@mui/icons-material"; // Import icons
 //import dayjs from "dayjs";
+import 'dayjs/locale/pt-br';
 
 function Financial() {
     const [transactions, setTransactions] = useState([]);
@@ -70,62 +71,99 @@ function Financial() {
         currentPainel.style.display = 'flex';
     }
 
+    // Função para formatar valor em Reais
+    const formatCurrency = (value) => {
+        return new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        }).format(value);
+    };
+
     return (
-        <div className="bg-zinc-100 w-full h-[100vh] flex justify-center items-center border-[10px] border-[#e6a429]">
-            <Asside />
-            <NavigationAdm title="CAIXA" />
-            <RelatorioFinanceiro />
+        <div className="bg-zinc-800 w-full h-[100vh] 
+        flex justify-center items-center border-[10px] 
+        border-[#e6a429] relative overflow-hidden">
+            <nav className="w-[30%] h-[100vh] relative">
+                <Asside />
+            </nav>
 
-            <div className="absolute top-[12vh] left-[33%] flex flex-col items-center">
-                <span className="font-bold">REGISTRO DE ENTRADAS</span>
-                <span className="text-lg font-semibold">Saldo: R$ {adminBalance.toFixed(2)}</span>
-            </div>
-            <button
-                onClick={OpenPainelFinanc}
-                className="absolute top-[12vh] right-[4%] bg-[#3C4557] w-[227px] h-[34px] text-white rounded-[6px] md:block hidden">relatório financeiro</button>
+            <section className="w-[70%] h-[100vh] relative p-3">
+                <NavigationAdm title="CAIXA" />
+                <RelatorioFinanceiro />
 
-            <section className='absolute flex flex-wrap justify-center items-start gap-3 sm:w-[70%] 
-            w-[94%] sm:max-h-[78vh] max-h-[72vh] sm:right-[3vh] right-auto top-[16vh] p-3 overflow-y-auto'>
+                <div className="absolute flex flex-col w-full h-full top-[16vh] p-1 
+                overflow-y-auto scrollbar scrollbar-thumb-[#18212f] scrollbar-track-gray-100">
+                    {/* Header com Saldo e Botão de Relatório */}
+                    <div className="flex justify-between items-center w-[98%] mb-4 bg-zinc-800/50 backdrop-blur-[12px] p-4 rounded-lg">
+                        <div className="flex flex-col text-white">
+                            <span className="text-gray-300">REGISTRO DE ENTRADAS</span>
+                            <span className="text-2xl font-bold">
+                                Saldo: {formatCurrency(adminBalance)}
+                            </span>
+                        </div>
+                        <button
+                            onClick={OpenPainelFinanc}
+                            className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors"
+                        >
+                            Relatório Financeiro
+                        </button>
+                    </div>
 
-                <table className="text-zinc-900 w-[90%]">
-                    <thead>
-                        <tr className="bg-gray-200">
-                            <th className="p-2">Cliente</th>
-                            <th className="p-2">Valor</th>
-                            <th className="p-2">Tipo</th>
-                            <th className="p-2">Método</th>
-                            <th className="p-2">Status</th>
-                            <th className="p-2">Data</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {transactions.map((transaction, index) => {
-                            console.log("Transaction: ", transaction); // Log each transaction
-                            return (
-                                <tr key={index} className="bg-white border-b hover:bg-gray-100">
-                                    <td className="p-2 flex items-center">
-                                        {transaction.Client ? (
-                                            <>
-                                                <img src={transaction.Client.avatar_url} alt="avatar" className="w-8 h-8 rounded-full mr-2 object-cover" />
-                                                <span>{transaction.Client.nome}</span>
-                                            </>
-                                        ) : (
-                                            <span>Cliente não encontrado</span>
-                                        )}
-                                    </td>
-                                    <td className="p-2">R$ {transaction.value.toFixed(2)}</td>
-                                    <td className="p-2">{transaction.transaction_type}</td>
-                                    <td className="p-2">
-                                        {transaction.method === 'PIX' ? <Pix /> : <CreditCard />}
-                                    </td>
-                                    <td className="p-2">{transaction.status}</td>
-                                    <td className="p-2">{new Date(transaction.created_at).toLocaleDateString()}</td>
+                    {/* Tabela de Transações */}
+                    <div className="w-[98%] bg-zinc-800/50 backdrop-blur-[12px] rounded-lg overflow-hidden">
+                        <table className="w-full">
+                            <thead>
+                                <tr className="border-b border-purple-500/30">
+                                    <th className="p-4 text-left text-white">Cliente</th>
+                                    <th className="p-4 text-white">Valor</th>
+                                    <th className="p-4 text-white">Tipo</th>
+                                    <th className="p-4 text-white">Método</th>
+                                    <th className="p-4 text-white">Status</th>
+                                    <th className="p-4 text-white">Data</th>
                                 </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
-
+                            </thead>
+                            <tbody>
+                                {transactions.map((transaction, index) => (
+                                    <tr key={index} className="border-b border-purple-500/10 hover:bg-white/5 transition-colors">
+                                        <td className="p-4 text-white flex items-center gap-2">
+                                            {transaction.Client ? (
+                                                <>
+                                                    <img 
+                                                        src={transaction.Client.avatar_url} 
+                                                        alt="avatar" 
+                                                        className="w-8 h-8 rounded-full object-cover" 
+                                                    />
+                                                    <span>{transaction.Client.nome}</span>
+                                                </>
+                                            ) : (
+                                                <span>Cliente não encontrado</span>
+                                            )}
+                                        </td>
+                                        <td className="p-4 text-white text-center">
+                                            {formatCurrency(transaction.value)}
+                                        </td>
+                                        <td className="p-4 text-white text-center">
+                                            {transaction.transaction_type}
+                                        </td>
+                                        <td className="p-4 text-white text-center">
+                                            {transaction.method === 'PIX' ? (
+                                                <Pix className="text-green-400" />
+                                            ) : (
+                                                <CreditCard className="text-blue-400" />
+                                            )}
+                                        </td>
+                                        <td className="p-4 text-white text-center">
+                                            {transaction.status}
+                                        </td>
+                                        <td className="p-4 text-white text-center">
+                                            {new Date(transaction.created_at).toLocaleDateString()}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </section>
         </div>
     );

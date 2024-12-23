@@ -81,10 +81,8 @@ function NavigationAdm({title }) {
         justify-between
         items-center 
         top-[2vh] 
-        lg:right-[3vh] 
-        right-auto 
-        lg:w-[72%] 
-        w-[94%] 
+        right-auto  
+        w-[98%]
         h-[78px] 
         bg-gradient-to-r 
         from-[#3E4759] 

@@ -20,6 +20,8 @@ import PortalAdmLogin from "./components/Portal-ADM/PortalAdmLogin"
 import GamerRegister from './components/Portal-GAMER/Register/GamerRegister';
 import GamerProfile from './components/Portal-GAMER/Profile/GamerProfile';
 import GamerShop from './components/Portal-GAMER/GamerShop';
+import ArenaEvents from './components/events/ArenaEvents';
+import EventContract from './components/events/EventContract';
 
 function App() {
 
@@ -44,7 +46,7 @@ function App() {
             <Route element={<PortalAdmColaboradores />} path="/adm-colaboradores" />
             <Route element={<PortalAdmProdutos />} path="/adm-produtos" />
             <Route element={<PortalAdmLocais />} path="/adm-locais" />
-
+            <Route element={<ArenaEvents />} path="/adm-events" />
             {/* PORTAL GAMER */}
             <Route element={<PortalGamerDashboard />} path="/gamer-dashboard" />
             <Route element={<PortalGamerFinanceiro />} path="/gamer-financeiro" />
@@ -52,6 +54,7 @@ function App() {
             <Route element={<GamerRegister />} path="/gamer-register" />
             <Route element={<GamerProfile />} path="/profile" />
             <Route element={<GamerShop />} path="/shop" /> {/* Nova rota para a loja */}
+            <Route element={<EventContract />} path="/event-contract/:id" />
           </Routes>
         </Suspense>
       </BrowserRouter>
