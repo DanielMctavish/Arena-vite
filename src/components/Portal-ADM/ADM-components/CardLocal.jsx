@@ -43,8 +43,6 @@ function CardLocal({ name, address, admId, Machines }) {
             ) : (
                 <LocationOn className="text-white" style={{ fontSize: 70 }} />
             )}
-            <span className="text-[10pt]">{address}</span>
-
         </div>
     )
 }

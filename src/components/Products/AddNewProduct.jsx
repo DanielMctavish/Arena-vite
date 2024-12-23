@@ -112,71 +112,114 @@ function AddNewProduct({reload}) {
 
     if (isLoading) {
         return (
-            <div className="w-[60%] h-[400px] flex flex-col
-            bg-[#3C4557] text-white rounded-md 
-            justify-center items-center gap-3 relative
-            shadow-lg shadow-[#0f0f0f4d]">
-                <span>criando um novo produto, aguarde!</span>
+            <div className="w-[60%] h-[500px] bg-[#18212f] backdrop-blur-lg rounded-lg 
+            flex flex-col justify-center items-center gap-4 relative 
+            shadow-xl shadow-black/20 border border-purple-500/20">
+                <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent" />
+                <span className="text-white text-lg">Criando novo produto...</span>
             </div>
         )
     }
 
     return (
-        <div className="w-[60%] h-[400px] flex flex-col
-        bg-[#3C4557] text-white rounded-md 
-        justify-center items-center gap-3 relative
-        shadow-lg shadow-[#0f0f0f4d]">
-
-            <span onClick={handleCloseCurrentWindow} className="absolute top-1 right-1 text-zinc-100 cursor-pointer">
+        <div className="w-[80%] h-[500px] bg-[#18212f] backdrop-blur-lg rounded-lg 
+        flex flex-col justify-center items-center gap-4 relative 
+        shadow-xl shadow-black/20 border border-purple-500/20">
+            {/* Botão Fechar */}
+            <button 
+                onClick={handleCloseCurrentWindow} 
+                className="absolute top-4 right-4 text-gray-400 hover:text-white 
+                transition-colors p-2 hover:bg-white/5 rounded-full"
+            >
                 <Close />
-            </span>
+            </button>
 
-            <section className="flex w-[100%] h-[82%] justify-center items-center gap-3">
-                <div className="flex h-[90%] flex-col gap-3 justify-between items-center">
-                    <img src={boxIcon} alt="icone caixa aberta" className="w-[70px] h-[70px] rounded-[4px] object-cover" />
-                    <input
-                        type="text"
-                        value={productName}
-                        onChange={handleSetName}
-                        className="bg-transparent border-white border-[1px] p-2 placeholder:text-white"
-                        placeholder="Nome do produto"
-                    />
-                    <input
-                        type="number"
-                        value={quantity}
-                        onChange={handleSetQuantity}
-                        className="bg-transparent border-white border-[1px] p-2 placeholder:text-white"
-                        placeholder="Quantidade"
-                    />
-                    <input
-                        type="text"
-                        value={price}
-                        onChange={handleSetPrice}
-                        className="bg-transparent border-white border-[1px] p-2 placeholder:text-white"
-                        placeholder="R$ 0.00"
-                    />
+            {/* Título */}
+            <h2 className="text-2xl font-bold text-white mb-4">Novo Produto</h2>
+
+            <section className="flex w-full h-[82%] justify-center items-center gap-8 px-8">
+                {/* Formulário */}
+                <div className="flex h-[90%] flex-col gap-6 w-[40%]">
+                    <div className="flex justify-center">
+                        <img src={boxIcon} alt="icone caixa aberta" className="w-16 h-16 object-contain opacity-70" />
+                    </div>
+                    
+                    <div className="space-y-4">
+                        <input
+                            type="text"
+                            value={productName}
+                            onChange={handleSetName}
+                            className="w-full bg-gray-800/50 text-white px-4 py-3 rounded-lg 
+                            border border-purple-500/20 focus:border-purple-500 
+                            focus:outline-none transition-colors placeholder:text-gray-500"
+                            placeholder="Nome do produto"
+                        />
+                        <input
+                            type="number"
+                            value={quantity}
+                            onChange={handleSetQuantity}
+                            className="w-full bg-gray-800/50 text-white px-4 py-3 rounded-lg 
+                            border border-purple-500/20 focus:border-purple-500 
+                            focus:outline-none transition-colors placeholder:text-gray-500"
+                            placeholder="Quantidade"
+                        />
+                        <input
+                            type="text"
+                            value={price}
+                            onChange={handleSetPrice}
+                            className="w-full bg-gray-800/50 text-white px-4 py-3 rounded-lg 
+                            border border-purple-500/20 focus:border-purple-500 
+                            focus:outline-none transition-colors placeholder:text-gray-500"
+                            placeholder="R$ 0.00"
+                        />
+                    </div>
                 </div>
-                {/* DRAG AND DROP AREA */}
-                <div
-                    {...getRootProps({ className: "dropzone" })}
-                    className="flex w-[60%] h-[90%] border-[2px] border-white 
-                border-dashed justify-center items-center 
-                rounded-md relative overflow-hidden">
-                    {
-                        isDragActive ?
-                            <span ref={refSpanMessage}>solte a foto do produto aqui!</span> :
-                            <span ref={refSpanMessage}>clique ou arraste do computador</span>
-                    }
-                    <input {...getInputProps()} type="file" className="hidden" />
-                    {
-                        files[0] ?
-                            (<img src={URL.createObjectURL(files[0])} alt={files[0].name} className="absolute flex h-[100%] object-cover z-[99] rounded-md" />) : ""
-                    }
+
+                {/* Área de Upload */}
+                <div className="w-[60%] h-[90%]">
+                    <div
+                        {...getRootProps({ className: "dropzone" })}
+                        className="w-full h-full border-2 border-purple-500/20 border-dashed 
+                        rounded-lg flex flex-col justify-center items-center relative 
+                        bg-gray-800/30 group cursor-pointer hover:border-purple-500/40 
+                        transition-colors"
+                    >
+                        <input {...getInputProps()} type="file" className="hidden" />
+                        
+                        {files[0] ? (
+                            <div className="relative w-full h-full">
+                                <img 
+                                    src={URL.createObjectURL(files[0])} 
+                                    alt={files[0].name} 
+                                    className="absolute inset-0 w-full h-full object-cover rounded-lg" 
+                                />
+                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 
+                                transition-opacity flex items-center justify-center">
+                                    <span className="text-white text-sm">Clique para trocar a imagem</span>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="text-center p-8">
+                                <span ref={refSpanMessage} className="text-gray-400">
+                                    {isDragActive ? 
+                                        'Solte a foto do produto aqui!' : 
+                                        'Clique ou arraste uma imagem do computador'}
+                                </span>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </section>
 
-            <button onClick={handleCreateProduct}>cadastrar produto</button>
-
+            {/* Botão Cadastrar */}
+            <button 
+                onClick={handleCreateProduct}
+                className="bg-purple-600 hover:bg-purple-700 text-white font-bold 
+                py-3 px-8 rounded-lg transition-colors mb-6 
+                shadow-lg shadow-purple-500/20"
+            >
+                Cadastrar Produto
+            </button>
         </div>
     );
 }

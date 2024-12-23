@@ -12,7 +12,7 @@ import { SyncDisabled, Sync, StopCircle } from "@mui/icons-material"
 import dayjs from "dayjs";
 import { useDispatch } from "react-redux";
 import { machineToDelete, machineRunning } from "../../../redux/machines/MachineSlice";
-import connectWebSocketClient from "../../SocketCOM/connectWebSocket";
+// import connectWebSocketClient from "../../SocketCOM/connectWebSocket";
 
 function CardMachine({ machine, index }) {
     const [currentClient, setCurrentClient] = useState({})
@@ -24,23 +24,23 @@ function CardMachine({ machine, index }) {
     const refCard = useRef()
     const dispatch = useDispatch()
 
-    const socketClient = new connectWebSocketClient()
+    // const socketClient = new connectWebSocketClient()
 
     useEffect(() => {
         getCurrentClient()
     }, [])
 
     useEffect(() => {
-        const socket = socketClient.getSocketInstance();
+        // const socket = socketClient.getSocketInstance();
 
-        socket.on(`${machine.id}-running`, (message) => {
-            // console.log("rodando... ", message.data.body.client_id);
-            setElapsedTime(message.data.cronTimer);
-        });
+        // socket.on(`${machine.id}-running`, (message) => {
+        //     // console.log("rodando... ", message.data.body.client_id);
+        //     setElapsedTime(message.data.cronTimer);
+        // });
 
         // Função de limpeza
         return () => {
-            socket.off(`${machine.id}-running`); // Desativa o listener do evento
+            // socket.off(`${machine.id}-running`); // Desativa o listener do evento
 
             if (machine.status === "RUNNING") {
 

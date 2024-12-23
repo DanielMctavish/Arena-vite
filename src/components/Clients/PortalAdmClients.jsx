@@ -18,6 +18,8 @@ import { Search } from "@mui/icons-material"
 function PortalAdmClientes() {
     const stateMachineRunning = useSelector(state => state.machine)
     const [clientList, setClientList] = useState([])
+    const [filteredClients, setFilteredClients] = useState([])
+    const [searchTerm, setSearchTerm] = useState('')
     const [changeState, setChangeState] = useState(false)
     const navigate = useNavigate();
     const refModAddCreate = useRef()
@@ -51,48 +53,91 @@ function PortalAdmClientes() {
         }
     }
 
+    const handleSearch = (value) => {
+        setSearchTerm(value);
+        
+        if (value.length >= 3) {
+            const filtered = clientList.filter(client => 
+                client.nome.toLowerCase().includes(value.toLowerCase()) ||
+                client.email.toLowerCase().includes(value.toLowerCase()) ||
+                client.cpf.includes(value)
+            );
+            setFilteredClients(filtered);
+        } else {
+            setFilteredClients(clientList);
+        }
+    };
+
+    useEffect(() => {
+        setFilteredClients(clientList);
+    }, [clientList]);
+
     return (
-        <div className="bg-zinc-100 w-full h-[100vh] flex justify-center items-center border-[10px] border-[#e6a429]">
-            <Asside />
-            <NavigationAdm title="CLIENTES" />
+        <div className="bg-zinc-800 w-full h-[100vh] 
+        flex justify-center items-center border-[10px] 
+        border-[#e6a429] relative overflow-hidden">
+            <nav className="w-[30%] h-[100vh] relative">
+                <Asside />
+            </nav>
 
+            <section className="w-[70%] h-[100vh] relative p-3">
+                <NavigationAdm title="CLIENTES" />
 
-            <section className='absolute flex flex-wrap 
-            justify-center items-start gap-3 lg:w-[72%] 
-            w-[90%] sm:max-h-[76vh] max-h-[77vh] sm:right-[3vh] 
-            right-auto top-[16vh] p-3 overflow-y-auto'>
-                <div className="flex w-[98%] h-[60px] bg-[#eaeaea] p-2 rounded-md justify-between items-center">
-                    <button
-                        onClick={handleShowModAddCreate}
-                        className="flex justify-center items-center bg-[#323e58] text-white p-3 rounded-md shadow-md shadow-[#14141431]">
-                        Adicionar Cliente
-                    </button>
-                    <div className="flex rounded-md overflow-hidden">
-                        <input type="text" placeholder="pesquisar cliente"
-                            className="bg-[#dfdfdf] text-[#353535] p-3" />
-                        <div className="flex w-full bg-[#dfdfdf] justify-center items-center">
-                            <Search sx={{fontSize:"33px"}}/>
+                <div className="absolute flex flex-col w-full max-h-[78vh] top-[16vh] p-1 
+                overflow-y-auto scrollbar scrollbar-thumb-[#18212f] scrollbar-track-gray-100">
+                    {/* Barra de Pesquisa e Botão Adicionar */}
+                    <div className="flex w-[98%] h-[60px] bg-zinc-800/50 backdrop-blur-[12px] p-4 rounded-lg mb-4 justify-between items-center">
+                        <button
+                            onClick={handleShowModAddCreate}
+                            className="flex justify-center items-center bg-[#323e58] text-white p-3 rounded-md shadow-md shadow-[#14141431]"
+                        >
+                            Adicionar Cliente
+                        </button>
+                        <div className="flex rounded-md overflow-hidden relative">
+                            <input 
+                                type="text" 
+                                value={searchTerm}
+                                onChange={(e) => handleSearch(e.target.value)}
+                                placeholder="Pesquisar por nome, email ou CPF"
+                                className="w-[300px] bg-[#dfdfdf] text-[#353535] p-3 pr-12" 
+                            />
+                            <div className="absolute right-0 top-0 bottom-0 flex items-center justify-center px-3 bg-[#dfdfdf]">
+                                <Search sx={{fontSize:"24px", color: searchTerm.length >= 3 ? "#4a5670" : "#999"}}/>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div className="flex flex-col text-zinc-900 w-[100%] p-6 gap-1">
-                    {clientList.map((client) => (
-                        <ClienteLinhaTd
-                            isPlaying={client.isPlaying}
-                            key={client.id}
-                            nome={client.nome}
-                            email={client.email}
-                            value={client.saldo}
-                            avatar_url={client.avatar_url}
-                            client_id={client.id}
-                            horas={client.horas}
-                        />
-                    ))}
-                </div>
+                    {/* Lista de Clientes */}
+                    <div className="flex flex-col text-zinc-900 w-[100%] p-6 gap-1">
+                        {/* Mensagem quando não encontrar resultados */}
+                        {searchTerm.length >= 3 && filteredClients.length === 0 && (
+                            <div className="text-center text-gray-400 py-4">
+                                Nenhum cliente encontrado para "{searchTerm}"
+                            </div>
+                        )}
 
+                        {/* Lista de clientes filtrada */}
+                        {(searchTerm.length >= 3 ? filteredClients : clientList).map((client) => (
+                            <ClienteLinhaTd
+                                key={client.id}
+                                isPlaying={client.isPlaying}
+                                nome={client.nome}
+                                email={client.email}
+                                value={client.saldo}
+                                avatar_url={client.avatar_url}
+                                client_id={client.id}
+                                horas={client.horas}
+                                tel={client.tel}
+                                address={client.address}
+                                cpf={client.cpf}
+                                created_at={client.created_at}
+                            />
+                        ))}
+                    </div>
+                </div>
             </section>
 
+            {/* Modais */}
             <div ref={refModAddCreate} className="mod-add-client absolute hidden w-full h-[80vh] justify-center items-center">
                 <CreateClient />
             </div>
@@ -108,9 +153,8 @@ function PortalAdmClientes() {
             <div className="mod-add-saldo-client absolute hidden w-full h-[80vh] justify-center items-center">
                 <ModAddSaldo changeState={changeState} setChangeState={setChangeState} />
             </div>
-
         </div>
-    )
+    );
 }
 
 export default PortalAdmClientes;

@@ -19,12 +19,11 @@ function Asside() {
       justify-start 
       items-center 
       overflow-y-auto
-      w-[24%]  
-      h-[96vh] 
+      w-full 
+      h-full 
       bg-gradient-to-b 
       from-[#3E4759] 
-      to-[#1D2433] 
-      left-[2vh] 
+      to-[#1D2433]  
       rounded-[10px] 
       border-[1px] 
       border-[#535E74]'>
@@ -86,8 +85,8 @@ function Asside() {
                         <span>Produtos</span>
                     </div>
 
-                    <div className='relative w-[90px] h-[90px] bg-[#303030] hover:bg-[#515151] 
-                    rounded-[10px] border-[1px] border-[#646464] flex flex-col justify-center items-center'>
+                    <div onClick={() => navigate("/adm-events")}  className='relative w-[90px] h-[90px] bg-[#202736] hover:bg-[#6478a0] cursor-pointer
+                    rounded-[10px] border-[1px] border-[#7586A8] flex flex-col justify-center items-center'>
                         <Celebration style={{ fontSize: '40pt', color: 'white' }} />
                         <span>Eventos</span>
                     </div>
