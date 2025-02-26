@@ -38,9 +38,8 @@ function PortalAdmLocais(props) {
     }, [])
 
     return (
-        <div className="bg-zinc-800 w-full h-[100vh] 
-        flex justify-center items-center border-[10px] 
-        border-[#e6a429] relative overflow-hidden">
+        <div className="bg-zinc-800 w-full h-[100vh] flex justify-center items-center 
+        border-[10px] border-[#e6a429] relative overflow-hidden">
             <nav className="w-[30%] h-[100vh] relative">
                 <Asside />
             </nav>
@@ -49,9 +48,9 @@ function PortalAdmLocais(props) {
                 <NavigationAdm title="LOCAIS" />
                 <AddNewLocation />
 
-                <div className="absolute flex flex-col w-full h-full top-[16vh] p-1 
+                <div className="absolute flex flex-col w-full h-full top-[16vh] p-4 
                 overflow-y-auto scrollbar scrollbar-thumb-[#18212f] scrollbar-track-gray-100">
-                    <div className="flex flex-wrap gap-4 w-[98%]">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {localList.map((local, index) => (
                             <CardLocal 
                                 key={index}
@@ -64,15 +63,21 @@ function PortalAdmLocais(props) {
 
                         <div 
                             onClick={OpenPainelLocation} 
-                            className="w-[238px] h-[240px] bg-zinc-800/50 backdrop-blur-[12px] 
-                            flex flex-col justify-around items-center text-white rounded-lg 
-                            cursor-pointer hover:bg-zinc-700/50 transition-colors"
+                            className="md:w-[238px] w-full h-[240px] bg-zinc-800/50 
+                            backdrop-blur-[12px] flex flex-col justify-center items-center 
+                            text-white rounded-lg cursor-pointer group hover:bg-zinc-700/50 
+                            transition-all duration-300 border-2 border-dashed border-white/20 
+                            hover:border-[#e6a429]"
                         >
                             <span className="bg-zinc-700 w-[70px] h-[70px] 
                             flex justify-center items-center rounded-full text-[20pt]
-                            hover:bg-zinc-600 transition-colors">
-                                <Add />
+                            group-hover:bg-[#e6a429] group-hover:scale-110 
+                            transition-all duration-300">
+                                <Add className="group-hover:rotate-90 transition-transform duration-300" />
                             </span>
+                            <p className="mt-4 text-white/60 group-hover:text-white">
+                                Adicionar Novo Local
+                            </p>
                         </div>
                     </div>
                 </div>

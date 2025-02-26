@@ -79,42 +79,91 @@ function RelatorioFinanceiro() {
     })
 
     return (
+        <div className="painel-financ fixed inset-0 flex items-center justify-center z-50">
+            <div className="relative w-[954px] bg-[#1c2833] rounded-xl shadow-xl 
+            border border-[#C5D3EF]/30 text-white p-8">
+                {/* Botão Fechar */}
+                <button
+                    onClick={ClosePainelFinanc}
+                    className="absolute right-4 top-4 w-8 h-8 rounded-full 
+                    bg-gradient-to-r from-red-600 to-red-400 
+                    border-2 border-white hover:opacity-80 transition-opacity 
+                    flex items-center justify-center"
+                >
+                    <span className="text-white text-xl">&times;</span>
+                </button>
 
-        <div className="painel-financ shadow-md shadow-black/40 absolute w-[954px] h-[400px] bg-[#3C4557] z-50 border border-[#C5D3EF] rounded-[10px] flex-col justify-around items-center text-white hidden">
-            <span
-                onClick={ClosePainelFinanc}
-                className="absolute right-2 top-2 cursor-pointer w-[26px] h-[26px] rounded-full bg-gradient-to-tr from-[#FF0000] to-[#fe5b5b] border-[2px] border-white"></span>
+                {/* Cabeçalho */}
+                <h2 className="text-2xl font-bold text-center mb-8 text-[#e6a429]">
+                    RELATÓRIO GERAL FINANCEIRO
+                </h2>
 
-            <h2 className="font-bold">RELATÓRIO GERAL FINANCEIRO</h2>
+                {/* Resumo Financeiro */}
+                <div className="space-y-6 mb-8">
+                    <div className="bg-[#243447] rounded-lg p-4 hover:bg-[#2a3c52] transition-colors">
+                        <div className="flex justify-between items-center">
+                            <span className="text-white/80">Hoje</span>
+                            <span className="text-[#00FF47] font-mono text-lg">
+                                {resumeBalance.dailySum && formatoBRL.format(resumeBalance.dailySum)}
+                            </span>
+                        </div>
+                    </div>
 
-            <div className="w-[80%] flex justify-between items-center">
-                <span>hoje</span>
-                <span className="text-[#00FF47]">{resumeBalance.dailySum && formatoBRL.format(resumeBalance.dailySum)}</span>
+                    <div className="bg-[#243447] rounded-lg p-4 hover:bg-[#2a3c52] transition-colors">
+                        <div className="flex justify-between items-center">
+                            <span className="text-white/80">Esta Semana</span>
+                            <span className="text-[#00FF47] font-mono text-lg">
+                                {resumeBalance.weeklySum && formatoBRL.format(resumeBalance.weeklySum)}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div className="bg-[#243447] rounded-lg p-4 hover:bg-[#2a3c52] transition-colors">
+                        <div className="flex justify-between items-center">
+                            <span className="text-white/80">Este Mês</span>
+                            <span className="text-[#00FF47] font-mono text-lg">
+                                {resumeBalance.monthlySum && formatoBRL.format(resumeBalance.monthlySum)}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent my-8" />
+
+                {/* Seção de Período */}
+                <div className="space-y-4">
+                    <h2 className="text-xl font-bold text-center text-[#e6a429]">
+                        PERÍODO DE ENTRADAS
+                    </h2>
+
+                    <div className="bg-[#243447] rounded-lg p-6">
+                        <div className="flex items-center gap-4 flex-wrap">
+                            <span className="text-white/80">Entre as datas:</span>
+                            <div className="flex gap-4">
+                                <input 
+                                    type="date" 
+                                    ref={refStartDate} 
+                                    className="bg-[#1c2833] border border-[#C5D3EF]/30 rounded-lg 
+                                    px-4 py-2 text-white focus:outline-none focus:border-[#e6a429] 
+                                    transition-colors"
+                                />
+                                <input 
+                                    type="date" 
+                                    ref={refEndDate} 
+                                    onChange={handleResumeBalanceRange}
+                                    className="bg-[#1c2833] border border-[#C5D3EF]/30 rounded-lg 
+                                    px-4 py-2 text-white focus:outline-none focus:border-[#e6a429] 
+                                    transition-colors"
+                                />
+                            </div>
+                            <span className="text-[#00FF47] font-mono text-lg ml-auto">
+                                {resumeBalanceRange && formatoBRL.format(resumeBalanceRange)}
+                            </span>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <div className="w-[80%] flex justify-between items-center">
-                <span>nesta semana</span>
-                <span className="text-[#00FF47]">{resumeBalance.weeklySum && formatoBRL.format(resumeBalance.weeklySum)}</span>
-            </div>
-
-            <div className="w-[80%] flex justify-between items-center">
-                <span>neste mês</span>
-                <span className="text-[#00FF47]">{resumeBalance.monthlySum && formatoBRL.format(resumeBalance.monthlySum)}</span>
-            </div>
-            <hr className="w-full border-[1px] border-white" />
-
-            <h2 className="font-bold">PERÍODO DE ENTRADAS</h2>
-
-            <div className="w-[80%] flex justify-between items-center">
-                <span>entre as datas</span>
-                <input type="date" ref={refStartDate} className="bg-[#3C4557] border-[1px] border-white" />
-                <input type="date" ref={refEndDate} className="bg-[#3C4557] border-[1px] border-white"
-                    onChange={handleResumeBalanceRange} />
-                <span className="text-[#00FF47]">{resumeBalanceRange && formatoBRL.format(resumeBalanceRange)}</span>
-            </div>
-
         </div>
-
     )
 }
 

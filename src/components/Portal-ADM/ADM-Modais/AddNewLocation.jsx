@@ -74,52 +74,77 @@ function AddNewLocation() {
 
     if (isLoading) {
         return (
-            <div className="painel-local absolute text-white font-bold w-[503px] h-[765px] bg-[#273249] rounded-[10px] border-[1px] border-[#8FA5CF] hidden flex-col justify-around items-center z-50">
-                criando local...
+            <div className="painel-local fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                <div className="bg-[#273249] p-8 rounded-lg shadow-xl border border-[#8FA5CF] flex flex-col items-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+                    <p className="mt-4 text-white font-medium">Criando local...</p>
+                </div>
             </div>
         )
     }
 
 
     return (
+        <div className="painel-local fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="relative bg-[#273249] p-8 rounded-lg shadow-xl border border-[#8FA5CF] w-[503px] flex flex-col gap-6">
+                {/* Botão de fechar */}
+                <button
+                    onClick={closePanelLocation}
+                    className="absolute right-4 top-4 w-8 h-8 rounded-full bg-gradient-to-r from-red-600 to-red-400 
+                    border-2 border-white hover:opacity-80 transition-opacity flex items-center justify-center"
+                >
+                    <span className="text-white text-xl">&times;</span>
+                </button>
 
-        <div className="painel-local absolute text-white font-bold w-[503px] h-[765px] bg-[#273249] rounded-[10px] border-[1px] border-[#8FA5CF] hidden flex-col justify-around items-center z-50">
-            <span
-                onClick={closePanelLocation}
-                className="absolute right-2 top-2 cursor-pointer w-[26px] h-[26px] rounded-full bg-gradient-to-r from-[#FF0000] to-[#fe5b5b] border-[2px] border-white"
-            ></span>
-            <h2>REGISTRAR LOCAL</h2>
+                {/* Título */}
+                <h2 className="text-2xl font-bold text-center text-white mb-6">
+                    Registrar Local
+                </h2>
 
-            <select
-                onChange={handleSelectAdmin}
-                className="w-[210px] h-[30px] bg-[#F5F5F5] text-zinc-600 text-center rounded-[4px]"
-            >
-                <option value="select">Selecione o proprietário</option>
-                {
-                    allAdmins.map((admin, i) => (
-                        <option key={i} value={admin.id}>{admin.nome}</option>
-                    ))
-                }
-            </select>
+                {/* Formulário */}
+                <div className="flex flex-col gap-4">
+                    <select
+                        onChange={handleSelectAdmin}
+                        className="w-full px-4 py-2 bg-white bg-opacity-95 text-gray-700 rounded-lg 
+                        border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 
+                        transition-all duration-200"
+                    >
+                        <option value="select">Selecione o proprietário</option>
+                        {allAdmins.map((admin, i) => (
+                            <option key={i} value={admin.id}>{admin.nome}</option>
+                        ))}
+                    </select>
 
-            <input
-                type="text"
-                placeholder="Nome do local"
-                className="w-[210px] h-[30px] bg-[#F5F5F5] text-zinc-600 text-center rounded-[4px]"
-                onChange={(e) => setLocalName(e.target.value)}
-            />
+                    <input
+                        type="text"
+                        placeholder="Nome do local"
+                        className="w-full px-4 py-2 bg-white bg-opacity-95 text-gray-700 rounded-lg 
+                        border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 
+                        transition-all duration-200"
+                        onChange={(e) => setLocalName(e.target.value)}
+                    />
 
-            <input
-                type="text"
-                placeholder="Digite o endereço"
-                value={address}
-                onChange={handleAddressChange}
-                className="w-[210px] h-[30px] bg-[#F5F5F5] text-zinc-600 text-center rounded-[4px]"
-            />
+                    <input
+                        type="text"
+                        placeholder="Digite o endereço"
+                        value={address}
+                        onChange={handleAddressChange}
+                        className="w-full px-4 py-2 bg-white bg-opacity-95 text-gray-700 rounded-lg 
+                        border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 
+                        transition-all duration-200"
+                    />
 
-            <button onClick={handleCreateLocal}>registrar local</button>
+                    <button 
+                        onClick={handleCreateLocal}
+                        className="w-full mt-4 py-3 bg-gradient-to-r from-blue-600 to-blue-400 
+                        text-white font-medium rounded-lg hover:opacity-90 transition-opacity
+                        transform hover:scale-[1.02] duration-200"
+                    >
+                        Registrar Local
+                    </button>
+                </div>
+            </div>
         </div>
-
     );
 }
 

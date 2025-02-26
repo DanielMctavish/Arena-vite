@@ -7,12 +7,15 @@ export const handleCreateMachine = async (
     currentNanoID,
     navigate,
     localSelected,
-    setIsLoading) => {
+    setIsLoading,
+    modalRef
+) => {
 
     console.log("observando local id -> ", localSelected)
 
-    const modCreateMachine = document.querySelector(".mod-create-machine")
-    modCreateMachine.style.display = 'none'
+    if (modalRef && modalRef.current) {
+        modalRef.current.style.display = 'none'
+    }
 
     try {
         const getAdmSession = await JSON.parse(localStorage.getItem("arena-adm-login"))
@@ -40,12 +43,14 @@ export const handleCreateMachine = async (
 
     } catch (err) {
         console.log('erro ao criar máquina --> ', err.message, currentAdmID, currentNanoID)
-        if (err.response.status === 401) {
+        if (err.response?.status === 401) {
             localStorage.removeItem('arena-adm-login')
             navigate("/adm-login")
         }
         setIsLoading(false)
-        modCreateMachine.style.display = 'none'
+        if (modalRef && modalRef.current) {
+            modalRef.current.style.display = 'none'
+        }
     }
 
 }

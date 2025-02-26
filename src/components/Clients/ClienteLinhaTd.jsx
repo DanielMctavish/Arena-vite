@@ -4,10 +4,10 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { selectedClient } from "../../redux/client/ClientSlice";
 import { useNavigate } from "react-router-dom";
-import { ShoppingCart, Timelapse, Storefront, Gamepad, ContactPage, AccessTime } from "@mui/icons-material";
+import { ShoppingCart, Timelapse, Storefront, Gamepad, ContactPage, AccessTime, Stop } from "@mui/icons-material";
 import ClientDetailsModal from './ClientDetailsModal';
 
-function ClienteLinhaTd({ nome, email, value, avatar_url, client_id, isPlaying, horas, tel, address, cpf, created_at }) {
+function ClienteLinhaTd({ nome, email, value, avatar_url, client_id, isPlaying, horas, tel, address, cpf, created_at, onUpdate }) {
     const stateMachineRunning = useSelector(state => state.machine);
     const [machineSession, setMachineSession] = useState({});
     const dispatch = useDispatch();
@@ -75,6 +75,52 @@ function ClienteLinhaTd({ nome, email, value, avatar_url, client_id, isPlaying, 
         setShowDetails(true);
     };
 
+    const handleForceStop = async () => {
+        const currentAdmCookie = JSON.parse(localStorage.getItem('arena-adm-login'));
+        if (!currentAdmCookie) return navigate("/");
+
+        try {
+            // Primeira chamada: Atualizar status do cliente
+            await axios.patch(`${import.meta.env.VITE_APP_API_URL}/client/update?client_id=${client_id}`, 
+                { isPlaying: false },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${currentAdmCookie.token}`
+                    }
+                }
+            );
+
+            // Segunda chamada: Parar a máquina
+            if (machineSession.Machine) {
+                await axios.post(`${import.meta.env.VITE_APP_API_URL}/machines/stop-machine`,
+                    {
+                        client_id: client_id,
+                        machine_id: machineSession.Machine.id
+                    },
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${currentAdmCookie.token}`
+                        }
+                    }
+                );
+            }
+
+            // Atualizar o estado local
+            getMachineSessionByClient();
+
+            // Disparar atualização da lista de clientes
+            dispatch({ type: 'UPDATE_CLIENTS_LIST' });
+
+            // Chamar função de atualização passada como prop
+            if (onUpdate) {
+                onUpdate();
+            }
+
+        } catch (error) {
+            console.error('Erro ao forçar parada:', error);
+        }
+    };
+
     useEffect(() => {
         // console.log(`Machine session updated for client_id: ${client_id}`, machineSession.Machine && machineSession.Machine);
     }, [machineSession]);
@@ -124,6 +170,14 @@ function ClienteLinhaTd({ nome, email, value, avatar_url, client_id, isPlaying, 
                                 rounded-lg transition-colors flex items-center gap-2 backdrop-blur-sm">
                                 <AccessTime />
                                 <span className="lg:flex hidden">Adicionar Horas</span>
+                            </button>
+                            <button
+                                onClick={handleForceStop}
+                                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 
+                                rounded-lg transition-colors flex items-center gap-2 shadow-lg"
+                            >
+                                <Stop />
+                                <span className="lg:flex hidden">Forçar Parada</span>
                             </button>
                         </div>
                     </div>

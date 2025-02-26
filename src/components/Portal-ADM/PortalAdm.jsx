@@ -26,15 +26,22 @@ import { useSelector } from "react-redux"
 import { updateError } from '../../redux/access/ErrorSlice';
 import { updateAdmin } from '../../redux/admin/AdminSlice';
 import LoadingComp from "../load/LoadingComp";
+import AlertModal from '../Alert/AlertModal';
 
 function PortalAdm() {
   const navigate = useNavigate();
   const [locationList, setLocationList] = useState([])
   const [localSelected, setLocalId] = useState("")
+  const [machines, setMachines] = useState([])
   const [currentSession, setCurrentSession] = useState({ name: "usuário" })
   const [currentNanoID, setCurrentNanoID] = useState('')
   const [machineType, setMachineType] = useState('PC')
   const [isLoading, setIsLoading] = useState(false)
+  const [alertConfig, setAlertConfig] = useState({
+    isOpen: false,
+    title: '',
+    message: ''
+  });
 
   const refCreateSession = useRef()
   const dispatch = useDispatch()
@@ -66,6 +73,12 @@ function PortalAdm() {
     getAdmInfoByEmail(currentSession.email, dispatch, updateError, updateAdmin)
   }, [currentSession, stateError])
 
+  useEffect(() => {
+    if (localSelected) {
+      getMachinesByLocal();
+    }
+  }, [localSelected]);
+
   const getLocationList = async () => {
     try {
       const currentSession = JSON.parse(localStorage.getItem('arena-adm-login'));
@@ -91,6 +104,47 @@ function PortalAdm() {
     }
   }
 
+  const getMachinesByLocal = async () => {
+    const currentSession = JSON.parse(localStorage.getItem('arena-adm-login'));
+    if (!currentSession) return;
+
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_APP_API_URL}/adm/all-machines`, {
+        params: {
+          adm_id: localSelected // usando o ID do local aqui
+        },
+        headers: {
+          'Authorization': `Bearer ${currentSession.token}`
+        }
+      });
+
+      // console.log("resposta de todas as máquinas -> ", response.data)
+
+      // Ordenar as máquinas por posição
+      const sortedMachines = response.data.sort((a, b) => a.position - b.position);
+      setMachines(sortedMachines);
+    } catch (error) {
+      console.error('Erro ao buscar máquinas:', error);
+      if (error.response?.status === 401) {
+        localStorage.removeItem("arena-adm-login");
+        navigate("/adm-login");
+      }
+    }
+  };
+
+  const handleAddMachine = () => {
+    if (!localSelected) {
+      setAlertConfig({
+        isOpen: true,
+        title: 'Selecione um Local',
+        message: 'É necessário selecionar um local para adicionar uma máquina.'
+      });
+      return;
+    }
+    
+    handleInitializeCreateMachine(refCreateSession, setCurrentNanoID, generateCustomID);
+  }
+
   return (
     <div className="bg-zinc-800 w-full h-[100vh] 
     flex justify-center items-center border-[10px] 
@@ -110,106 +164,116 @@ function PortalAdm() {
         <ModalConfigSession />
         <SureMachineDelete setIsLoading={setIsLoading} isLoading={isLoading} />
 
-        <div className='absolute flex flex-col
-        justify-start items-start 
-        gap-1 w-full 
-        max-h-[78vh]
-        top-[16vh] 
-        p-1 overflow-y-auto scrollbar 
-        scrollbar-thumb-[#18212f] scrollbar-track-gray-100'>
+        <div className='absolute flex flex-col gap-4 w-full max-h-[78vh] top-[16vh] 
+        p-4 overflow-y-auto scrollbar scrollbar-thumb-[#18212f] scrollbar-track-gray-100'>
           
           <SelectLocation localList={locationList} setLocalId={setLocalId} />
 
-          {locationList.map((local) => (
-            local.Machines.length > 0 &&
-            <section key={local.id} className="flex flex-col w-full text-white relative">
-              <span className="text-[22px]">{local.nome}</span>
+          {localSelected && (
+            <div className="flex flex-wrap gap-4 p-6 w-full max-h-[60vh]
+            overflow-y-auto overflow-x-hidden rounded-xl
+            bg-[#5e30ba1c] backdrop-blur-[6px] relative
+            border border-white/10 shadow-lg">
+              {machines.map((machine, i) => (
+                <CardMachine key={machine.id} machine={machine} index={i} />
+              ))}
 
-              <div className="flex flex-wrap gap-2 p-3 w-full max-h-[60vh]
-              overflow-y-auto overflow-x-hidden rounded-[12px]
-              justify-start items-start bg-[#5e30ba1c] backdrop-blur-[6px] relative">
-                {local.Machines && local.Machines.map((machine, i) => (
-                  <CardMachine key={machine.id} machine={machine} index={i} />
-                ))}
+              <div
+                onClick={handleAddMachine}
+                className="add-machine w-[160px] min-h-[233px] bg-[#1f2735] hover:bg-[#18212f] 
+                cursor-pointer border-[1px] border-[#8499c2] rounded-[10px] 
+                flex flex-col justify-center items-center text-white">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <Add />
               </div>
-            </section>
-          ))}
-
-          <div
-            onClick={() => handleInitializeCreateMachine(refCreateSession, setCurrentNanoID, generateCustomID)}
-            className="add-machine w-[160px] min-h-[233px] bg-[#1f2735] hover:bg-[#18212f] 
-            cursor-pointer border-[1px] border-[#8499c2] rounded-[10px] 
-            flex flex-col justify-center items-center text-white">
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <Add />
-          </div>
+            </div>
+          )}
         </div>
       </section>
 
       {/* Modal CREATE MACHINE */}
       <section ref={refCreateSession}
-        className='w-[60%] h-[80%] hidden flex-col gap-3 
-        justify-center items-center absolute 
-        bg-[#1c2833] text-white z-[99] rounded-md 
-        mod-create-machine
-        shadow-lg shadow-[#141414a9]'>
-        <span className="absolute top-2 right-2 cursor-pointer text-white"
-          onClick={() => refCreateSession.current.style.display = "none"}>
-          <Close />
-        </span>
+        className='fixed inset-0 hidden items-center justify-center 
+        bg-black/50 backdrop-blur-sm z-[99]'>
+        <div className='w-[500px] bg-[#1c2833] text-white rounded-xl 
+        shadow-lg shadow-black/30 p-8 relative'>
+          <button 
+            onClick={() => refCreateSession.current.style.display = "none"}
+            className="absolute top-4 right-4 text-white/60 hover:text-white
+            transition-colors duration-200">
+            <Close />
+          </button>
 
-        <h2>você esta criando uma nova máquina!</h2>
-
-        <span className='font-bold'>{currentNanoID}</span>
-
-        <div className="flex flex-col justify-center items-center gap-6">
-          <span>selecione o tipo da máquina</span>
-
-          <div className="flex justify-center items-center gap-3">
-
-            <span onClick={() => setMachineType("PC")} className={`flex ${machineType === 'PC' ? "w-[90px] h-[90px] shadow-lg shadow-[#14141440]"
-              : "w-[60px] h-[60px]"} cursor-pointer bg-[#707070] border-[1px] border-[#e6e6e6] rounded-md justify-center items-center`}>
-              <img src={ComputerIcon} alt="" className="h-[70%] object-cover" />
+          <div className="flex flex-col items-center gap-6">
+            <h2 className="text-2xl font-bold">Nova Máquina</h2>
+            <span className='font-mono bg-[#e6a429]/20 px-4 py-2 rounded-lg text-[#e6a429]'>
+              {currentNanoID}
             </span>
 
-            <span onClick={() => setMachineType("PS5")} className={`flex ${machineType === 'PS5' ? "w-[90px] h-[90px] shadow-lg shadow-[#14141440]"
-              : "w-[60px] h-[60px]"}  
-              cursor-pointer bg-[#b8d4ff] border-[1px] border-[#deebfe] rounded-md justify-center items-center`}>
-              <img src={PS_logo} alt="" className="h-[70%] object-cover" />
-            </span>
+            <div className="flex flex-col items-center gap-4 w-full">
+              <h3 className="text-lg text-white/80">Selecione o tipo da máquina</h3>
 
-            <span onClick={() => setMachineType("XBOX")} className={`flex ${machineType === 'XBOX' ? "w-[90px] h-[90px] shadow-lg shadow-[#14141440]"
-              : "w-[60px] h-[60px]"}  
-              cursor-pointer bg-[#b8fff0] border-[1px] border-[#defefa] rounded-md justify-center items-center`}>
-              <img src={Xbox_logo} alt="" className="h-[60%] object-cover" />
-            </span>
-
-          </div>
-
-        </div>
-
-        {
-          !isLoading ?
-            <button onClick={() => handleCreateMachine(
-              stateAdmin.admin_id,
-              machineType,
-              currentNanoID,
-              navigate,
-              localSelected,
-              setIsLoading)}
-              className='w-[100px] h-[40px] bg-[#e6a429] 
-          rounded-[10px] text-white font-bold'>
-              Criar
-            </button> :
-            <div>
-              <LoadingComp />
+              <div className="flex justify-center items-center gap-4">
+                {[
+                  { type: 'PC', icon: ComputerIcon, bg: 'bg-[#707070]' },
+                  { type: 'PS5', icon: PS_logo, bg: 'bg-[#b8d4ff]' },
+                  { type: 'XBOX', icon: Xbox_logo, bg: 'bg-[#b8fff0]' }
+                ].map((item) => (
+                  <button
+                    key={item.type}
+                    onClick={() => setMachineType(item.type)}
+                    className={`${
+                      machineType === item.type 
+                        ? 'w-[90px] h-[90px] shadow-lg shadow-black/20' 
+                        : 'w-[60px] h-[60px] opacity-60'
+                    } ${item.bg} rounded-xl transition-all duration-300
+                    hover:opacity-100 flex items-center justify-center`}
+                  >
+                    <img 
+                      src={item.icon} 
+                      alt={item.type} 
+                      className="h-[70%] object-contain" 
+                    />
+                  </button>
+                ))}
+              </div>
             </div>
-        }
 
+            {!isLoading ? (
+              <button 
+                onClick={() => handleCreateMachine(
+                  stateAdmin.admin_id,
+                  machineType,
+                  currentNanoID,
+                  navigate,
+                  localSelected,
+                  setIsLoading,
+                  refCreateSession
+                )}
+                className='w-full py-3 bg-gradient-to-r from-[#e6a429] to-[#ffd700]
+                rounded-lg text-white font-bold hover:opacity-90 
+                transition-opacity duration-200 shadow-lg shadow-[#e6a429]/20'
+              >
+                Criar Máquina
+              </button>
+            ) : (
+              <div className="flex items-center justify-center">
+                <LoadingComp />
+              </div>
+            )}
+          </div>
+        </div>
       </section>
+
+      <AlertModal 
+        isOpen={alertConfig.isOpen}
+        onClose={() => setAlertConfig(prev => ({ ...prev, isOpen: false }))}
+        title={alertConfig.title}
+        message={alertConfig.message}
+      />
     </div>
   );
 }
