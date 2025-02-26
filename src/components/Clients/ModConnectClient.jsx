@@ -95,7 +95,6 @@ function ModConnectClient() {
             });
 
             const clientData = clientResponse.data.body.horas;
-            console.log("clientData -> ", clientData)
             if (clientData < parseFloat(durations)) {
                 setShowModal(true);
                 setIsLoading(false);
@@ -103,6 +102,8 @@ function ModConnectClient() {
             }
 
             setIsLoading(true)
+            
+            // Inicia a sessão com a rota existente
             await axios.post(`${import.meta.env.VITE_APP_API_URL}/machines/start-machine`, {
                 duration: parseInt(durations) * 60,
                 timer_started_at: dayjs().toDate(),
@@ -119,13 +120,21 @@ function ModConnectClient() {
             }).then(result => {
                 console.log("session created -> ", result.data)
                 setIsLoading(false)
-                dispatch(machineRunning(result.data))
+                
+                // Atualiza o estado da máquina com o client_id
+                const updatedMachine = {
+                    ...result.data,
+                    client_id: clientState.client_id
+                };
+                
+                dispatch(machineRunning(updatedMachine))
                 handleCloseCurrentWindow()
             }).catch(err => {
                 console.log("error at create session -> ", err.response.data)
                 setIsLoading(false)
                 setServerResponses(err.response.data)
             })
+
         } catch (error) {
             console.log("error -> ", error.message)
             setIsLoading(false)
@@ -186,138 +195,183 @@ function ModConnectClient() {
     )
 
     return (
-        <div className="lg:w-[60%] w-[90%] h-[58%] flex 
-            bg-gradient-to-r from-[#2c3e50] via-[#34495e] to-[#2c3e50] 
-            backdrop-blur-lg text-white rounded-md 
-            justify-center items-center gap-6 relative p-2
-            shadow-lg shadow-[#0f0f0f4d] overflow-y-auto mod-connect-client">
+        <div className="lg:w-[80%] w-[95%] h-[70%] 
+        bg-gradient-to-br from-[#1c2833] to-[#2c3e50] 
+        backdrop-blur-lg text-white rounded-xl 
+        flex justify-between items-stretch relative p-6
+        shadow-2xl border border-white/10 mod-connect-client">
+            {/* Botão Fechar */}
+            <button 
+                onClick={handleCloseCurrentWindow} 
+                className="absolute top-4 right-4 p-2 hover:bg-white/10 
+                rounded-lg transition-colors duration-200"
+            >
+                <Close className="text-white/60 hover:text-white" />
+            </button>
 
-            <span onClick={handleCloseCurrentWindow} className="absolute top-1 right-1 text-zinc-100 cursor-pointer z-10">
-                <Close />
-            </span>
-
-            {/* Modal de aviso */}
+            {/* Modal de aviso de horas insuficientes */}
             {showModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50">
-                    <div className="bg-[#2c3e50] p-6 rounded-md shadow-md text-center text-white">
-                        <h2 className="text-xl font-bold mb-4">Aviso de Conexão</h2>
-                        <p>O cliente não tem horas suficientes.</p>
+                <div className="fixed inset-0 bg-black/75 flex justify-center items-center z-50 backdrop-blur-sm">
+                    <div className="bg-[#1c2833] p-8 rounded-xl shadow-xl border border-red-500/20 max-w-md">
+                        <h2 className="text-2xl font-bold mb-4 text-red-500">Aviso de Conexão</h2>
+                        <p className="text-white/80 text-lg">O cliente não tem horas suficientes.</p>
                         <button
                             onClick={() => setShowModal(false)}
-                            className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md"
+                            className="mt-6 w-full py-3 bg-gradient-to-r from-red-600 to-red-500
+                            text-white rounded-lg hover:opacity-90 transition-opacity
+                            font-medium shadow-lg shadow-red-500/20"
                         >
-                            Fechar
+                            Entendi
                         </button>
                     </div>
                 </div>
             )}
 
-            {/*------------------------------------ SESSÃO DE MÁQUINAS DISPONÍVEIS --------------------------------------- */}
-            <section className="flex gap-1 w-[60%] h-[100%] bg-[#1c2833] rounded-md p-3 relative">
+            {/* Seção de Máquinas */}
+            <section className="w-[60%] h-full bg-[#141e2a]/50 rounded-xl p-6 
+            border border-white/5 shadow-xl">
+                <h2 className="text-xl font-bold mb-6 text-white/80">Máquinas Disponíveis</h2>
+                
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 
+                h-[calc(100%-3rem)] overflow-y-auto pr-2
+                scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                    {cardsMachines.map((card) => {
+                        const bgColor = getBackgroundColor(card.type);
+                        const icon = getMachineIcon(card.type);
+                        const isConsole = card.type === 'PS5' || card.type === 'XBOX';
 
-                <div className="w-full flex flex-wrap h-auto justify-center items-start gap-1 overflow-y-auto">
-                    {
-                        cardsMachines.map((card) => {
-                            const bgColor = getBackgroundColor(card.type);
-                            const icon = getMachineIcon(card.type);
-                            const isConsole = card.type === 'PS5' || card.type === 'XBOX';
-
-                            if (card.status === "RUNNING") {
-                                return (
-                                    <div key={card.id} className="flex flex-col relative min-w-[140px] h-[140px]">
-                                        <span className="bg-white text-zinc-600 mb-[-2px] 
-                                        w-[80px] text-[12px] rounded-[2px] text-center">rodando</span>
-
-                                        <div className="min-w-[130px] h-[130px] border-white border-[10px]
-                                     flex justify-center items-center rounded-[2px]
-                                     cursor-pointer relative"
-                                     style={{ backgroundColor: bgColor }}>
-                                            <span className={`absolute text-[22px] text-white
-                                                ${isConsole ? 'top-1 left-1' : 'mt-[-22px]'}`}>
-                                                {card.position}
-                                            </span>
-                                            <img src={icon} alt="" className="h-[50%] object-contain" style={{ filter: 'invert(1)' }} />
-                                        </div>
-                                    </div>
-                                )
-                            }
-
+                        if (card.status === "RUNNING") {
                             return (
-                                <div onClick={() => handleSelectMachine(card)} 
-                                     key={card.id} 
-                                     className="min-w-[140px] h-[140px]
-                                     hover:brightness-110 flex flex-col justify-center items-center
-                                     rounded-md cursor-pointer relative"
-                                     style={{ backgroundColor: bgColor }}>
-                                    <img src={icon} alt="" className="h-[50%] object-contain" style={{ filter: 'invert(1)' }} />
-                                    <span className={`absolute text-[22px] text-white
-                                        ${isConsole ? 'top-1 left-1' : 'mt-[-4vh]'}`}>
-                                        {card.position}
-                                    </span>
-                                    <span className="text-white">{card.nano_id}</span>
+                                <div key={card.id} 
+                                className="relative group transition-all duration-300">
+                                    <div className="absolute -top-2 left-1/2 transform -translate-x-1/2
+                                    bg-red-500 text-white text-xs px-3 py-1 rounded-full">
+                                        Em Uso
+                                    </div>
+                                    <div className="h-[140px] border-2 border-red-500/50
+                                    rounded-xl flex flex-col items-center justify-center
+                                    bg-gradient-to-br from-red-500/20 to-transparent"
+                                    style={{ backgroundColor: bgColor }}>
+                                        <span className={`text-xl text-white/80
+                                            ${isConsole ? 'self-start ml-3' : ''}`}>
+                                            {card.position}
+                                        </span>
+                                        <img src={icon} alt="" 
+                                            className="h-1/2 object-contain opacity-50" 
+                                            style={{ filter: 'invert(1)' }} 
+                                        />
+                                    </div>
                                 </div>
                             )
-                        })
-                    }
-                </div>
+                        }
 
-            </section>
-
-            <section className="flex flex-col w-[60%] h-[100%] p-4 gap-3 relative">
-
-                <div className="w-full h-[40%] border-[1px] border-bg-white rounded-md flex flex-col justify-center items-center bg-[#1c2833] text-white">
-
-                    <span className="text-[14px]">cliente: {clientState.nome}</span>
-
-                    <span className="font-bold text-[33px]">{currentMachine && currentMachine.nano_id}</span>
-                    <span className="text-[12px]">{currentMachine && currentMachine.status}</span>
-
-                </div>
-
-                <div className="w-full h-[60%] border-[1px] relative p-1
-                border-bg-white rounded-md flex flex-col justify-center items-center gap-6 bg-[#1c2833] text-white">
-
-
-                    {
-                        currentMachine &&
-                        <>
-
-                            <div className="flex flex-col w-full justify-center items-center gap-4">
-                                <div className="flex gap-2 justify-center items-center">
-                                    <input type="number"
-                                        onChange={(e) => e.target.value > 0 ? setDurations(e.target.value) : false}
-                                        value={durations}
-                                        className="w-[80px] h-[40px] text-[33px] bg-transparent p-2 border-[1px] border-white/30 rounded-md" />
-                                    <span className="font-bold text-[33px]">H</span>
-                                </div>
-
-                                <div className="flex gap-4">
-                                    {/* MACHINE CONTROLLERS */}
-                                    <button
-                                        onClick={handleRunMachine}
-                                        className="flex w-[100px] h-[100px] shadow-lg shadow-[#20202051]
-                                                    justify-center items-center bg-[#1e90ff]
-                                                    border-[#87cefa] border-[1px]
-                                                    text-white rounded-lg font-bold hover:bg-[#1c86ee]">
-                                        <PlayArrow className="h-[40px] w-[40px]" />
-                                    </button>
-                                    <button
-                                        onClick={handleStopMachine}
-                                        className="flex w-[100px] h-[100px] shadow-lg shadow-[#20202051]
-                                                    justify-center items-center bg-[#4682b4]
-                                                    border-[#b0e0e6] border-[1px]
-                                                    text-white rounded-lg font-bold hover:bg-[#4169e1]">
-                                        <Stop className="h-[40px] w-[40px]" />
-                                    </button>
-                                </div>
+                        return (
+                            <div 
+                                onClick={() => handleSelectMachine(card)}
+                                key={card.id}
+                                className="h-[140px] rounded-xl cursor-pointer
+                                transition-all duration-300 group hover:scale-105
+                                flex flex-col items-center justify-center
+                                border border-white/10 hover:border-[#e6a429]
+                                relative overflow-hidden"
+                                style={{ backgroundColor: bgColor }}
+                            >
+                                <div className="absolute inset-0 bg-gradient-to-br 
+                                from-white/5 to-transparent opacity-0 group-hover:opacity-100 
+                                transition-opacity duration-300" />
+                                
+                                <span className={`text-xl text-white/80
+                                    ${isConsole ? 'self-start ml-3' : ''}`}>
+                                    {card.position}
+                                </span>
+                                <img src={icon} alt="" 
+                                    className="h-1/2 object-contain transition-transform 
+                                    duration-300 group-hover:scale-110" 
+                                    style={{ filter: 'invert(1)' }} 
+                                />
+                                <span className="text-white/60 text-sm mt-2">
+                                    {card.nano_id}
+                                </span>
                             </div>
-                        </>
-                    }
-
+                        )
+                    })}
                 </div>
-
             </section>
 
+            {/* Seção de Controles */}
+            <section className="w-[38%] h-full flex flex-col gap-6">
+                {/* Painel do Cliente */}
+                <div className="bg-[#141e2a]/50 rounded-xl p-6 border border-white/5 shadow-xl">
+                    <h3 className="text-white/60 mb-2">Cliente Selecionado</h3>
+                    <div className="flex items-center gap-4">
+                        <img src={clientState.avatar_url} alt="" 
+                            className="w-12 h-12 rounded-full object-cover border-2 border-white/20" 
+                        />
+                        <div>
+                            <h4 className="text-lg font-bold">{clientState.nome}</h4>
+                            <p className="text-[#e6a429]">
+                                {currentMachine && currentMachine.nano_id}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Painel de Controle */}
+                {currentMachine && (
+                    <div className="flex-1 bg-[#141e2a]/50 rounded-xl p-6 
+                    border border-white/5 shadow-xl flex flex-col justify-between">
+                        <div>
+                            <h3 className="text-white/60 mb-4">Duração da Sessão</h3>
+                            <div className="flex items-center justify-center gap-4 mb-8">
+                                <input 
+                                    type="number"
+                                    min="1"
+                                    onChange={(e) => e.target.value > 0 ? setDurations(e.target.value) : false}
+                                    value={durations}
+                                    className="w-24 h-16 text-3xl bg-[#1c2833] text-center
+                                    border border-white/20 rounded-lg focus:border-[#e6a429]
+                                    focus:outline-none transition-colors"
+                                />
+                                <span className="text-3xl font-light">horas</span>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <button
+                                onClick={handleRunMachine}
+                                className="h-20 bg-gradient-to-r from-green-600 to-green-500
+                                rounded-xl flex items-center justify-center gap-2
+                                hover:opacity-90 transition-all duration-300
+                                shadow-lg shadow-green-500/20 group"
+                            >
+                                <PlayArrow className="text-3xl group-hover:scale-110 transition-transform" />
+                                <span className="font-medium">Iniciar</span>
+                            </button>
+                            
+                            <button
+                                onClick={handleStopMachine}
+                                className="h-20 bg-gradient-to-r from-red-600 to-red-500
+                                rounded-xl flex items-center justify-center gap-2
+                                hover:opacity-90 transition-all duration-300
+                                shadow-lg shadow-red-500/20 group"
+                            >
+                                <Stop className="text-3xl group-hover:scale-110 transition-transform" />
+                                <span className="font-medium">Parar</span>
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </section>
+
+            {/* Loading State */}
+            {isLoading && (
+                <div className="absolute inset-0 bg-black/50 backdrop-blur-sm
+                flex flex-col items-center justify-center rounded-xl">
+                    <div className="animate-spin rounded-full h-12 w-12 
+                    border-t-2 border-b-2 border-white"></div>
+                    <p className="mt-4 text-white/80">Conectando máquina...</p>
+                </div>
+            )}
         </div>
     )
 }

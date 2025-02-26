@@ -132,82 +132,141 @@ function CreateClient() {
     }
 
     if (isCreating) {
-
         return (
-            <div className="w-[60%] h-[88%] flex flex-col
-            bg-gradient-to-t from-[#3C4557] to-[#192234]  text-white rounded-md 
-            justify-center items-center gap-6 relative
-            shadow-lg shadow-[#0f0f0f4d] overflow-y-auto">
-                <span>Criando Cliente, aguarde!</span>
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                <div className="w-[500px] bg-[#18212f] rounded-lg shadow-xl border border-purple-500/20 
+                p-8 flex flex-col items-center justify-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent"></div>
+                    <span className="mt-4 text-gray-300">Criando Cliente, aguarde!</span>
+                </div>
             </div>
         )
     }
 
     const { getRootProps, getInputProps, isDragActive } = dropzone;
     return (
-        <div className="w-[60%] h-[88%] flex flex-col
-        bg-gradient-to-r from-[#3C4557] to-[#192234]  text-white rounded-md 
-        justify-center items-center gap-6 relative
-        shadow-lg shadow-[#0f0f0f4d] overflow-y-auto">
-            <span ref={refSpanCreation} className="absolute hidden bg-[#f49c0e] top-1 w-[300px] text-center p-3 z-[99] rounded-[3px]">
-                span de criação
-            </span>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="w-[600px] bg-[#18212f] rounded-lg shadow-xl border border-purple-500/20 
+            overflow-hidden transform transition-all">
+                {/* Header */}
+                <div className="relative h-24 bg-gradient-to-r from-purple-600 to-blue-600">
+                    <button 
+                        onClick={handleCloseCurrentWindow}
+                        className="absolute top-2 right-2 text-white/80 hover:text-white 
+                        transition-colors p-1 hover:bg-white/10 rounded-full"
+                    >
+                        <Close />
+                    </button>
+                    <h2 className="absolute bottom-4 left-4 text-2xl font-bold text-white">
+                        Novo Cliente
+                    </h2>
+                </div>
 
-            <span onClick={handleCloseCurrentWindow} className="absolute top-1 right-1 text-zinc-100 cursor-pointer">
-                <Close />
-            </span>
+                <div className="p-6">
+                    <span ref={refSpanCreation} className="hidden bg-yellow-500/90 text-white p-3 rounded-md 
+                    mb-4 block text-center">
+                        span de criação
+                    </span>
 
-            {/* DRAG AND DROP AREA */}
-            <div
-                {...getRootProps({ className: "dropzone" })}
-                className="flex w-[200px] h-[200px] border-[2px] border-white 
-                border-dashed justify-center items-center text-[12px]
-                rounded-full relative overflow-hidden">
-                {
-                    isDragActive ?
-                        <span ref={refSpanMessage}>solte a foto!</span> :
-                        <span ref={refSpanMessage}>clique ou arraste</span>
-                }
-                <input {...getInputProps()} type="file" className="hidden" />
-                {
-                    files[0] ?
-                        (<img src={URL.createObjectURL(files[0])} alt={files[0].name}
-                            className="absolute flex h-[100%] object-cover z-[99] rounded-md" />) : ""
-                }
+                    {/* Área de Upload */}
+                    <div className="flex justify-center mb-6">
+                        <div
+                            {...getRootProps()}
+                            className="w-32 h-32 rounded-full border-2 border-purple-500/50 border-dashed
+                            flex items-center justify-center cursor-pointer hover:border-purple-500
+                            transition-colors relative overflow-hidden"
+                        >
+                            <input {...getInputProps()} />
+                            {files[0] ? (
+                                <img 
+                                    src={URL.createObjectURL(files[0])} 
+                                    alt="Preview" 
+                                    className="absolute inset-0 w-full h-full object-cover"
+                                />
+                            ) : (
+                                <span ref={refSpanMessage} className="text-gray-400 text-sm text-center">
+                                    {isDragActive ? "Solte a foto!" : "Clique ou arraste\numa foto"}
+                                </span>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Formulário */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-4">
+                            <input 
+                                type="text"
+                                placeholder="Nome do cliente"
+                                onChange={(e) => setClientName(e.target.value)}
+                                className="w-full bg-[#1f2937] border border-purple-500/20 rounded-md
+                                p-2.5 text-gray-300 focus:border-purple-500 transition-colors
+                                outline-none"
+                            />
+                            <input 
+                                type="email"
+                                placeholder="Email do cliente"
+                                onChange={(e) => setclientEmail(e.target.value)}
+                                className="w-full bg-[#1f2937] border border-purple-500/20 rounded-md
+                                p-2.5 text-gray-300 focus:border-purple-500 transition-colors
+                                outline-none"
+                            />
+                            <input 
+                                type="text"
+                                placeholder="CPF do cliente"
+                                onChange={(e) => setclientCpf(e.target.value)}
+                                className="w-full bg-[#1f2937] border border-purple-500/20 rounded-md
+                                p-2.5 text-gray-300 focus:border-purple-500 transition-colors
+                                outline-none"
+                            />
+                        </div>
+
+                        <div className="space-y-4">
+                            <input 
+                                type="text"
+                                placeholder="Endereço"
+                                onChange={(e) => setAdress(e.target.value)}
+                                className="w-full bg-[#1f2937] border border-purple-500/20 rounded-md
+                                p-2.5 text-gray-300 focus:border-purple-500 transition-colors
+                                outline-none"
+                            />
+                            <input 
+                                type="text"
+                                placeholder="Telefone"
+                                onChange={(e) => setPhone(e.target.value)}
+                                className="w-full bg-[#1f2937] border border-purple-500/20 rounded-md
+                                p-2.5 text-gray-300 focus:border-purple-500 transition-colors
+                                outline-none"
+                            />
+                            <input 
+                                type="password"
+                                placeholder="Senha"
+                                onChange={(e) => setSenha(e.target.value)}
+                                className="w-full bg-[#1f2937] border border-purple-500/20 rounded-md
+                                p-2.5 text-gray-300 focus:border-purple-500 transition-colors
+                                outline-none"
+                            />
+                            <input 
+                                type="password"
+                                placeholder="Confirmar senha"
+                                onChange={(e) => setConfirmSenha(e.target.value)}
+                                className="w-full bg-[#1f2937] border border-purple-500/20 rounded-md
+                                p-2.5 text-gray-300 focus:border-purple-500 transition-colors
+                                outline-none"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Botão de Criar */}
+                    <button
+                        onClick={handleCreateClient}
+                        className="w-full mt-6 bg-gradient-to-r from-purple-600 to-blue-600
+                        text-white py-2.5 rounded-md hover:opacity-90 transition-opacity
+                        font-medium"
+                    >
+                        Criar Cliente
+                    </button>
+                </div>
             </div>
-
-            <section className="flex w-[80%] justify-between items-start">
-
-                <div className="flex flex-col w-[50%] gap-3 p-2">
-                    <input onChange={(e) => { setClientName(e.target.value) }}
-                        type="text" className="p-2 border-[1px] bg-transparent rounded-md w-full"
-                        placeholder="nome do cliente" />
-                    <input onChange={(e) => { setclientEmail(e.target.value) }} type="text"
-                        className="p-2 border-[1px] bg-transparent rounded-md w-full" placeholder="email do cliente" />
-                    <input onChange={(e) => { setclientCpf(e.target.value) }} type="text"
-                        className="p-2 border-[1px] bg-transparent rounded-md w-full" placeholder="cpf do cliente" />
-                    <input onChange={(e) => { setSenha(e.target.value) }} type="password"
-                        className="p-2 border-[1px] bg-transparent rounded-md w-full" placeholder="senha" />
-                    <input onChange={(e) => { setConfirmSenha(e.target.value) }} type="password"
-                        className="p-2 border-[1px] bg-transparent rounded-md w-full" placeholder="confirmar senha" />
-                </div>
-
-                <div className="flex flex-col w-[50%] gap-3 p-2">
-                    <input onChange={(e) => { setAdress(e.target.value) }}
-                        type="text" className="p-2 border-[1px] bg-transparent rounded-md w-full"
-                        placeholder="endereço" />
-                    <input onChange={(e) => { setPhone(e.target.value) }}
-                        type="text" className="p-2 border-[1px] bg-transparent rounded-md w-full"
-                        placeholder="telefone" />
-                </div>
-
-            </section>
-
-            <button
-                onClick={handleCreateClient}
-                className="p-2 bg-[#27314b] border-[1px] border-[#3e4e75] rounded-md w-[80%]">
-                criar cliente
-            </button>
         </div>
     )
 }
