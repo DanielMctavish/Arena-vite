@@ -4,11 +4,11 @@ import axios from "axios";
 import WarningIcon from "../../medias/icons/BoxImportant.png";
 import { useNavigate } from "react-router-dom";
 
-function SureProductDelete({ setIsLoading, isLoading, productId, productName, productUrl, reload }) {
+function SureProductDelete({ setIsLoading, isLoading, productId, productName, productUrl, reload, onClose }) {
     const [password, setPassword] = useState("");
     const [session, setSession] = useState();
     const [message, setMessage] = useState("");
-    const [messageType, setMessageType] = useState(""); // "success" ou "error"
+    const [messageType, setMessageType] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -20,16 +20,12 @@ function SureProductDelete({ setIsLoading, isLoading, productId, productName, pr
         setSession(getAdmSession);
     }, []);
 
-    function CloseWindowWarning() {
-        const currentWindow = document.querySelector(".windows-del-warning");
-        if (currentWindow) {
-            currentWindow.style.display = "none";
-            // Limpar estados ao fechar
-            setPassword("");
-            setMessage("");
-            setMessageType("");
-        }
-    }
+    const handleClose = () => {
+        setPassword("");
+        setMessage("");
+        setMessageType("");
+        onClose();
+    };
 
     const handleDeleteProduct = async () => {
         if (!password) {
@@ -59,16 +55,14 @@ function SureProductDelete({ setIsLoading, isLoading, productId, productName, pr
             
             setMessage("Produto excluído com sucesso!");
             setMessageType("success");
-            setIsLoading(false);
             
-            // Aguarda 1.5 segundos antes de fechar a janela e recarregar
+            // Aguarda 1.5 segundos antes de fechar e recarregar
             setTimeout(() => {
-                CloseWindowWarning();
+                handleClose();
                 reload();
             }, 1500);
 
         } catch (error) {
-            setIsLoading(false);
             setPassword("");
             
             if (error.response?.status === 401) {
@@ -77,66 +71,69 @@ function SureProductDelete({ setIsLoading, isLoading, productId, productName, pr
                 setMessage("Erro ao excluir produto. Tente novamente.");
             }
             setMessageType("error");
+        } finally {
+            setIsLoading(false);
         }
     };
 
-    if (isLoading) {
-        return (
-            <div className="windows-del-warning 
-                w-[636px] h-[337px] flex fixed
-                flex-col justify-around 
-                items-center bg-[#201733] 
-                border-[1px] border-[#C8D3E9] 
-                rounded-[10px] text-white z-[99]">
-                <span className="text-[#ff9090]">excluindo produto... </span>
-            </div>
-        );
-    }
-
     return (
-        <div className="windows-del-warning 
-            w-[636px] h-[337px] flex fixed
-            flex-col justify-around 
-            items-center bg-[#201733] 
-            border-[1px] border-[#C8D3E9] 
-            rounded-[10px] text-white z-[60]"
-        >
-            <img src={WarningIcon} alt="icon de aviso" />
-            <span>VOCÊ TEM CERTEZA QUE DESEJA EXCLUIR O PRODUTO?</span>
-            <span className="font-bold">{productName}</span>
-
-            {message && (
-                <div className={`text-sm ${
-                    messageType === "success" ? "text-green-400" : "text-red-400"
-                }`}>
-                    {message}
+        <div className="bg-[#201733] rounded-xl border border-purple-500/20 p-8 
+        max-w-md w-full mx-4 animate-fadeIn">
+            <div className="flex flex-col items-center gap-6">
+                <img src={WarningIcon} alt="Ícone de aviso" className="w-16 h-16" />
+                
+                <div className="text-center">
+                    <h3 className="text-white text-lg font-bold mb-2">
+                        CONFIRMAR EXCLUSÃO
+                    </h3>
+                    <p className="text-gray-300">
+                        Você tem certeza que deseja excluir o produto:
+                    </p>
+                    <p className="text-white font-bold mt-1">{productName}</p>
                 </div>
-            )}
 
-            <section className="flex gap-3">
-                <input
-                    type="password"
-                    placeholder="confirme sua senha"
-                    value={password}
-                    className="text-zinc-700 text-center p-2 rounded-md"
-                    onChange={(e) => setPassword(e.target.value)}
-                    disabled={messageType === "success"}
-                />
-                <button 
-                    onClick={handleDeleteProduct} 
-                    className="text-[#FF5454]"
-                    disabled={messageType === "success"}
-                >
-                    DELETAR
-                </button>
-            </section>
+                {message && (
+                    <div className={`text-sm ${
+                        messageType === "success" ? "text-green-400" : "text-red-400"
+                    }`}>
+                        {message}
+                    </div>
+                )}
 
-            <button 
-                onClick={CloseWindowWarning}
-                className={messageType === "success" ? "text-green-400" : ""}
-            >
-                {messageType === "success" ? "FECHAR" : "CANCELAR"}
-            </button>
+                <div className="flex flex-col w-full gap-4">
+                    <input
+                        type="password"
+                        placeholder="Confirme sua senha"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        disabled={messageType === "success"}
+                        className="w-full bg-[#2c3e50] text-white px-4 py-2 rounded-lg
+                        border border-purple-500/20 focus:border-purple-500 transition-colors
+                        outline-none text-center"
+                    />
+
+                    <div className="flex gap-3 justify-center">
+                        <button 
+                            onClick={handleClose}
+                            className="px-6 py-2 rounded-lg bg-gray-600 text-white
+                            hover:bg-gray-700 transition-colors"
+                        >
+                            {messageType === "success" ? "FECHAR" : "CANCELAR"}
+                        </button>
+
+                        {messageType !== "success" && (
+                            <button 
+                                onClick={handleDeleteProduct}
+                                className="px-6 py-2 rounded-lg bg-red-600 text-white
+                                hover:bg-red-700 transition-colors"
+                                disabled={isLoading}
+                            >
+                                {isLoading ? "EXCLUINDO..." : "EXCLUIR"}
+                            </button>
+                        )}
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

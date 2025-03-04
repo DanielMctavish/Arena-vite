@@ -79,7 +79,7 @@ function ModAddSaldo({ changeState, setChangeState }) {
 
     return (
         <div className="bg-[#18212f] rounded-lg shadow-xl border border-purple-500/20 
-        min-w-[400px] max-w-lg mx-auto overflow-hidden animate-fadeIn">
+        min-w-[400px] max-w-lg mx-auto overflow-hidden animate-fadeIn z-[999]">
             {/* Header */}
             <div className="relative h-32 bg-gradient-to-r from-purple-600 to-blue-600 
             flex items-center justify-center p-4">
