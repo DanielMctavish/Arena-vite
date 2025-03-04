@@ -20,6 +20,7 @@ function CardMachine({ machine, index }) {
     const [elapsedTime, setElapsedTime] = useState(0);
     const [playColor, setPlayColor] = useState('#3C4557')
     const [machineStatus, setMachineStatus] = useState('')
+    const [showStoppedMessage, setShowStoppedMessage] = useState(false);
 
     const refCard = useRef()
     const dispatch = useDispatch()
@@ -34,27 +35,45 @@ function CardMachine({ machine, index }) {
         const socket = socketClient.getSocketInstance();
 
         socket.on(`${machine.id}-running`, (message) => {
-            // console.log("rodando... ", message.data.body.client_id);
             setElapsedTime(message.data.cronTimer);
         });
 
-        // Função de limpeza
+        socket.on(`${machine.id}-stopped`, () => {
+            setShowStoppedMessage(true);
+            setElapsedTime(0);
+            setMachineStatus({
+                status: 'CONECTED',
+                color: 'rgb(23, 250, 137)'
+            });
+            
+            setPlayColor('#3C4557');
+            const currentCard = refCard.current;
+            if (currentCard) {
+                currentCard.style.border = "1px solid #80c4cd";
+                currentCard.style.filter = "brightness(100%)";
+                currentCard.style.background = getBackgroundColor();
+            }
+            
+            setTimeout(() => {
+                setShowStoppedMessage(false);
+            }, 3000);
+        });
+
         return () => {
-            socket.off(`${machine.id}-running`); // Desativa o listener do evento
+            socket.off(`${machine.id}-running`);
+            socket.off(`${machine.id}-stopped`);
 
             if (machine.status === "RUNNING") {
-
                 const currentCard = refCard.current;
-
                 if (currentCard) {
                     currentCard.style.border = "3px solid #00cccc";
-                    currentCard.style.filter = "brightness(160%)"; // Aumenta o brilho
+                    currentCard.style.filter = "brightness(160%)";
                 }
             } else {
                 const currentCard = refCard.current;
                 if (currentCard) {
-                    currentCard.style.border = "none"; // Volta ao estilo normal
-                    currentCard.style.filter = "brightness(100%)"; // Volta ao brilho normal
+                    currentCard.style.border = "1px solid #80c4cd";
+                    currentCard.style.filter = "brightness(100%)";
                 }
             }
 
@@ -69,7 +88,6 @@ function CardMachine({ machine, index }) {
                 color: machine.connection === "CONECTED" ? 'rgb(23, 250, 137)' : 'rgba(248, 85, 85, 0.822)',
             });
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoading, elapsedTime]);
 
     const getCurrentClient = async () => {
@@ -191,6 +209,16 @@ function CardMachine({ machine, index }) {
             justify-center
             relative 
             items-center">
+
+            {showStoppedMessage && (
+                <div className="absolute inset-0 flex items-center justify-center
+                bg-black/70 backdrop-blur-sm rounded-[10px] z-10">
+                    <div className="bg-yellow-500/20 text-yellow-400 px-4 py-2 rounded-lg
+                    border border-yellow-500/30 text-sm font-medium animate-bounce">
+                        Máquina Parada
+                    </div>
+                </div>
+            )}
 
             <span className="absolute text-white top-1 right-1">
                 {

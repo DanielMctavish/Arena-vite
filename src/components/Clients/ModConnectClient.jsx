@@ -16,6 +16,8 @@ function ModConnectClient() {
     const [cardsMachines, setCardsMachines] = useState([1])
     const [currentMachine, setCurrentMachine] = useState()
     const [durations, setDurations] = useState(1)
+    const [hours, setHours] = useState(1)
+    const [minutes, setMinutes] = useState(0)
     const [showModal, setShowModal] = useState(false)
     const [selectedMachineId, setSelectedMachineId] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
@@ -88,6 +90,9 @@ function ModConnectClient() {
         const currentSession = JSON.parse(localStorage.getItem('arena-adm-login'))
 
         try {
+            // Calcula o total de minutos
+            const totalMinutes = (hours * 60) + minutes;
+
             // Verifica se o cliente tem horas suficientes
             const clientResponse = await axios.get(`${import.meta.env.VITE_APP_API_URL}/client/find?client_id=${clientState.client_id}`, {
                 headers: {
@@ -96,7 +101,8 @@ function ModConnectClient() {
             });
 
             const clientData = clientResponse.data.body.horas;
-            if (clientData < parseFloat(durations)) {
+            // Converte totalMinutes para horas para comparação
+            if (clientData < (totalMinutes / 60)) {
                 setShowModal(true);
                 setIsLoading(false);
                 return;
@@ -105,11 +111,10 @@ function ModConnectClient() {
             setIsLoading(true)
             setErrorMessage('');
             
-            // Inicia a sessão com a rota existente
             await axios.post(`${import.meta.env.VITE_APP_API_URL}/machines/start-machine`, {
-                duration: parseInt(durations) * 60,
+                duration: totalMinutes, // Enviando em minutos
                 timer_started_at: dayjs().toDate(),
-                timer_ended_at: dayjs().add(durations, 'hour').toDate(),
+                timer_ended_at: dayjs().add(totalMinutes, 'minutes').toDate(),
                 status: 'RUNNING',
                 adm_id: currentAdmin.id,
                 client_id: clientState.client_id,
@@ -143,7 +148,10 @@ function ModConnectClient() {
         }
     }
 
-  
+    // Função para atualizar durations quando hours ou minutes mudam
+    const updateDurations = (h, m) => {
+        setDurations(h + (m / 60));
+    };
 
     const getBackgroundColor = (type) => {
         switch(type) {
@@ -185,7 +193,7 @@ function ModConnectClient() {
     return (
         <div className="w-[800px] 
         bg-gradient-to-br from-[#1c2833] to-[#2c3e50] 
-        backdrop-blur-lg text-white rounded-xl 
+        backdrop-blur-lg text-white rounded-xl z-[999]
         flex justify-between items-stretch relative p-6
         shadow-2xl border border-white/10 mod-connect-client">
             {/* Botão Fechar */}
@@ -334,23 +342,58 @@ function ModConnectClient() {
                 {currentMachine && (
                     <div className="flex-1 bg-[#141e2a]/50 rounded-xl p-6 
                     border border-white/5 shadow-xl flex flex-col">
-                        <div>
-                            <h3 className="text-white/60 mb-6">Duração da Sessão</h3>
-                            <div className="bg-[#1c2833] rounded-lg p-4 border border-white/10">
-                                <div className="flex items-center justify-center gap-3">
-                                    <div className="relative flex-1">
+                        <div className="flex flex-col items-center">
+                            <h3 className="text-xl font-medium text-white mb-6">Duração da Sessão</h3>
+                            
+                            <div className="bg-[#1c2833] w-full max-w-[280px] rounded-xl p-5
+                            border border-white/10 shadow-lg">
+                                {/* Container dos Inputs */}
+                                <div className="space-y-4">
+                                    {/* Seleção de Horas */}
+                                    <div className="relative group">
                                         <input 
                                             type="number"
-                                            min="1"
-                                            onChange={(e) => e.target.value > 0 ? setDurations(e.target.value) : false}
-                                            value={durations}
-                                            className="w-full text-4xl bg-transparent text-center
-                                            text-white font-medium focus:outline-none"
+                                            min="0"
+                                            value={hours}
+                                            onChange={(e) => {
+                                                const h = Math.max(0, parseInt(e.target.value) || 0);
+                                                setHours(h);
+                                                updateDurations(h, minutes);
+                                            }}
+                                            className="w-full h-12 text-2xl bg-[#141e2a] text-center
+                                            text-white font-medium focus:outline-none rounded-lg
+                                            border-2 border-purple-500/10 focus:border-purple-500/50
+                                            transition-all group-hover:border-purple-500/30"
                                         />
-                                        <div className="absolute bottom-0 left-0 right-0 h-0.5 
-                                        bg-gradient-to-r from-transparent via-purple-500 to-transparent"></div>
+                                        <span className="absolute right-3 top-1/2 -translate-y-1/2
+                                        text-sm text-gray-400 font-medium">horas</span>
                                     </div>
-                                    <span className="text-2xl text-white/60 font-light">horas</span>
+
+                                    {/* Seleção de Minutos */}
+                                    <div className="relative group">
+                                        <input 
+                                            type="number"
+                                            min="0"
+                                            max="59"
+                                            value={minutes}
+                                            onChange={(e) => {
+                                                const m = Math.min(59, Math.max(0, parseInt(e.target.value) || 0));
+                                                setMinutes(m);
+                                                updateDurations(hours, m);
+                                            }}
+                                            className="w-full h-12 text-2xl bg-[#141e2a] text-center
+                                            text-white font-medium focus:outline-none rounded-lg
+                                            border-2 border-purple-500/10 focus:border-purple-500/50
+                                            transition-all group-hover:border-purple-500/30"
+                                        />
+                                        <span className="absolute right-3 top-1/2 -translate-y-1/2
+                                        text-sm text-gray-400 font-medium">minutos</span>
+                                    </div>
+                                </div>
+
+                                {/* Total em minutos */}
+                                <div className="mt-3 text-center text-sm text-gray-500">
+                                    Total: {(hours * 60) + minutes} min
                                 </div>
                             </div>
                         </div>
@@ -358,13 +401,15 @@ function ModConnectClient() {
                         <div className="mt-auto pt-6">
                             <button
                                 onClick={handleRunMachine}
-                                className="w-full h-16 bg-gradient-to-r from-green-600 to-green-500
-                                rounded-xl flex items-center justify-center gap-3
+                                disabled={durations === 0 && minutes === 0}
+                                className="w-full h-12 bg-gradient-to-r from-green-600 to-green-500
+                                rounded-lg flex items-center justify-center gap-2
                                 hover:opacity-90 transition-all duration-300
-                                shadow-lg shadow-green-500/20 group"
+                                shadow-lg shadow-green-500/20 group
+                                disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                <PlayArrow className="text-3xl group-hover:scale-110 transition-transform" />
-                                <span className="text-lg font-medium">Iniciar Sessão</span>
+                                <PlayArrow className="text-2xl group-hover:scale-110 transition-transform" />
+                                <span className="text-base font-medium">Iniciar Sessão</span>
                             </button>
                         </div>
                     </div>

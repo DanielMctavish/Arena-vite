@@ -4,23 +4,43 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { selectedClient } from "../../redux/client/ClientSlice";
 import { useNavigate } from "react-router-dom";
-import { ShoppingCart, Timelapse, Storefront, Gamepad, ContactPage, AccessTime, Stop, Delete } from "@mui/icons-material";
+import { ShoppingCart, Timelapse, Storefront, Gamepad, ContactPage, AccessTime, Stop, Delete, Edit } from "@mui/icons-material";
 import ClientDetailsModal from './ClientDetailsModal';
+import ClientEdit from './ClientEdit';
+import connectWebSocketClient from "../../components/SocketCOM/connectWebSocket";
 
 function ClienteLinhaTd({ nome, email, value, avatar_url, 
     client_id, isPlaying, horas, tel, address, cpf, created_at, onUpdate, sessions, transactions }) {
     const stateMachineRunning = useSelector(state => state.machine);
     const [machineSession, setMachineSession] = useState({});
+    const [elapsedTime, setElapsedTime] = useState(0);
+    const [isStoppingMachine, setIsStoppingMachine] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [showDetails, setShowDetails] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const socketClient = new connectWebSocketClient();
 
     useEffect(() => {
         getMachineSessionByClient();
-        console.log("sessões do cliente -> ", transactions);
-    }, [client_id, stateMachineRunning]);
+        
+        // Configurar socket para receber o tempo decorrido
+        const socket = socketClient.getSocketInstance();
+        
+        if (machineSession.Machine?.id) {
+            socket.on(`${machineSession.Machine.id}-running`, (message) => {
+                setElapsedTime(message.data.cronTimer);
+            });
+        }
+
+        return () => {
+            if (machineSession.Machine?.id) {
+                socket.off(`${machineSession.Machine.id}-running`);
+            }
+        };
+    }, [client_id, stateMachineRunning, machineSession.Machine?.id]);
 
     const getMachineSessionByClient = () => {
         const currentAdmCookie = JSON.parse(localStorage.getItem('arena-adm-login'));
@@ -79,48 +99,47 @@ function ClienteLinhaTd({ nome, email, value, avatar_url,
     };
 
     const handleForceStop = async () => {
-        const currentAdmCookie = JSON.parse(localStorage.getItem('arena-adm-login'));
-        if (!currentAdmCookie) return navigate("/");
+        if (!machineSession.Machine?.id) return;
+        
+        setIsStoppingMachine(true);
+        const currentSession = JSON.parse(localStorage.getItem("arena-adm-login"));
 
         try {
             // Primeira chamada: Atualizar status do cliente
-            await axios.patch(`${import.meta.env.VITE_APP_API_URL}/client/update?client_id=${client_id}`, 
+            await axios.patch(
+                `${import.meta.env.VITE_APP_API_URL}/client/update?client_id=${client_id}`,
                 { isPlaying: false },
                 {
                     headers: {
-                        'Authorization': `Bearer ${currentAdmCookie.token}`
+                        'Authorization': `Bearer ${currentSession.token}`
                     }
                 }
             );
 
             // Segunda chamada: Parar a máquina
-            if (machineSession.Machine) {
-                await axios.post(`${import.meta.env.VITE_APP_API_URL}/machines/stop-machine`,
-                    {
-                        client_id: client_id,
-                        machine_id: machineSession.Machine.id
-                    },
-                    {
-                        headers: {
-                            'Authorization': `Bearer ${currentAdmCookie.token}`
-                        }
+            await axios.post(
+                `${import.meta.env.VITE_APP_API_URL}/machines/stop-machine`,
+                {
+                    client_id: client_id,
+                    machine_id: machineSession.Machine.id,
+                    elapsed_time: elapsedTime
+                },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${currentSession.token}`
                     }
-                );
-            }
+                }
+            );
 
-            // Atualizar o estado local
-            getMachineSessionByClient();
-
-            // Disparar atualização da lista de clientes
-            dispatch({ type: 'UPDATE_CLIENTS_LIST' });
-
-            // Chamar função de atualização passada como prop
-            if (onUpdate) {
-                onUpdate();
-            }
+            // Atualizar a lista após parar
+            onUpdate?.();
+            setElapsedTime(0);
 
         } catch (error) {
-            console.error('Erro ao forçar parada:', error);
+            console.error("Erro ao parar máquina:", error);
+            alert("Erro ao tentar parar a máquina");
+        } finally {
+            setIsStoppingMachine(false);
         }
     };
 
@@ -253,11 +272,12 @@ function ClienteLinhaTd({ nome, email, value, avatar_url,
                             </button>
                             <button
                                 onClick={handleForceStop}
+                                disabled={isStoppingMachine}
                                 className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 
                                 rounded-lg transition-colors flex items-center gap-2 shadow-lg"
                             >
                                 <Stop />
-                                <span className="lg:flex hidden">Forçar Parada</span>
+                                <span className="lg:flex hidden">{isStoppingMachine ? "Parando..." : "Forçar Parada"}</span>
                             </button>
                         </div>
                     </div>
@@ -352,6 +372,15 @@ function ClienteLinhaTd({ nome, email, value, avatar_url,
                             >
                                 <Delete />
                             </button>
+
+                            <button 
+                                onClick={() => setShowEditModal(true)}
+                                className="bg-blue-600/20 hover:bg-blue-600 text-blue-400 
+                                hover:text-white p-2 rounded-lg transition-all flex items-center"
+                                title="Editar Cliente"
+                            >
+                                <Edit />
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -381,6 +410,20 @@ function ClienteLinhaTd({ nome, email, value, avatar_url,
 
             {showDeleteConfirm && <DeleteConfirmModal />}
             {isDeleting && <DeletingModal />}
+
+            {showEditModal && (
+                <ClientEdit 
+                    client={{
+                        id: client_id,
+                        nome,
+                        email,
+                        tel,
+                        address
+                    }}
+                    onClose={() => setShowEditModal(false)}
+                    onUpdate={handleClientUpdated}
+                />
+            )}
         </>
     );
 }
