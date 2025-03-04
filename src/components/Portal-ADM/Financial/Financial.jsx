@@ -5,7 +5,7 @@ import Asside from "../../Asside/Asside";
 import NavigationAdm from "../../navigation/Navigation";
 import RelatorioFinanceiro from "../ADM-Modais/RelatorioFinanceiro";
 import { useNavigate } from 'react-router-dom';
-import { CreditCard, Pix } from "@mui/icons-material"; // Import icons
+import { CreditCard, Pix, Payments } from "@mui/icons-material"; // Import icons
 //import dayjs from "dayjs";
 import 'dayjs/locale/pt-br';
 
@@ -146,11 +146,18 @@ function Financial() {
                                             {transaction.transaction_type}
                                         </td>
                                         <td className="p-4 text-white text-center">
-                                            {transaction.method === 'PIX' ? (
-                                                <Pix className="text-green-400" />
-                                            ) : (
-                                                <CreditCard className="text-blue-400" />
-                                            )}
+                                            {(() => {
+                                                switch(transaction.method) {
+                                                    case 'PIX':
+                                                        return <Pix className="text-green-400" />;
+                                                    case 'CREDITO':
+                                                        return <CreditCard className="text-blue-400" />;
+                                                    case 'DINHEIRO':
+                                                        return <Payments className="text-yellow-400" />;
+                                                    default:
+                                                        return transaction.method;
+                                                }
+                                            })()}
                                         </td>
                                         <td className="p-4 text-white text-center">
                                             {transaction.status}
