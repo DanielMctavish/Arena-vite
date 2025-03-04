@@ -4,7 +4,7 @@ import { useCallback, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { getAdmInfoByEmail } from "../Portal-ADM/functions/getAdmInfoByEmail";
 
-function CreateClient() {
+function CreateClient({ onClientCreated }) {
     const [files, setFiles] = useState([]);
     const [clientName, setClientName] = useState('')
     const [clientEmail, setclientEmail] = useState('')
@@ -76,15 +76,6 @@ function CreateClient() {
             return null
         }
 
-        if (files.length === 0) {
-            refSpanCreation.current.style.display = "block"
-            refSpanCreation.current.innerHTML = "Adicione uma foto pro usuário"
-            setTimeout(() => {
-                refSpanCreation.current.style.display = "none"
-            }, 3000);
-            return null
-        }
-
         setIsCreating(true)
 
         getAdmInfoByEmail(getAdmSession.email).then(async res => {
@@ -95,16 +86,18 @@ function CreateClient() {
             };
 
             try {
-                const formData = new FormData()
-                formData.append('arena-client-profile', files[0])
+                let currentUrlClientImage = ''; // Valor padrão caso não tenha foto
 
-                // FIREBASE.....
-                let currentUrlClientImage;
-                await axios.post(`${import.meta.env.VITE_APP_API_URL}/client/upload-client-profile`, formData)
-                    .then(response => {
-                        console.log('response firebase ->', response.data);
-                        currentUrlClientImage = response.data.currentImage
-                    })
+                // Só faz upload se tiver arquivo
+                if (files.length > 0) {
+                    const formData = new FormData()
+                    formData.append('arena-client-profile', files[0])
+
+                    await axios.post(`${import.meta.env.VITE_APP_API_URL}/client/upload-client-profile`, formData)
+                        .then(response => {
+                            currentUrlClientImage = response.data.currentImage
+                        })
+                }
 
                 await axios.post(`${import.meta.env.VITE_APP_API_URL}/client/create-client`, {
                     nome: clientName,
@@ -121,14 +114,14 @@ function CreateClient() {
                 }, config).then(() => {
                     setIsCreating(false)
                     setFiles([])
+                    handleCloseCurrentWindow()
+                    onClientCreated && onClientCreated()
                 })
             } catch (error) {
                 console.log('erro ao tentar criar client _>', error);
                 setIsCreating(false)
             }
-
         })
-
     }
 
     if (isCreating) {
@@ -163,8 +156,10 @@ function CreateClient() {
                 </div>
 
                 <div className="p-6">
-                    <span ref={refSpanCreation} className="hidden bg-yellow-500/90 text-white p-3 rounded-md 
-                    mb-4 block text-center">
+                    <span 
+                        ref={refSpanCreation} 
+                        className="hidden bg-yellow-500/90 text-white p-3 rounded-md mb-4"
+                    >
                         span de criação
                     </span>
 

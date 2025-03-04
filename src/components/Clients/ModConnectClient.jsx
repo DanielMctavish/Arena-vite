@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Close, PlayArrow, Stop } from "@mui/icons-material";
+import { Close, PlayArrow } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import ComputerIcon from "../../medias/icons/iMac.png"
 import axios from "axios";
@@ -16,8 +16,9 @@ function ModConnectClient() {
     const [cardsMachines, setCardsMachines] = useState([1])
     const [currentMachine, setCurrentMachine] = useState()
     const [durations, setDurations] = useState(1)
-    const [serverResponses, setServerResponses] = useState("")
     const [showModal, setShowModal] = useState(false)
+    const [selectedMachineId, setSelectedMachineId] = useState(null);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const clientState = useSelector(state => state.client)
     const dispatch = useDispatch()
@@ -79,8 +80,8 @@ function ModConnectClient() {
     }
 
     const handleSelectMachine = (currentMachine) => {
-        //console.log(currentMachine)
-        setCurrentMachine(currentMachine)
+        setSelectedMachineId(currentMachine.id);
+        setCurrentMachine(currentMachine);
     }
 
     const handleRunMachine = async () => {
@@ -102,6 +103,7 @@ function ModConnectClient() {
             }
 
             setIsLoading(true)
+            setErrorMessage('');
             
             // Inicia a sessão com a rota existente
             await axios.post(`${import.meta.env.VITE_APP_API_URL}/machines/start-machine`, {
@@ -118,7 +120,6 @@ function ModConnectClient() {
                     'Authorization': `Bearer ${currentSession.token}`
                 }
             }).then(result => {
-                console.log("session created -> ", result.data)
                 setIsLoading(false)
                 
                 // Atualiza o estado da máquina com o client_id
@@ -130,32 +131,19 @@ function ModConnectClient() {
                 dispatch(machineRunning(updatedMachine))
                 handleCloseCurrentWindow()
             }).catch(err => {
-                console.log("error at create session -> ", err.response.data)
                 setIsLoading(false)
-                setServerResponses(err.response.data)
+                setErrorMessage(err.response?.data || 'Erro ao iniciar sessão');
+                // Mostrar erro em um toast ou modal se necessário
             })
 
         } catch (error) {
-            console.log("error -> ", error.message)
             setIsLoading(false)
+            setErrorMessage('Erro ao conectar com o servidor');
+            // Mostrar erro em um toast ou modal se necessário
         }
     }
 
-    const handleStopMachine = async () => {
-        const currentSession = JSON.parse(localStorage.getItem('arena-adm-login'))
-        //console.log("observando token = > ", currentSession.token)
-
-        await axios.get(`${import.meta.env.VITE_APP_API_URL}/machines/stop-machine?machine_id=${currentMachine.id}`, {
-            headers: {
-                'Authorization': `Bearer ${currentSession.token}`
-            }
-        }).then(res => {
-            console.log("Stopping machine -> ", res)
-        }).catch(err => {
-            console.log("error at stop machine -> ", err.message)
-        })
-
-    }
+  
 
     const getBackgroundColor = (type) => {
         switch(type) {
@@ -184,18 +172,18 @@ function ModConnectClient() {
     }
 
     if (isLoading) return (
-        <div className="lg:w-[60%] w-[90%] h-[58%] flex 
+        <div className="w-[800px] flex 
             bg-gradient-to-r from-[#2c3e50] via-[#34495e] to-[#2c3e50] 
             backdrop-blur-lg text-white rounded-md 
-            justify-center items-center gap-6 relative p-2
-            shadow-lg shadow-[#0f0f0f4d] overflow-y-auto">
+            justify-center items-center gap-6 relative p-8
+            shadow-lg shadow-[#0f0f0f4d]">
             <span className="fixed bottom-[2vh]">conectando máquina, aguarde...</span>
             <LoadingComp />
         </div>
     )
 
     return (
-        <div className="lg:w-[80%] w-[95%] h-[70%] 
+        <div className="w-[800px] 
         bg-gradient-to-br from-[#1c2833] to-[#2c3e50] 
         backdrop-blur-lg text-white rounded-xl 
         flex justify-between items-stretch relative p-6
@@ -227,37 +215,57 @@ function ModConnectClient() {
                 </div>
             )}
 
+            {/* Modal de erro */}
+            {errorMessage && (
+                <div className="fixed inset-0 bg-black/75 flex justify-center items-center z-50 backdrop-blur-sm">
+                    <div className="bg-[#1c2833] p-8 rounded-xl shadow-xl border border-red-500/20 max-w-md">
+                        <h2 className="text-2xl font-bold mb-4 text-red-500">Erro</h2>
+                        <p className="text-white/80 text-lg">{errorMessage}</p>
+                        <button
+                            onClick={() => setErrorMessage('')}
+                            className="mt-6 w-full py-3 bg-gradient-to-r from-red-600 to-red-500
+                            text-white rounded-lg hover:opacity-90 transition-opacity
+                            font-medium shadow-lg shadow-red-500/20"
+                        >
+                            Fechar
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {/* Seção de Máquinas */}
-            <section className="w-[60%] h-full bg-[#141e2a]/50 rounded-xl p-6 
+            <section className="w-[60%] bg-[#141e2a]/50 rounded-xl p-6 
             border border-white/5 shadow-xl">
                 <h2 className="text-xl font-bold mb-6 text-white/80">Máquinas Disponíveis</h2>
                 
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 
-                h-[calc(100%-3rem)] overflow-y-auto pr-2
+                max-h-[400px] overflow-y-auto pr-2
                 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
                     {cardsMachines.map((card) => {
                         const bgColor = getBackgroundColor(card.type);
                         const icon = getMachineIcon(card.type);
                         const isConsole = card.type === 'PS5' || card.type === 'XBOX';
+                        const isSelected = selectedMachineId === card.id;
 
                         if (card.status === "RUNNING") {
                             return (
                                 <div key={card.id} 
-                                className="relative group transition-all duration-300">
+                                className={`relative group transition-all duration-300 
+                                ${selectedMachineId ? 'opacity-40 scale-95' : ''}`}>
                                     <div className="absolute -top-2 left-1/2 transform -translate-x-1/2
                                     bg-red-500 text-white text-xs px-3 py-1 rounded-full">
                                         Em Uso
                                     </div>
-                                    <div className="h-[140px] border-2 border-red-500/50
+                                    <div className="h-[110px] border-2 border-red-500/50
                                     rounded-xl flex flex-col items-center justify-center
                                     bg-gradient-to-br from-red-500/20 to-transparent"
                                     style={{ backgroundColor: bgColor }}>
-                                        <span className={`text-xl text-white/80
+                                        <span className={`text-lg text-white/80
                                             ${isConsole ? 'self-start ml-3' : ''}`}>
                                             {card.position}
                                         </span>
                                         <img src={icon} alt="" 
-                                            className="h-1/2 object-contain opacity-50" 
+                                            className="h-[40%] object-contain opacity-50" 
                                             style={{ filter: 'invert(1)' }} 
                                         />
                                     </div>
@@ -269,27 +277,33 @@ function ModConnectClient() {
                             <div 
                                 onClick={() => handleSelectMachine(card)}
                                 key={card.id}
-                                className="h-[140px] rounded-xl cursor-pointer
-                                transition-all duration-300 group hover:scale-105
+                                className={`rounded-xl cursor-pointer
+                                transition-all duration-300 group
                                 flex flex-col items-center justify-center
-                                border border-white/10 hover:border-[#e6a429]
-                                relative overflow-hidden"
+                                border border-white/10
+                                relative overflow-hidden
+                                ${isSelected 
+                                    ? 'h-[130px] border-[#e6a429] shadow-lg shadow-[#e6a429]/20 scale-105 z-10' 
+                                    : 'h-[110px] hover:border-[#e6a429] opacity-40 scale-95'
+                                }
+                                ${selectedMachineId && !isSelected ? 'hover:opacity-60' : ''}`}
                                 style={{ backgroundColor: bgColor }}
                             >
-                                <div className="absolute inset-0 bg-gradient-to-br 
-                                from-white/5 to-transparent opacity-0 group-hover:opacity-100 
-                                transition-opacity duration-300" />
+                                <div className={`absolute inset-0 bg-gradient-to-br 
+                                from-white/5 to-transparent transition-opacity duration-300
+                                ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
                                 
-                                <span className={`text-xl text-white/80
+                                <span className={`text-lg text-white/80
                                     ${isConsole ? 'self-start ml-3' : ''}`}>
                                     {card.position}
                                 </span>
                                 <img src={icon} alt="" 
-                                    className="h-1/2 object-contain transition-transform 
-                                    duration-300 group-hover:scale-110" 
+                                    className={`h-[40%] object-contain transition-all duration-300
+                                    ${isSelected ? 'scale-110' : 'group-hover:scale-110'}`}
                                     style={{ filter: 'invert(1)' }} 
                                 />
-                                <span className="text-white/60 text-sm mt-2">
+                                <span className={`text-white transition-all duration-300 mt-1
+                                    ${isSelected ? 'text-sm' : 'text-xs opacity-60'}`}>
                                     {card.nano_id}
                                 </span>
                             </div>
@@ -299,7 +313,7 @@ function ModConnectClient() {
             </section>
 
             {/* Seção de Controles */}
-            <section className="w-[38%] h-full flex flex-col gap-6">
+            <section className="w-[38%] flex flex-col gap-6">
                 {/* Painel do Cliente */}
                 <div className="bg-[#141e2a]/50 rounded-xl p-6 border border-white/5 shadow-xl">
                     <h3 className="text-white/60 mb-2">Cliente Selecionado</h3>
@@ -319,44 +333,38 @@ function ModConnectClient() {
                 {/* Painel de Controle */}
                 {currentMachine && (
                     <div className="flex-1 bg-[#141e2a]/50 rounded-xl p-6 
-                    border border-white/5 shadow-xl flex flex-col justify-between">
+                    border border-white/5 shadow-xl flex flex-col">
                         <div>
-                            <h3 className="text-white/60 mb-4">Duração da Sessão</h3>
-                            <div className="flex items-center justify-center gap-4 mb-8">
-                                <input 
-                                    type="number"
-                                    min="1"
-                                    onChange={(e) => e.target.value > 0 ? setDurations(e.target.value) : false}
-                                    value={durations}
-                                    className="w-24 h-16 text-3xl bg-[#1c2833] text-center
-                                    border border-white/20 rounded-lg focus:border-[#e6a429]
-                                    focus:outline-none transition-colors"
-                                />
-                                <span className="text-3xl font-light">horas</span>
+                            <h3 className="text-white/60 mb-6">Duração da Sessão</h3>
+                            <div className="bg-[#1c2833] rounded-lg p-4 border border-white/10">
+                                <div className="flex items-center justify-center gap-3">
+                                    <div className="relative flex-1">
+                                        <input 
+                                            type="number"
+                                            min="1"
+                                            onChange={(e) => e.target.value > 0 ? setDurations(e.target.value) : false}
+                                            value={durations}
+                                            className="w-full text-4xl bg-transparent text-center
+                                            text-white font-medium focus:outline-none"
+                                        />
+                                        <div className="absolute bottom-0 left-0 right-0 h-0.5 
+                                        bg-gradient-to-r from-transparent via-purple-500 to-transparent"></div>
+                                    </div>
+                                    <span className="text-2xl text-white/60 font-light">horas</span>
+                                </div>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="mt-auto pt-6">
                             <button
                                 onClick={handleRunMachine}
-                                className="h-20 bg-gradient-to-r from-green-600 to-green-500
-                                rounded-xl flex items-center justify-center gap-2
+                                className="w-full h-16 bg-gradient-to-r from-green-600 to-green-500
+                                rounded-xl flex items-center justify-center gap-3
                                 hover:opacity-90 transition-all duration-300
                                 shadow-lg shadow-green-500/20 group"
                             >
                                 <PlayArrow className="text-3xl group-hover:scale-110 transition-transform" />
-                                <span className="font-medium">Iniciar</span>
-                            </button>
-                            
-                            <button
-                                onClick={handleStopMachine}
-                                className="h-20 bg-gradient-to-r from-red-600 to-red-500
-                                rounded-xl flex items-center justify-center gap-2
-                                hover:opacity-90 transition-all duration-300
-                                shadow-lg shadow-red-500/20 group"
-                            >
-                                <Stop className="text-3xl group-hover:scale-110 transition-transform" />
-                                <span className="font-medium">Parar</span>
+                                <span className="text-lg font-medium">Iniciar Sessão</span>
                             </button>
                         </div>
                     </div>

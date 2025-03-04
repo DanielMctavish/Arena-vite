@@ -4,19 +4,22 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { selectedClient } from "../../redux/client/ClientSlice";
 import { useNavigate } from "react-router-dom";
-import { ShoppingCart, Timelapse, Storefront, Gamepad, ContactPage, AccessTime, Stop } from "@mui/icons-material";
+import { ShoppingCart, Timelapse, Storefront, Gamepad, ContactPage, AccessTime, Stop, Delete } from "@mui/icons-material";
 import ClientDetailsModal from './ClientDetailsModal';
 
-function ClienteLinhaTd({ nome, email, value, avatar_url, client_id, isPlaying, horas, tel, address, cpf, created_at, onUpdate }) {
+function ClienteLinhaTd({ nome, email, value, avatar_url, 
+    client_id, isPlaying, horas, tel, address, cpf, created_at, onUpdate, sessions, transactions }) {
     const stateMachineRunning = useSelector(state => state.machine);
     const [machineSession, setMachineSession] = useState({});
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [showDetails, setShowDetails] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
         getMachineSessionByClient();
-        console.log("horas do cliente -> ", horas);
+        console.log("sessões do cliente -> ", transactions);
     }, [client_id, stateMachineRunning]);
 
     const getMachineSessionByClient = () => {
@@ -121,6 +124,32 @@ function ClienteLinhaTd({ nome, email, value, avatar_url, client_id, isPlaying, 
         }
     };
 
+    const handleDelete = async () => {
+        const currentAdmCookie = JSON.parse(localStorage.getItem('arena-adm-login'));
+        if (!currentAdmCookie) return navigate("/");
+
+        setIsDeleting(true);
+        setShowDeleteConfirm(false);
+
+        try {
+            await axios.delete(`${import.meta.env.VITE_APP_API_URL}/adm/delete-client?client_id=${client_id}`, {
+                headers: {
+                    'Authorization': `Bearer ${currentAdmCookie.token}`
+                }
+            });
+
+            // Atualizar a lista de clientes
+            if (onUpdate) {
+                onUpdate();
+            }
+        } catch (error) {
+            console.error('Erro ao deletar cliente:', error);
+            alert('Erro ao deletar cliente. Tente novamente.');
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
     useEffect(() => {
         // console.log(`Machine session updated for client_id: ${client_id}`, machineSession.Machine && machineSession.Machine);
     }, [machineSession]);
@@ -133,6 +162,57 @@ function ClienteLinhaTd({ nome, email, value, avatar_url, client_id, isPlaying, 
 
         return `${horasInteiras}h ${minutos}min`;
     }
+
+    const handleClientUpdated = () => {
+        // Chama a função de atualização passada pelo componente pai
+        if (onUpdate) {
+            onUpdate();
+        }
+    };
+
+    // Modal de confirmação de delete
+    const DeleteConfirmModal = () => (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+            <div className="bg-[#18212f] p-6 rounded-lg shadow-xl border border-red-500/20 
+            max-w-md w-full mx-4">
+                <h3 className="text-xl font-bold text-white mb-4">Confirmar Exclusão</h3>
+                <p className="text-gray-300 mb-6">
+                    Tem certeza que deseja excluir o cliente <span className="text-white font-semibold">{nome}</span>? 
+                    Esta ação não pode ser desfeita.
+                </p>
+                <div className="flex justify-end gap-3">
+                    <button
+                        onClick={() => setShowDeleteConfirm(false)}
+                        className="px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 
+                        text-white transition-colors"
+                    >
+                        Cancelar
+                    </button>
+                    <button
+                        onClick={() => {
+                            handleDelete();
+                            setShowDeleteConfirm(false);
+                        }}
+                        className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 
+                        text-white transition-colors flex items-center gap-2"
+                    >
+                        <Delete />
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+
+    // Mini-modal de loading
+    const DeletingModal = () => (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+            <div className="bg-[#18212f] p-6 rounded-lg shadow-xl border border-red-500/20 
+            flex flex-col items-center gap-3">
+                <div className="animate-spin rounded-full h-8 w-8 border-2 border-white border-t-transparent" />
+                <p className="text-white">Excluindo cliente...</p>
+            </div>
+        </div>
+    );
 
     if (isPlaying) {
         return (
@@ -187,55 +267,92 @@ function ClienteLinhaTd({ nome, email, value, avatar_url, client_id, isPlaying, 
     }
 
     return (
-        <div className="bg-[#18212f] rounded-lg p-6 mt-4 hover:bg-[#1c2736] 
-        transition-all duration-300 border border-purple-500/10 shadow-lg">
-            <div className="flex justify-between items-center">
-                <div className="flex items-center gap-4">
-                    <img src={avatar_url} alt="" 
-                        className="w-12 h-12 rounded-full object-cover border-2 border-purple-500/20" 
-                    />
-                    <div>
-                        <h3 className="text-white font-bold text-lg">{nome}</h3>
-                        <p className="text-gray-400 text-sm">{email}</p>
+        <>
+            <div className="bg-[#18212f] rounded-lg p-6 mt-4 hover:bg-[#1c2736] 
+            transition-all duration-300 border border-purple-500/10 shadow-lg group">
+                <div className="flex flex-col md:flex-row justify-between gap-4">
+                    {/* Informações do Cliente */}
+                    <div className="flex items-center gap-4">
+                        <div className="relative">
+                            <img 
+                                src={avatar_url} 
+                                alt="" 
+                                className="w-16 h-16 rounded-full object-cover border-2 border-purple-500/20 
+                                group-hover:border-purple-500/40 transition-all" 
+                            />
+                            <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 
+                            border-[#18212f] bg-gray-500"></div>
+                        </div>
+                        <div>
+                            <h3 className="text-white font-bold text-lg group-hover:text-purple-400 
+                            transition-colors">{nome}</h3>
+                            <p className="text-gray-400 text-sm">{email}</p>
+                            <div className="flex items-center gap-2 mt-1">
+                                <div className="flex items-center gap-2 bg-purple-500/10 px-3 py-1 
+                                rounded-full">
+                                    <Timelapse className="text-purple-400 text-sm" />
+                                    <span className="text-gray-300 text-sm font-medium">
+                                        {horas && formatarHoras(horas)}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                <div className="flex items-center gap-6">
-                    <div className="bg-purple-500/10 px-4 py-2 rounded-lg flex items-center gap-2">
-                        <Timelapse className="text-purple-400" />
-                        <span className="text-white font-medium">
-                            {horas && formatarHoras(horas)}
-                        </span>
-                    </div>
+                    {/* Ações */}
+                    <div className="flex flex-wrap items-center gap-2 md:gap-3">
+                        {/* Ações Principais */}
+                        <div className="flex gap-2">
+                            <button 
+                                onClick={handleShowConnectClient}
+                                className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 
+                                hover:to-green-800 text-white px-4 py-2 rounded-lg transition-all 
+                                flex items-center gap-2 shadow-lg hover:shadow-green-500/20"
+                            >
+                                <Gamepad />
+                                <span>Conectar</span>
+                            </button>
 
-                    <div className="flex gap-2">
-                        <button onClick={handleShowConnectClient} 
-                            className="bg-green-600 hover:bg-green-700 text-white p-2 
-                            rounded-lg transition-colors flex items-center gap-2">
-                            <Gamepad />
-                            <span className="lg:flex hidden">Conectar</span>
-                        </button>
-                        
-                        <button onClick={handleShowConsumoClient}
-                            className="bg-purple-600 hover:bg-purple-700 text-white p-2 
-                            rounded-lg transition-colors flex items-center gap-2">
-                            <Storefront />
-                            <span className="lg:flex hidden">Loja</span>
-                        </button>
-                        
-                        <button onClick={handleShowAddSaldo}
-                            className="bg-blue-600 hover:bg-blue-700 text-white p-2 
-                            rounded-lg transition-colors flex items-center gap-2">
-                            <AccessTime />
-                            <span className="lg:flex hidden">Adicionar Horas</span>
-                        </button>
-                        
-                        <button onClick={handleShowDetails}
-                            className="bg-gray-600 hover:bg-gray-700 text-white p-2 
-                            rounded-lg transition-colors flex items-center gap-2">
-                            <ContactPage />
-                            <span className="lg:flex hidden">Detalhes</span>
-                        </button>
+                            <button 
+                                onClick={handleShowAddSaldo}
+                                className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 
+                                hover:to-blue-800 text-white px-4 py-2 rounded-lg transition-all 
+                                flex items-center gap-2 shadow-lg hover:shadow-blue-500/20"
+                            >
+                                <AccessTime />
+                                <span>Horas</span>
+                            </button>
+                        </div>
+
+                        {/* Ações Secundárias */}
+                        <div className="flex gap-2">
+                            <button 
+                                onClick={handleShowConsumoClient}
+                                className="bg-purple-600/20 hover:bg-purple-600 text-purple-400 
+                                hover:text-white p-2 rounded-lg transition-all flex items-center"
+                                title="Loja"
+                            >
+                                <Storefront />
+                            </button>
+
+                            <button 
+                                onClick={handleShowDetails}
+                                className="bg-gray-600/20 hover:bg-gray-600 text-gray-400 
+                                hover:text-white p-2 rounded-lg transition-all flex items-center"
+                                title="Detalhes"
+                            >
+                                <ContactPage />
+                            </button>
+
+                            <button
+                                onClick={() => setShowDeleteConfirm(true)}
+                                className="bg-red-600/20 hover:bg-red-600 text-red-400 
+                                hover:text-white p-2 rounded-lg transition-all flex items-center"
+                                title="Excluir Cliente"
+                            >
+                                <Delete />
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -253,12 +370,18 @@ function ClienteLinhaTd({ nome, email, value, avatar_url, client_id, isPlaying, 
                         tel,
                         address,
                         cpf,
-                        created_at
+                        created_at,
+                        Sessions: sessions,
+                        Transactions: transactions
                     }}
                     onClose={() => setShowDetails(false)}
+                    onClientUpdated={handleClientUpdated}
                 />
             )}
-        </div>
+
+            {showDeleteConfirm && <DeleteConfirmModal />}
+            {isDeleting && <DeletingModal />}
+        </>
     );
 }
 

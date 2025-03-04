@@ -13,6 +13,7 @@ import ModClientConsumo from "./ModClientConsumo";
 import ModAddSaldo from "./ModAddSaldo";
 import { useSelector } from "react-redux";
 import { Search } from "@mui/icons-material"
+import ClientDetailsModal from "./ClientDetailsModal";
 
 
 function PortalAdmClientes() {
@@ -23,10 +24,10 @@ function PortalAdmClientes() {
     const [changeState, setChangeState] = useState(false)
     const navigate = useNavigate();
     const refModAddCreate = useRef()
+    const [selectedClient, setSelectedClient] = useState(null);
 
     useEffect(() => {
         getClientList()
-        console.log("redux: ", stateMachineRunning)
     }, [changeState, stateMachineRunning])
 
     const handleShowModAddCreate = () => {
@@ -71,6 +72,15 @@ function PortalAdmClientes() {
     useEffect(() => {
         setFilteredClients(clientList);
     }, [clientList]);
+
+    const handleClientCreated = () => {
+        getClientList()
+    }
+
+    // Função para atualizar a lista
+    const handleClientUpdate = () => {
+        getClientList();
+    };
 
     return (
         <div className="bg-zinc-800 w-full h-[100vh] 
@@ -131,6 +141,9 @@ function PortalAdmClientes() {
                                 address={client.address}
                                 cpf={client.cpf}
                                 created_at={client.created_at}
+                                onUpdate={handleClientUpdate}
+                                sessions={client.Sessions}
+                                transactions={client.Transactions}
                             />
                         ))}
                     </div>
@@ -139,7 +152,7 @@ function PortalAdmClientes() {
 
             {/* Modais */}
             <div ref={refModAddCreate} className="mod-add-client absolute hidden w-full h-[80vh] justify-center items-center">
-                <CreateClient />
+                <CreateClient onClientCreated={handleClientCreated} />
             </div>
 
             <div className="mod-connect-client absolute hidden w-full h-[80vh] justify-center items-center">
@@ -153,6 +166,12 @@ function PortalAdmClientes() {
             <div className="mod-add-saldo-client absolute hidden w-full h-[80vh] justify-center items-center">
                 <ModAddSaldo changeState={changeState} setChangeState={setChangeState} />
             </div>
+
+            <ClientDetailsModal 
+                client={selectedClient} 
+                onClose={() => setSelectedClient(null)}
+                onClientUpdated={() => getClientList()}
+            />
         </div>
     );
 }

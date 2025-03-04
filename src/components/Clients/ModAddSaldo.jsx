@@ -69,54 +69,105 @@ function ModAddSaldo({ changeState, setChangeState }) {
 
     if (isLoading) {
         return (
-            <div className="w-[60%] h-[88%] flex flex-col
-        bg-gradient-to-t from-[#3C4557] to-[#192234]  text-white rounded-md 
-        justify-center items-center gap-6 relative
-        shadow-lg shadow-[#0f0f0f4d] overflow-y-auto">
-                <span className="absolute top-[3vh]">adicionando horas...</span>
+            <div className="bg-[#18212f] p-6 rounded-lg shadow-xl border border-purple-500/20 
+            flex flex-col items-center gap-4 min-w-[400px] max-w-lg mx-auto animate-fadeIn">
+                <span className="text-white text-lg">Adicionando horas...</span>
                 <LoadingComp />
             </div>
         );
     }
 
     return (
-        <div className="w-[60%] h-[88%] flex flex-col
-        bg-gradient-to-t from-[#3C4557] to-[#192234]  text-white rounded-md 
-        justify-center items-center gap-6 relative
-        shadow-lg shadow-[#0f0f0f4d] overflow-y-auto">
-
-            <span onClick={handleCloseCurrentWindow} className="absolute top-1 right-1 text-zinc-100 cursor-pointer">
-                <Close />
-            </span>
-
-            <span className="text-[32px] font-bold">{clientState && clientState.nome}</span>
-            <img src={clientState && clientState.avatar_url} alt="" className="w-[120px] h-[120px] object-cover rounded-full bg-zinc-300" />
-
-            <div className="flex w-[80%] justify-center items-center gap-1">
-                <div className="flex w-[50%] gap-1 justify-start items-center">
-                    <PointOfSale />
-                    <input onChange={(e) => { setTarifa(e.target.value) }}
-                        type="text" className="p-2 border-[1px] bg-transparent rounded-md w-full"
-                        placeholder="definir tarifa: R$ 0.00" />
-                </div>
-                <div className="flex w-[50%] gap-1 justify-start items-center">
-                    <AccessTime />
-                    <input onChange={(e) => { setHours(e.target.value) }}
-                        type="text" className="p-2 border-[1px] bg-transparent rounded-md w-full"
-                        placeholder="definir horas" />
+        <div className="bg-[#18212f] rounded-lg shadow-xl border border-purple-500/20 
+        min-w-[400px] max-w-lg mx-auto overflow-hidden animate-fadeIn">
+            {/* Header */}
+            <div className="relative h-32 bg-gradient-to-r from-purple-600 to-blue-600 
+            flex items-center justify-center p-4">
+                <button 
+                    onClick={handleCloseCurrentWindow}
+                    className="absolute top-4 right-4 text-white/80 hover:text-white 
+                    transition-colors p-1 hover:bg-white/10 rounded-full"
+                >
+                    <Close />
+                </button>
+                
+                <div className="flex items-center gap-4">
+                    <img 
+                        src={clientState?.avatar_url} 
+                        alt="" 
+                        className="w-20 h-20 rounded-full object-cover border-4 border-[#18212f]" 
+                    />
+                    <div>
+                        <h2 className="text-2xl font-bold text-white">
+                            {clientState?.nome}
+                        </h2>
+                        <div className="bg-white/20 text-white text-sm px-3 py-1 rounded-full 
+                        backdrop-blur-sm inline-block mt-1">
+                            Adicionar Créditos
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <select onChange={(e) => setMethod(e.target.value)} className="p-2 border-[1px] bg-transparent rounded-md w-[80%]">
-                <option value="">Selecione o método de pagamento</option>
-                <option value="CREDITO">Cartão de Crédito</option>
-                <option value="PIX">PIX</option>
-            </select>
+            {/* Formulário */}
+            <div className="p-6 space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <label className="text-sm text-gray-400">Tarifa (R$)</label>
+                        <div className="relative">
+                            <PointOfSale className="absolute left-3 top-1/2 -translate-y-1/2 text-purple-400" />
+                            <input 
+                                type="number"
+                                onChange={(e) => setTarifa(e.target.value)}
+                                className="w-full bg-[#1f2937] border border-purple-500/20 rounded-lg
+                                pl-10 pr-4 py-2.5 text-gray-300 focus:border-purple-500 transition-colors
+                                outline-none"
+                                placeholder="0.00"
+                            />
+                        </div>
+                    </div>
 
-            <button onClick={handleAddHoursToClient} className="p-2 bg-[#27314b] border-[1px] border-[#3e4e75] rounded-md w-[80%]">
-                confirmar
-            </button>
+                    <div className="space-y-2">
+                        <label className="text-sm text-gray-400">Horas</label>
+                        <div className="relative">
+                            <AccessTime className="absolute left-3 top-1/2 -translate-y-1/2 text-purple-400" />
+                            <input 
+                                type="number"
+                                onChange={(e) => setHours(e.target.value)}
+                                className="w-full bg-[#1f2937] border border-purple-500/20 rounded-lg
+                                pl-10 pr-4 py-2.5 text-gray-300 focus:border-purple-500 transition-colors
+                                outline-none"
+                                placeholder="0"
+                            />
+                        </div>
+                    </div>
+                </div>
 
+                <div className="space-y-2">
+                    <label className="text-sm text-gray-400">Método de Pagamento</label>
+                    <select 
+                        onChange={(e) => setMethod(e.target.value)}
+                        className="w-full bg-[#1f2937] border border-purple-500/20 rounded-lg
+                        px-4 py-2.5 text-gray-300 focus:border-purple-500 transition-colors
+                        outline-none appearance-none cursor-pointer"
+                    >
+                        <option value="">Selecione o método</option>
+                        <option value="DINHEIRO">Dinheiro</option>
+                        <option value="CREDITO">Cartão de Crédito</option>
+                        <option value="PIX">PIX</option>
+                    </select>
+                </div>
+
+                <button 
+                    onClick={handleAddHoursToClient}
+                    className="w-full bg-gradient-to-r from-purple-600 to-blue-600 
+                    hover:from-purple-700 hover:to-blue-700 text-white font-medium
+                    py-3 rounded-lg transition-all transform hover:scale-[1.02] 
+                    active:scale-[0.98] shadow-lg hover:shadow-purple-500/25"
+                >
+                    Confirmar
+                </button>
+            </div>
         </div>
     );
 }
