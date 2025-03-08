@@ -23,7 +23,6 @@ function PortalGamerDashboard() {
         return
       }
       setClientSession(clientSessionData.body)
-
       try {
         const response = await axios.get(`${import.meta.env.VITE_APP_API_URL}/client/find-by-email?email=${clientSessionData.body.email}`, {
           headers: { 'Authorization': `Bearer ${clientSessionData.token}` }
